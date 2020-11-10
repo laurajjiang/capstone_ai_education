@@ -10,10 +10,10 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 
 ## Available Scripts
 
-### npm install -g yarn
+### `npm install -g yarn`
 If you don't have yarn, please install yarn with this npm command.
 
-### 'yarn install'
+### `yarn install`
 Before run the yarn script, please install packages with this command.
 
 In the project directory, you can run:
