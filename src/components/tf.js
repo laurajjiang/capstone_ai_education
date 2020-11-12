@@ -1,4 +1,4 @@
-import React,{Component} from "react";
+import React from "react";
 import * as tf from '@tensorflow/tfjs';
 import * as tfvis from '@tensorflow/tfjs-vis'
 
@@ -20,6 +20,12 @@ const MNIST_LABELS_PATH =
  * NOTE: This will get much easier. For now, we do data fetching and
  * manipulation manually.
  */
+
+window.tf = tf;
+window.tfvis = tfvis;
+var data = 0;
+var model = 0;
+
 export class MnistData {
   constructor() {
     this.shuffledTrainIndex = 0;
@@ -27,6 +33,7 @@ export class MnistData {
   }
 
   async load() {
+    console.log("MNIST load ...");
     // Make a request for the MNIST sprited image.
     const img = new Image();
     const canvas = document.createElement('canvas');
@@ -128,11 +135,9 @@ export class MnistData {
   }
 }
 
-window.tf = tf;
-window.tfvis = tfvis;
-
 export function getModel() {
-  const model = tf.sequential();
+  console.log("getModel ..");
+  model = tf.sequential();
 
   model.add(tf.layers.conv2d({
     inputShape: [28, 28, 1],
@@ -174,30 +179,24 @@ export function getModel() {
 }
 
 export async function loadData() {
-  const data = new MnistData();
+  data = new MnistData();
   await data.load();
   return data;
 }
 
 async function initData() {
-  window.data = await loadData();
-  console.log("loadData done");
-}
-
-function initModel() {
-  window.model = getModel();
-}
-
-async function showExamples() {
-  // Get a surface
-  console.log("show example")
+  //data = await loadData();
+  data = new MnistData();
+  await data.load();
+  
   const surface = tfvis.visor().surface({
-    name: 'My First Surface',
+    name: 'Surface',
     tab: 'Input Data'
   });
+
   const drawArea = surface.drawArea; // Get the examples
 
-  const examples = window.data.nextTestBatch(20);
+  const examples = data.nextTestBatch(20);
   const numExamples = examples.xs.shape[0];
 
   for (let i = 0; i < numExamples; i++) {
@@ -209,14 +208,48 @@ async function showExamples() {
     canvas.width = 28;
     canvas.height = 28;
     canvas.style = 'margin: 4px;';
-    await tf.browser.toPixels(imageTensor, canvas);
+    tf.browser.toPixels(imageTensor, canvas);
     drawArea.appendChild(canvas);
     imageTensor.dispose();
   }
+  console.log("loadData done");
 }
 
-async function example_button() {
-  document.querySelector('#show-examples').addEventListener('click', async e => showExamples());
+function initModel() {
+  console.log("initModel ...");
+  window.model = getModel();
+}
+
+// doesn't work (fix later)
+function example_button() {
+  document.querySelector('#show-examples').addEventListener('click', async (e) => {
+  // Get a surface
+    console.log("show example")
+    const surface = tfvis.visor().surface({
+      name: 'Surface',
+      tab: 'Input Data'
+    });
+    const drawArea = surface.drawArea; // Get the examples
+
+    const examples = data.nextTestBatch(20);
+    const numExamples = examples.xs.shape[0];
+
+    for (let i = 0; i < numExamples; i++) {
+      const imageTensor = tf.tidy(() => {
+        return examples.xs.slice([i, 0], [1, examples.xs.shape[1]]).reshape([28, 28, 1]);
+      }); // Create a canvas element to render each example
+
+      const canvas = document.createElement('canvas');
+      canvas.width = 28;
+      canvas.height = 28;
+      canvas.style = 'margin: 4px;';
+      tf.browser.toPixels(imageTensor, canvas);
+      drawArea.appendChild(canvas);
+      imageTensor.dispose();
+      }
+    
+    e.target.disabled = true;
+  });
 }
 
 function visor() {
@@ -235,8 +268,10 @@ function visor() {
 
 function load_data() {
   document.querySelector('#load-data').addEventListener('click', async (e) => {
+    console.log("Data initializing ...");
     await initData();
-    document.querySelector('#show-examples').disabled = false;
+    console.log("Data initializaed !");
+    //document.querySelector('#show-examples').disabled = false;
     document.querySelector('#start-training-1').disabled = false;
     //document.querySelector('#start-training-2').disabled = false;
     e.target.disabled = true;
@@ -244,11 +279,107 @@ function load_data() {
 
 }
 
+async function train(model, data, fitCallbacks) {
+  console.log("training ..");
+  const BATCH_SIZE = 64;
+  const trainDataSize = 500;
+  const testDataSize = 100;
+  const [trainXs, trainYs] = tf.tidy(() => {
+    const d = data.nextTrainBatch(trainDataSize);
+    return [d.xs.reshape([trainDataSize, 28, 28, 1]), d.labels];
+  });
+  const [testXs, testYs] = tf.tidy(() => {
+    const d = data.nextTestBatch(testDataSize);
+    return [d.xs.reshape([testDataSize, 28, 28, 1]), d.labels];
+  });
+  return model.fit(trainXs, trainYs, {
+    batchSize: BATCH_SIZE,
+    validationData: [testXs, testYs],
+    epochs: 10,
+    shuffle: true,
+    callbacks: fitCallbacks
+  });
+}
+
+async function vis_train(){
+  const metrics = ['loss', 'val_loss', 'acc', 'val_acc'];
+  const container = {
+    name: 'show.fitCallbacks',
+    tab: 'Training',
+    styles: {
+      height: '1000px'
+    }
+  };
+  const callbacks = tfvis.show.fitCallbacks(container, metrics);
+  console.log("vis_train()");
+  return train(model, data, callbacks);
+}
+
+function show_train(){
+  document.querySelector('#start-training-1').addEventListener('click', async (e) => {
+    console.log("set up vis ..")
+    vis_train()
+    console.log("training done !")
+    document.querySelector('#show-accuracy').disabled = false;
+    document.querySelector('#show-confusion').disabled = false;
+  });
+}
+
+const classNames = ['Zero', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine'];
+
+function doPrediction(testDataSize = 500) {
+  const testData = data.nextTestBatch(testDataSize);
+  const testxs = testData.xs.reshape([testDataSize, 28, 28, 1]);
+  const labels = testData.labels.argMax([-1]);
+  const preds = model.predict(testxs).argMax([-1]);
+  testxs.dispose();
+  return [preds, labels];
+}
+
+async function showAccuracy() {
+  const [preds, labels] = doPrediction();
+  const classAccuracy = await tfvis.metrics.perClassAccuracy(labels, preds);
+  const container = {
+    name: 'Accuracy',
+    tab: 'Evaluation'
+  };
+  tfvis.show.perClassAccuracy(container, classAccuracy, classNames);
+  labels.dispose();
+}
+
+async function showConfusion() {
+  const [preds, labels] = doPrediction();
+  const confusionMatrix = await tfvis.metrics.confusionMatrix(labels, preds);
+  const container = {
+    name: 'Confusion Matrix',
+    tab: 'Evaluation'
+  };
+  tfvis.render.confusionMatrix(container, {
+    values: confusionMatrix,
+    tickLabels: classNames
+  });
+  labels.dispose();
+}
+
+function show_eval(){
+  document.querySelector('#show-accuracy').addEventListener('click', async (e) => {
+    console.log("calling accuracy function ..")
+    showAccuracy()
+  });
+}
+
+function show_confusion(){
+  document.querySelector('#show-confusion').addEventListener('click', async (e) => {
+    console.log("calling confusion chart function ..")
+    showConfusion()
+  });
+}
+
 document.addEventListener('DOMContentLoaded', function() {
   initModel();
 });
 
-  function Tf_VIS() {
+  function TfVis() {
     return(
       <section>
       <h2>Chapter 1</h2>
@@ -282,7 +413,6 @@ document.addEventListener('DOMContentLoaded', function() {
       </span>
       <div>
       <button onClick={load_data} id='load-data' style={{margin: '10px'}}>Load MNIST data</button>
-      <button onClick={example_button} id='show-examples' disabled>Show data examples</button>
       </div>
       <h3>Train Model</h3>
       <span>
@@ -290,10 +420,19 @@ document.addEventListener('DOMContentLoaded', function() {
        quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. 
       </span>
       <div>
-      <button onClick={initModel} id='start-training-1' style={{margin: '10px'}}>Train Model</button>
+      <button onClick={show_train} id='start-training-1' style={{margin: '10px'}} disabled>Train Model</button>
+      </div>
+      <h3>Test Model</h3>
+      <span>
+      Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+       quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. 
+      </span>
+      <div>
+      <button onClick={show_eval} id='show-accuracy' style={{margin: '10px'}} disabled>Test Model</button>
+      <button onClick={show_confusion} id='show-confusion' style={{margin: '10px'}} disabled>Draw Confusion</button>
       </div>
       </section>
     )
   }
 
-export default Tf_VIS;
+export default TfVis;
