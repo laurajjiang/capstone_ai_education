@@ -5,8 +5,6 @@ import {getModel, loadData} from './model';
 window.tf = tf;
 window.tfvis = tfvis;
 
-window.data;
-window.model;
 
 async function initData() {
   window.data = await loadData();
