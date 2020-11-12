@@ -272,7 +272,7 @@ function load_data() {
     await initData();
     console.log("Data initializaed !");
     //document.querySelector('#show-examples').disabled = false;
-    document.querySelector('#start-training-1').disabled = false;
+    //document.querySelector('#start-training-1').disabled = false;
     //document.querySelector('#start-training-2').disabled = false;
     e.target.disabled = true;
   });
@@ -320,8 +320,8 @@ function show_train(){
     console.log("set up vis ..")
     vis_train()
     console.log("training done !")
-    document.querySelector('#show-accuracy').disabled = false;
-    document.querySelector('#show-confusion').disabled = false;
+    //document.querySelector('#show-accuracy').disabled = false;
+    //document.querySelector('#show-confusion').disabled = false;
   });
 }
 
@@ -420,7 +420,7 @@ document.addEventListener('DOMContentLoaded', function() {
        quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. 
       </span>
       <div>
-      <button onClick={show_train} id='start-training-1' style={{margin: '10px'}} disabled>Train Model</button>
+      <button onClick={show_train} id='start-training-1' style={{margin: '10px'}} >Train Model</button>
       </div>
       <h3>Test Model</h3>
       <span>
@@ -428,8 +428,8 @@ document.addEventListener('DOMContentLoaded', function() {
        quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. 
       </span>
       <div>
-      <button onClick={show_eval} id='show-accuracy' style={{margin: '10px'}} disabled>Test Model</button>
-      <button onClick={show_confusion} id='show-confusion' style={{margin: '10px'}} disabled>Draw Confusion</button>
+      <button onClick={show_eval} id='show-accuracy' style={{margin: '10px'}} >Test Model</button>
+      <button onClick={show_confusion} id='show-confusion' style={{margin: '10px'}} >Draw Confusion</button>
       </div>
       </section>
     )
