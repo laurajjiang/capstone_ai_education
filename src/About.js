@@ -3,11 +3,11 @@ import Navigation from "./components/navbar";
 import SimpleFooter from "./components/footer";
 
 
-export default function App() {
+export default function About() {
   return (
     <div>
       <Navigation />
-      {"this is the home page"}
+      {"this is the about page"}
       <SimpleFooter /> 
     </div>
   );
