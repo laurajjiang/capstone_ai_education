@@ -4,17 +4,12 @@ import SimpleFooter from "./components/footer";
 import TfVis from "./components/tf";
 
 
-class App extends Component {
-
-  render(){
+export default function App() {
     return(
       <div>
-      <header><Navigation/></header>
+      <Navigation/>
       <TfVis/>
-      <footer><SimpleFooter/></footer>
+      <SimpleFooter/>
       </div> 
     )
-  };
 }
-
-export default App;

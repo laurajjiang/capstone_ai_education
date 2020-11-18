@@ -1,6 +1,8 @@
-import React from "react";
+import React, { Component }  from "react";
 import * as tf from '@tensorflow/tfjs';
-import * as tfvis from '@tensorflow/tfjs-vis'
+import * as tfvis from '@tensorflow/tfjs-vis';
+import { css } from "@emotion/core";
+import PacmanLoader from "react-spinners/PacmanLoader";
 
 const IMAGE_SIZE = 784;
 const NUM_CLASSES = 10;
@@ -23,8 +25,8 @@ const MNIST_LABELS_PATH =
 
 window.tf = tf;
 window.tfvis = tfvis;
-var data = 0;
-var model = 0;
+let data = 0;
+let model = 0;
 
 export class MnistData {
   constructor() {
@@ -178,261 +180,254 @@ export function getModel() {
   return model;
 }
 
-export async function loadData() {
-  data = new MnistData();
-  await data.load();
-  return data;
-}
-
-async function initData() {
-  //data = await loadData();
-  data = new MnistData();
-  await data.load();
-  
-  const surface = tfvis.visor().surface({
-    name: 'Surface',
-    tab: 'Input Data'
-  });
-
-  const drawArea = surface.drawArea; // Get the examples
-
-  const examples = data.nextTestBatch(20);
-  const numExamples = examples.xs.shape[0];
-
-  for (let i = 0; i < numExamples; i++) {
-    const imageTensor = tf.tidy(() => {
-      return examples.xs.slice([i, 0], [1, examples.xs.shape[1]]).reshape([28, 28, 1]);
-    }); // Create a canvas element to render each example
-
-    const canvas = document.createElement('canvas');
-    canvas.width = 28;
-    canvas.height = 28;
-    canvas.style = 'margin: 4px;';
-    tf.browser.toPixels(imageTensor, canvas);
-    drawArea.appendChild(canvas);
-    imageTensor.dispose();
-  }
-  console.log("loadData done");
-}
 
 function initModel() {
   console.log("initModel ...");
   window.model = getModel();
 }
 
-// doesn't work (fix later)
-function example_button() {
-  document.querySelector('#show-examples').addEventListener('click', async (e) => {
-  // Get a surface
-    console.log("show example")
-    const surface = tfvis.visor().surface({
-      name: 'Surface',
-      tab: 'Input Data'
-    });
-    const drawArea = surface.drawArea; // Get the examples
-
-    const examples = data.nextTestBatch(20);
-    const numExamples = examples.xs.shape[0];
-
-    for (let i = 0; i < numExamples; i++) {
-      const imageTensor = tf.tidy(() => {
-        return examples.xs.slice([i, 0], [1, examples.xs.shape[1]]).reshape([28, 28, 1]);
-      }); // Create a canvas element to render each example
-
-      const canvas = document.createElement('canvas');
-      canvas.width = 28;
-      canvas.height = 28;
-      canvas.style = 'margin: 4px;';
-      tf.browser.toPixels(imageTensor, canvas);
-      drawArea.appendChild(canvas);
-      imageTensor.dispose();
-      }
-    
-    e.target.disabled = true;
-  });
-}
-
-function visor() {
-  document.querySelector('#show-visor').addEventListener('click', () => {
-    const visorInstance = tfvis.visor();
-    if (!visorInstance.isOpen()) {
-      visorInstance.toggle();
-    }
-  });
-
-  document.querySelector('#make-surface').addEventListener('click', () => {
-    tfvis.visor().surface({name: 'Surface', tab: 'Input Data'});
-  });
-  
-}
-
-function load_data() {
-  document.querySelector('#load-data').addEventListener('click', async (e) => {
-    console.log("Data initializing ...");
-    await initData();
-    console.log("Data initializaed !");
-    //document.querySelector('#show-examples').disabled = false;
-    //document.querySelector('#start-training-1').disabled = false;
-    //document.querySelector('#start-training-2').disabled = false;
-    e.target.disabled = true;
-  });
-
-}
-
-async function train(model, data, fitCallbacks) {
-  console.log("training ..");
-  const BATCH_SIZE = 64;
-  const trainDataSize = 500;
-  const testDataSize = 100;
-  const [trainXs, trainYs] = tf.tidy(() => {
-    const d = data.nextTrainBatch(trainDataSize);
-    return [d.xs.reshape([trainDataSize, 28, 28, 1]), d.labels];
-  });
-  const [testXs, testYs] = tf.tidy(() => {
-    const d = data.nextTestBatch(testDataSize);
-    return [d.xs.reshape([testDataSize, 28, 28, 1]), d.labels];
-  });
-  return model.fit(trainXs, trainYs, {
-    batchSize: BATCH_SIZE,
-    validationData: [testXs, testYs],
-    epochs: 10,
-    shuffle: true,
-    callbacks: fitCallbacks
-  });
-}
-
-async function vis_train(){
-  const metrics = ['loss', 'val_loss', 'acc', 'val_acc'];
-  const container = {
-    name: 'show.fitCallbacks',
-    tab: 'Training',
-    styles: {
-      height: '1000px'
-    }
-  };
-  const callbacks = tfvis.show.fitCallbacks(container, metrics);
-  console.log("vis_train()");
-  return train(model, data, callbacks);
-}
-
-function show_train(){
-  document.querySelector('#start-training-1').addEventListener('click', async (e) => {
-    console.log("set up vis ..")
-    vis_train()
-    console.log("training done !")
-    //document.querySelector('#show-accuracy').disabled = false;
-    //document.querySelector('#show-confusion').disabled = false;
-  });
-}
 
 const classNames = ['Zero', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine'];
-
-function doPrediction(testDataSize = 500) {
-  const testData = data.nextTestBatch(testDataSize);
-  const testxs = testData.xs.reshape([testDataSize, 28, 28, 1]);
-  const labels = testData.labels.argMax([-1]);
-  const preds = model.predict(testxs).argMax([-1]);
-  testxs.dispose();
-  return [preds, labels];
-}
-
-async function showAccuracy() {
-  const [preds, labels] = doPrediction();
-  const classAccuracy = await tfvis.metrics.perClassAccuracy(labels, preds);
-  const container = {
-    name: 'Accuracy',
-    tab: 'Evaluation'
-  };
-  tfvis.show.perClassAccuracy(container, classAccuracy, classNames);
-  labels.dispose();
-}
-
-async function showConfusion() {
-  const [preds, labels] = doPrediction();
-  const confusionMatrix = await tfvis.metrics.confusionMatrix(labels, preds);
-  const container = {
-    name: 'Confusion Matrix',
-    tab: 'Evaluation'
-  };
-  tfvis.render.confusionMatrix(container, {
-    values: confusionMatrix,
-    tickLabels: classNames
-  });
-  labels.dispose();
-}
-
-function show_eval(){
-  document.querySelector('#show-accuracy').addEventListener('click', async (e) => {
-    console.log("calling accuracy function ..")
-    showAccuracy()
-  });
-}
-
-function show_confusion(){
-  document.querySelector('#show-confusion').addEventListener('click', async (e) => {
-    console.log("calling confusion chart function ..")
-    showConfusion()
-  });
-}
 
 document.addEventListener('DOMContentLoaded', function() {
   initModel();
 });
 
-  function TfVis() {
-    return(
-      <section>
-      <h2>Chapter 1</h2>
-      <span>
-      Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
-       quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. 
-       Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, 
-       sunt in culpa qui officia deserunt mollit anim id est laborum.
-      </span>
-      <div>
-      <button onClick={visor} id="show-visor" style={{margin: '10px'}}>Load Tensorflow Visor</button>
-      </div>
-      <span>
-        <ul>
-          <li>
-            <strong>`</strong> (backtick): Shows or hides the visor</li>
-          <li>
-            <strong>~</strong> (tilde, shift+backtick): Toggles betweeen the two sizes the visor supports</li>
-        </ul>
-      </span>
-      <span>
-      Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
-       quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. 
-      </span>
-      <div>
-      <button onClick={visor} id='make-surface' style={{margin: '10px'}}>Make a surface</button>
-      </div>
-      <span>
-      Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
-       quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. 
-      </span>
-      <div>
-      <button onClick={load_data} id='load-data' style={{margin: '10px'}}>Load MNIST data</button>
-      </div>
-      <h3>Train Model</h3>
-      <span>
-      Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
-       quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. 
-      </span>
-      <div>
-      <button onClick={show_train} id='start-training-1' style={{margin: '10px'}} >Train Model</button>
-      </div>
-      <h3>Test Model</h3>
-      <span>
-      Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
-       quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. 
-      </span>
-      <div>
-      <button onClick={show_eval} id='show-accuracy' style={{margin: '10px'}} >Test Model</button>
-      <button onClick={show_confusion} id='show-confusion' style={{margin: '10px'}} >Draw Confusion</button>
-      </div>
-      </section>
-    )
+const override = css`
+  display: block;
+  margin: 0 auto;
+  border-color: yellow;
+`;
+
+class TfVis extends Component {
+  state = {
+    disabled_surface  : false,
+    disabled_examples : true,
+    disabled_train : true,
+    disabled_test : true,
+    disabled_confusion : true,
+    loading : false,
+    loading2 : false
+  };
+
+  visor() {
+    const visorInstance = tfvis.visor();
+    if (!visorInstance.isOpen()) {
+      visorInstance.toggle();
+    }
+  }
+  
+  surface(){
+    console.log("making surface ...");
+    tfvis.visor().surface({name: 'Surface', tab: 'Input Data'});
+    this.setState({disabled_surface : true});
+
+  }
+  
+  async initData() {
+    data = new MnistData();
+    await data.load();
+
+    console.log("loadData done");
   }
 
-export default TfVis;
+  async load_data() {
+      console.log("Data initializing ...");
+      this.setState({loading : true});
+      await this.initData();
+      this.setState({loading : false});
+      console.log("Data initializaed !");
+      
+      this.setState({disabled_examples: false});
+      this.setState({disabled_train: false});
+
+      document.querySelector('#load-data').disabled = true;
+      document.querySelector('#load-data').innerHTML = "Dataset is loaded!!";
+    }
+
+  example_button() {
+      // Get a surface
+        console.log("show example")
+        const surface = tfvis.visor().surface({
+          name: 'Surface',
+          tab: 'Input Data'
+        });
+        const drawArea = surface.drawArea; // Get the examples
+    
+        const examples = data.nextTestBatch(20);
+        const numExamples = examples.xs.shape[0];
+    
+        for (let i = 0; i < numExamples; i++) {
+          const imageTensor = tf.tidy(() => {
+            return examples.xs.slice([i, 0], [1, examples.xs.shape[1]]).reshape([28, 28, 1]);
+          }); // Create a canvas element to render each example
+    
+          const canvas = document.createElement('canvas');
+          canvas.width = 28;
+          canvas.height = 28;
+          canvas.style = 'margin: 4px;';
+          tf.browser.toPixels(imageTensor, canvas);
+          drawArea.appendChild(canvas);
+          imageTensor.dispose();
+          }
+    }
+
+    // train part
+    async train(model, data, fitCallbacks) {
+      console.log("training ..");
+      const BATCH_SIZE = 64;
+      const trainDataSize = 500;
+      const testDataSize = 100;
+      const [trainXs, trainYs] = tf.tidy(() => {
+        const d = data.nextTrainBatch(trainDataSize);
+        return [d.xs.reshape([trainDataSize, 28, 28, 1]), d.labels];
+      });
+      const [testXs, testYs] = tf.tidy(() => {
+        const d = data.nextTestBatch(testDataSize);
+        return [d.xs.reshape([testDataSize, 28, 28, 1]), d.labels];
+      });
+      return model.fit(trainXs, trainYs, {
+        batchSize: BATCH_SIZE,
+        validationData: [testXs, testYs],
+        epochs: 10,
+        shuffle: true,
+        callbacks: fitCallbacks
+      });
+    }
+    
+    async vis_train(){
+      const metrics = ['loss', 'val_loss', 'acc', 'val_acc'];
+      const container = {
+        name: 'show.fitCallbacks',
+        tab: 'Training',
+        styles: {
+          height: '1000px'
+        }
+      };
+      const callbacks = tfvis.show.fitCallbacks(container, metrics);
+      console.log("vis_train()");
+      return this.train(model, data, callbacks);
+    }
+    
+    async show_train(){
+      console.log("set up vis ..");
+      this.setState({loading2 : true});
+      document.querySelector('#start-training').innerHTML = "Training ..";
+      await this.vis_train();
+      this.setState({loading2 : false});
+      console.log("training done !");
+      this.setState({disabled_train: true});
+      document.querySelector('#start-training').innerHTML = "Training is done !!";
+      this.setState({disabled_test: false});
+      this.setState({disabled_confusion : false});
+      
+    }
+
+    doPrediction(testDataSize = 500) {
+      const testData = data.nextTestBatch(testDataSize);
+      const testxs = testData.xs.reshape([testDataSize, 28, 28, 1]);
+      const labels = testData.labels.argMax([-1]);
+      const preds = model.predict(testxs).argMax([-1]);
+      testxs.dispose();
+      return [preds, labels];
+    }
+    
+    async showAccuracy() {
+      console.log("calling accuracy function ..")
+      const [preds, labels] = this.doPrediction();
+      const classAccuracy = await tfvis.metrics.perClassAccuracy(labels, preds);
+      const container = {
+        name: 'Accuracy',
+        tab: 'Evaluation'
+      };
+      tfvis.show.perClassAccuracy(container, classAccuracy, classNames);
+      labels.dispose();
+    }
+    
+    async showConfusion() {
+      console.log("calling confusion chart function ..")
+      const [preds, labels] = this.doPrediction();
+      const confusionMatrix = await tfvis.metrics.confusionMatrix(labels, preds);
+      const container = {
+        name: 'Confusion Matrix',
+        tab: 'Evaluation'
+      };
+      tfvis.render.confusionMatrix(container, {
+        values: confusionMatrix,
+        tickLabels: classNames
+      });
+      labels.dispose();
+    }
+  
+
+  render(){
+    return(
+        <section>
+        <h2>Chapter 1</h2>
+        <span>
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+        quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. 
+        Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, 
+        sunt in culpa qui officia deserunt mollit anim id est laborum.
+        </span>
+        <div>
+        <button onClick={() => this.visor()} id="show-visor" style={{margin: '10px'}}>Load Tensorflow Visor</button>
+        </div>
+        <span>
+          <ul>
+            <li>
+              <strong>`</strong> (backtick): Shows or hides the visor</li>
+            <li>
+              <strong>~</strong> (tilde, shift+backtick): Toggles betweeen the two sizes the visor supports</li>
+          </ul>
+        </span>
+        <span>
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+        quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. 
+        </span>
+        <div>
+        <button onClick={() => this.surface()} id='make-surface' style={{margin: '10px'}} disabled={this.state.disabled_surface}>Make a surface</button>
+        </div>
+        <span>
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+        quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. 
+        </span>
+        <div>
+        <button onClick={() => this.load_data()} id='load-data' style={{margin: '10px'}}>Load MNIST data<PacmanLoader
+          className="sweet-loading"
+          css={override}
+          size={25}
+          color={"#F8E71C"}
+          loading={this.state.loading}
+        /></button>
+        <button onClick={() => this.example_button()} id='example-button' style={{margin: '10px'}} disabled={this.state.disabled_examples}>Show Data Examples</button>
+        </div>
+        <h3>Train Model</h3>
+        <span>
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+        quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. 
+        </span>
+        <div>
+        <button onClick={() => this.show_train()} id='start-training' style={{margin: '10px'}} disabled={this.state.disabled_train}>Train Model<PacmanLoader
+          className="sweet-loading"
+          css={override}
+          size={25}
+          color={"#F8E71C"}
+          loading={this.state.loading2}
+        /></button>
+        </div>
+        <h3>Test Model</h3>
+        <span>
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+        quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. 
+        </span>
+        <div>
+        <button onClick={() => this.showAccuracy()} id='show-accuracy' style={{margin: '10px'}} disabled={this.state.disabled_test}>Test Model</button>
+        <button onClick={() => this.showConfusion()} id='show-confusion' style={{margin: '10px'}} disabled={this.state.disabled_confusion}>Draw Confusion</button>
+        </div>
+        </section>
+      )
+  }
+}
+
+export default TfVis; 
