@@ -234,6 +234,8 @@ class TfVis extends Component {
   async load_data() {
       console.log("Data initializing ...");
       this.setState({loading : true});
+      document.querySelector('#load-data').innerHTML = "Loading dataset ...";
+      document.querySelector('#load-data').disabled = true;
       await this.initData();
       this.setState({loading : false});
       console.log("Data initializaed !");
@@ -241,7 +243,6 @@ class TfVis extends Component {
       this.setState({disabled_examples: false});
       this.setState({disabled_train: false});
 
-      document.querySelector('#load-data').disabled = true;
       document.querySelector('#load-data').innerHTML = "Dataset is loaded!!";
     }
 
@@ -313,10 +314,10 @@ class TfVis extends Component {
       console.log("set up vis ..");
       this.setState({loading2 : true});
       document.querySelector('#start-training').innerHTML = "Training ..";
+      this.setState({disabled_train: true});
       await this.vis_train();
       this.setState({loading2 : false});
       console.log("training done !");
-      this.setState({disabled_train: true});
       document.querySelector('#start-training').innerHTML = "Training is done !!";
       this.setState({disabled_test: false});
       this.setState({disabled_confusion : false});
