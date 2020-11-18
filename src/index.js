@@ -1,17 +1,19 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { Route, BrowserRouter as Router } from "react-router-dom";
+import { Route, Switch, BrowserRouter as Router } from "react-router-dom";
 import './index.css';
-import App from './App';
+import Home from './Home';
 import reportWebVitals from './reportWebVitals';
 import About from './About';
+import Error from './Error'
 
 const routing = (
   <Router>
-    <div>
-      <Route exact path="/" component={App} />
+    <Switch>
+      <Route exact path="/" component={Home} />
       <Route exact path="/about" component={About} />
-    </div>
+      <Route component={Error} />
+    </Switch>
   </Router>
 );
 

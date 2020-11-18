@@ -3,11 +3,13 @@ import Navigation from "./components/navbar";
 import SimpleFooter from "./components/footer";
 
 
-export default function App() {
+export default function error() {
   return (
     <div>
       <Navigation />
-      {"this is the home page"}
+      <div class="jumbotron text-center">
+        <h1> 404 - Page Not Found</h1>
+      </div>
       <SimpleFooter /> 
     </div>
   );
