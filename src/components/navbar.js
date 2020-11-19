@@ -11,7 +11,8 @@ import {
 import theme from "./theme";
 
 const items = [
-  { label: "About", href: "/about" }
+  { label: "About", href: "/about" },
+  { label: "Chapter 1", href: "/chapter1"}
 ];
 
 const CollapsableNav = () => (
@@ -41,6 +42,12 @@ const CollapsableNav = () => (
                   label: "About",
                   onClick: (event) => {
                     window.location.href = "/about";
+                  },
+                },
+                {
+                  label: "Chapter 1",
+                  onClick: (event) => {
+                    window.location.href = "/chapter1";
                   },
                 }
               ]}
