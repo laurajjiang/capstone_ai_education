@@ -9,24 +9,34 @@ import {
   ResponsiveContext,
 } from "grommet";
 import theme from "./theme";
+import {
+  Alignment,
+  Button,
+  Classes,
+  H5,
+  Navbar,
+  NavbarDivider,
+  NavbarGroup,
+  NavbarHeading,
+  Switch,
+} from "@blueprintjs/core";
 
 const items = [
   { label: "About", href: "/about" },
-  { label: "Chapter 1", href: "/chapter1"}
+  { label: "Chapter 1", href: "/chapter1" },
 ];
 
 const CollapsableNav = () => (
   <Grommet theme={theme}>
     <Header
-      background="#FFFFFF"
-      pad="small"
-      border={{ side: "bottom", size: "small", color: "#000000" }}
-    >
-      <Box direction="row" align="center" gap="small">
+      background='#FFFFFF'
+      pad='small'
+      border={{ side: "bottom", size: "small", color: "#000000" }}>
+      <Box direction='row' align='center' gap='small'>
         <Anchor
           margin={{ left: "medium" }}
-          color="dark-2"
-          size="xxlarge"
+          color='dark-2'
+          size='xxlarge'
           href={"/"}
           label={"Interactive Visualization for AI Education"}
           key={"home"}
@@ -36,7 +46,7 @@ const CollapsableNav = () => (
         {(responsive) =>
           responsive === "small" ? (
             <Menu
-              label="Navigate"
+              label='Navigate'
               items={[
                 {
                   label: "About",
@@ -49,16 +59,16 @@ const CollapsableNav = () => (
                   onClick: (event) => {
                     window.location.href = "/chapter1";
                   },
-                }
+                },
               ]}
             />
           ) : (
-            <Nav direction="row">
+            <Nav direction='row'>
               {items.map((item) => (
                 <Anchor
                   margin={{ left: "small", right: "medium" }}
-                  color="dark-2"
-                  size="large"
+                  color='dark-2'
+                  size='large'
                   href={item.href}
                   label={item.label}
                   key={item.label}
@@ -73,5 +83,30 @@ const CollapsableNav = () => (
 );
 
 export default function Navigation() {
-  return <CollapsableNav />;
+  return (
+    <Navbar>
+      <Navbar.Group align={Alignment.LEFT}>
+        <Navbar.Heading>
+          Interactive Visualization for AI Education
+        </Navbar.Heading>
+        <Navbar.Divider />
+        <Button
+          className='bp3-minimal'
+          icon='home'
+          text='Home'
+          onClick={(e) => (window.location.href = "/")}
+        />
+        <Button
+          className='bp3-minimal'
+          icon='id-number'
+          text='About'
+          onClick={(e) => (window.location.href = "/about")}
+        />
+      </Navbar.Group>
+      <Navbar.Group>
+        <Navbar.Divider />
+        <Button className='bp3-minimal' icon='learning' text='Learn' />
+      </Navbar.Group>
+    </Navbar>
+  );
 }
