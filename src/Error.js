@@ -1,7 +1,7 @@
 import React from "react";
 import Navigation from "./components/navbar";
-import SimpleFooter from "./components/footer";
-import { Button, Classes, NonIdealState } from "@blueprintjs/core";
+import Footer from "./components/footer";
+import { Button, NonIdealState } from "@blueprintjs/core";
 
 const description = (
   <>
@@ -22,15 +22,15 @@ export default function error() {
   return (
     <div>
       <Navigation style={{}} />
-      <div style={{ backgroundColor: "#EBF1F5", height: "80vh" }}>
+      <div style={{ backgroundColor: "#F5F8FA", height: "80vh" }}>
         <NonIdealState
           icon='error'
           title='No page found'
           description={description}
         />
       </div>
-
-      <SimpleFooter style={{}} />
+      <hr style={{ marginTop: "0px" }} />
+      <Footer />
     </div>
   );
 }

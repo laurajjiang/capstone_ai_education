@@ -1,32 +1,25 @@
 import React from "react";
 
-function SimpleFooter() {
+function Footer() {
   return (
-    <div class='container-fluid text-center'>
-      <hr style={{ marginTop: "0px" }} />
-      <div class='row'>
-        <div class='col-sm-4'>
-          <h6>
-            {" "}
-            Advisor: <a href='https://minsuk.com/'>Dr. Minsuk Kahng </a>
-          </h6>
-        </div>
-
-        <div class='col-sm-4'>
-          <h6>
-            Written by Group 21: <br></br> Laura Jiang, Thuy-Vy Nguyen,{" "}
-            <br></br>Owen Taylor Markley, Junhyeok Jeong
-          </h6>
-        </div>
-
-        <div class='col-sm-4'>
-          <h6>
-            Oregon State University, <br></br> Corvallis, OR, USA
-          </h6>
-        </div>
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "row",
+        justifyContent: "space-around",
+      }}>
+      <div class='.bp3-text-muted'>
+        Advisor: <a href='https://minsuk.com/'>Dr. Minsuk Kahng </a>
+      </div>
+      <div class='.bp3-text-muted'>
+        Written by Group 21: <br></br> Laura Jiang, Thuy-Vy Nguyen, <br></br>
+        Owen Taylor Markley, Junhyeok Jeong
+      </div>
+      <div class='.bp3-text-muted'>
+        Oregon State University, <br></br> Corvallis, OR, USA
       </div>
     </div>
   );
 }
 
-export default SimpleFooter;
+export default Footer;
