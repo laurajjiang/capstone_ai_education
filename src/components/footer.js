@@ -6,17 +6,17 @@ function Footer() {
       style={{
         display: "flex",
         flexDirection: "row",
-        justifyContent: "space-around",
+        justifyContent: "center",
       }}>
+      <div>
+        <img src='/logo.png' alt='logo' width='20%' />
+        <div class='.bp3-text-muted'>
+          Capstone (CS461) - Group 21 <br></br> Oregon State University
+        </div>
+      </div>
+
       <div class='.bp3-text-muted'>
         Advisor: <a href='https://minsuk.com/'>Dr. Minsuk Kahng </a>
-      </div>
-      <div class='.bp3-text-muted'>
-        Written by Group 21: <br></br> Laura Jiang, Thuy-Vy Nguyen, <br></br>
-        Owen Taylor Markley, Junhyeok Jeong
-      </div>
-      <div class='.bp3-text-muted'>
-        Oregon State University, <br></br> Corvallis, OR, USA
       </div>
     </div>
   );

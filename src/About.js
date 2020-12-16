@@ -25,19 +25,19 @@ export default function About() {
       </div>
 
       <div class='container' style={{ flexDirection: "row" }}>
-        <h2 > Meet the Team!</h2>
+        <h2> Meet the Team!</h2>
         <br></br>
         <div>
           <img src='teampics/derek.png' alt='Derek' width='80%' />
           <h4>Junhyeok Jeong </h4>
 
-          <img src='teampics/laura.png' alt='Derek' width='80%' />
+          <img src='teampics/laura.png' alt='Laura' width='80%' />
           <h4> Laura Jiang</h4>
 
-          <img src='teampics/owen.png' alt='Derek' width='80%' />
+          <img src='teampics/owen.png' alt='Owen' width='80%' />
           <h4>Owen Markley</h4>
 
-          <img src='teampics/thuyvy.png' alt='Derek' width='80%' />
+          <img src='teampics/thuyvy.png' alt='Thuy-Vy' width='80%' />
           <h4>Thuy-Vy Nguyen</h4>
         </div>
       </div>
