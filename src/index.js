@@ -5,13 +5,15 @@ import "./index.css";
 import Home from "./Home";
 import reportWebVitals from "./reportWebVitals";
 import About from "./About";
-import Chapter1 from "./Chapter1";
+import Chapter1 from "./chapters/Chapter1";
 import Error from "./Error";
+import Introduction from "./chapters/Intro";
 
 const routing = (
   <Router>
     <Switch>
       <Route exact path='/' component={Home} />
+      <Route exact path='/chapter0' component={Introduction} />
       <Route exact path='/chapter1' component={Chapter1} />
       <Route exact path='/about' component={About} />
       <Route component={Error} />

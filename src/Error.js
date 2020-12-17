@@ -1,7 +1,7 @@
 import React from "react";
 import Navigation from "./components/navbar";
 import Footer from "./components/footer";
-import { Button, NonIdealState } from "@blueprintjs/core";
+import { Button, NonIdealState, Intent } from "@blueprintjs/core";
 
 const description = (
   <>
@@ -9,16 +9,15 @@ const description = (
     <br />
     <br />
     <Button
-      className='bp3-minimal'
       icon='home'
       text='Go to Home'
-      intent='warning'
+      intent={Intent.WARNING}
       onClick={(e) => (window.location.href = "/")}
     />
   </>
 );
 
-export default function error() {
+export default function Error() {
   return (
     <div>
       <Navigation style={{}} />
