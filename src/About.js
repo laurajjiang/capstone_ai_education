@@ -3,6 +3,7 @@ import Navigation from "./components/navbar";
 import Footer from "./components/footer";
 import Description from "./components/description";
 import Spacer from "./components/spacer";
+import Container from "./components/container";
 
 const aboutParagraph = (
   <>
@@ -17,19 +18,23 @@ const aboutParagraph = (
   </>
 );
 
+const aboutContent = (
+  <>
+    <Spacer space={"3vh"} />
+    <div>
+      <div style={{ fontSize: "500%" }}>about the project</div>
+      <Spacer space={"3vh"} />
+      <Description content={aboutParagraph} />
+    </div>
+  </>
+);
+
 export default function About() {
   return (
     <>
+      <Navigation />
       <div style={{ backgroundColor: "#f5f8fa" }}>
-        <Navigation />
-        <div class='container'>
-          <Spacer space={"3vh"} />
-          <div>
-            <div style={{ fontSize: "500%" }}>about the project</div>
-            <Spacer space={"3vh"} />
-            <Description content={aboutParagraph} />
-          </div>
-        </div>
+        <Container height='75vh' content={aboutContent} />
       </div>
       <hr style={{ marginTop: "0px" }} />
       <Footer />

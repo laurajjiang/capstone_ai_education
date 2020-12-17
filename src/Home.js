@@ -6,6 +6,7 @@ import { Button, Icon, Intent } from "@blueprintjs/core";
 import TextLoop from "react-text-loop";
 import Description from "./components/description";
 import Spacer from "./components/spacer";
+import Container from "./components/container";
 
 const goal = (
   <>
@@ -28,35 +29,39 @@ const use = (
   </>
 );
 
+const homeContent = (
+  <>
+    <Spacer space={"3vh"} />
+    <div style={{ fontSize: "500%" }}>
+      a new{" "}
+      <TextLoop springConfig={{ stiffness: 210, damping: 45 }}>
+        <span>interactive</span>
+        <span>programming</span>
+        <span>introductory</span>
+      </TextLoop>{" "}
+      approach to teach machine learning
+    </div>
+    <Description content={goal} />
+    <Description content={use} />
+    <br />
+    <Button
+      className='bp3-large'
+      intent={Intent.PRIMARY}
+      icon='learning'
+      text='Get Started'
+      style={{ maxWidth: "50%", marginBottom: "5vh" }}
+      onClick={(e) => (window.location.href = "/chapter0")}
+    />
+  </>
+);
+
 export default function Home() {
   return (
     <>
       <div>
         <Navigation />
         <div style={{ backgroundColor: "#f5f8fa" }}>
-          <div className='container'>
-            <Spacer space={"3vh"} />
-            <div style={{ fontSize: "500%" }}>
-              a new{" "}
-              <TextLoop springConfig={{ stiffness: 210, damping: 45 }}>
-                <span>interactive</span>
-                <span>programming</span>
-                <span>introductory</span>
-              </TextLoop>{" "}
-              approach to teach machine learning
-            </div>
-            <Description content={goal} />
-            <Description content={use} />
-            <br />
-            <Button
-              className='bp3-large'
-              intent={Intent.PRIMARY}
-              icon='learning'
-              text='Get Started'
-              style={{ maxWidth: "50%", marginBottom: "5vh" }}
-              onClick={(e) => (window.location.href = "/chapter0")}
-            />
-          </div>
+          <Container height='75vh' content={homeContent} />
         </div>
         <hr style={{ marginTop: "0px" }} />
         <Footer />
