@@ -15,12 +15,3 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
 }
-
-.container {
-  display: flex;
-  flex-direction: column;
-  height: 75vh;
-  align-items: center;
-  margin-left: 50vh;
-  margin-right: 50vh;
-}

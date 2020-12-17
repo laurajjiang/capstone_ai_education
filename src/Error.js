@@ -2,12 +2,12 @@ import React from "react";
 import Navigation from "./components/navbar";
 import Footer from "./components/footer";
 import { Button, NonIdealState, Intent } from "@blueprintjs/core";
+import Spacer from "./components/spacer";
 
 const description = (
   <>
     You've landed on a page that doesn't exist.
-    <br />
-    <br />
+    <Spacer space='1vh' />
     <Button
       icon='home'
       text='Go to Home'
@@ -20,8 +20,8 @@ const description = (
 export default function Error() {
   return (
     <div>
-      <Navigation style={{}} />
-      <div style={{ backgroundColor: "#F5F8FA", height: "80vh" }}>
+      <Navigation />
+      <div style={{ backgroundColor: "#F5F8FA", height: "75vh" }}>
         <NonIdealState
           icon='error'
           title='No page found'
