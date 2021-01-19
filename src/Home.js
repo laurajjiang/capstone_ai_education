@@ -2,7 +2,7 @@ import React from "react";
 import Navigation from "./components/navbar";
 import Footer from "./components/footer";
 import "./index.css";
-import { Button, Icon, Intent } from "@blueprintjs/core";
+import { Button, Intent } from "@blueprintjs/core";
 import TextLoop from "react-text-loop";
 import Description from "./components/description";
 import Spacer from "./components/spacer";

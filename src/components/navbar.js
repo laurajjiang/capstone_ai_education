@@ -11,7 +11,6 @@ import {
   Position,
 } from "@blueprintjs/core";
 
-
 export default function Navigation() {
   return (
     <Navbar>
