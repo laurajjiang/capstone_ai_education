@@ -2,14 +2,14 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
+    <link rel="icon" href="%PUBLIC_URL%/logo.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#000000" />
     <meta
       name="Interactive visualization for AI education"
       content="Learn about basic machine learning/artificial intelligence concepts such as classification with a step-by-step, interactive and programatic website."
     />
-    <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
+    <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo.png" />
     <!--
       manifest.json provides metadata used when your web app is installed on a
       user's mobile device or desktop. See https://developers.google.com/web/fundamentals/web-app-manifest/
@@ -29,7 +29,19 @@
     <!-- Import TensorFlow.js -->
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@1.0.0/dist/tf.min.js"></script>
     <!-- Import tfjs-vis -->
-    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-vis@1.0.2/dist/tfjs-vis.umd.min.js"></script> 
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-vis@1.0.2/dist/tfjs-vis.umd.min.js"></script>
+
+    <link href="node_modules/normalize.css/normalize.css" rel="stylesheet" />
+    <!-- blueprint-icons.css file must be included alongside blueprint.css! -->
+    <link
+      href="node_modules/@blueprintjs/icons/lib/css/blueprint-icons.css"
+      rel="stylesheet"
+    />
+    <link
+      href="node_modules/@blueprintjs/core/lib/css/blueprint.css"
+      rel="stylesheet"
+    />
+    <!-- add other blueprint-*.css files here -->
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
