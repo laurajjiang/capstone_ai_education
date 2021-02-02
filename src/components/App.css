@@ -1,3 +1,27 @@
-.MDImg img {
-  max-width: 100%;
+.box_highlighted {
+  background-color: #ffb;
+  border: 1px solid #b53;
+}
+td {
+  min-width: 100px;
+}
+
+#review {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid pink;
+  padding: 5px;
+  width: 750px;
+  height: 500px;
+  background-color: white;
+  margin: 20px;
+  overflow: scroll;
+}
+
+#matrix {
+  border: 1px solid pink;
+  padding: 5px;
+  float: left;
+  margin: 20px;
 }

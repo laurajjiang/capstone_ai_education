@@ -38,18 +38,22 @@ export default function Navigation() {
           content={
             <Menu className={Classes.ELEVATION_1}>
               <MenuItem
-                icon='cut'
+                icon='new-link'
                 text='Chapter 0 - Introduction'
                 onClick={(e) => (window.location.href = "/chapter0")}
               />
               <MenuDivider />
               <MenuItem
                 icon='new-link'
-                text='Chapter 1'
+                text='Chapter 1 - Sentiment Classification'
                 onClick={(e) => (window.location.href = "/chapter1")}
               />
               <MenuDivider />
-              <MenuItem icon='new-link' text='Chapter 2' />
+              <MenuItem
+                icon='new-link'
+                text='Chapter 2'
+                onClick={(e) => (window.location.href = "/chapter2")}
+              />
             </Menu>
           }
           position={Position.BOTTOM_RIGHT}>

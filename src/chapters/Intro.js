@@ -1,19 +1,68 @@
-import React, { useEffect, useState } from "react";
-import ReactDOM from "react-dom";
+import React from "react";
 import Navigation from "../components/navbar";
 import Footer from "../components/footer";
-import Container from "../components/container";
 import Description from "../components/description";
-import { Callout } from "@blueprintjs/core";
+import { Callout, Button, Intent } from "@blueprintjs/core";
 import Spacer from "../components/spacer";
+import Container from "../components/container";
 
-import IframeResizer from "iframe-resizer-react";
-import ReactIframeResizer from "react-iframe-resizer-super";
-
-const text = (
+const pretext = (
   <>
+    <Spacer space='1vh' />
     Artificial intelligence is the science and engineering of making machines
     behave or think rationally or for the machines to act or think like humans.
+    <Spacer space='1vh' />
+  </>
+);
+
+const introAI = (
+  <>
+    Let's briefly go over some of the ideas motivating the use of artificial
+    intelligence. Mouseover any concept for a more in-depth explanation.
+    <Spacer space='1vh' />
+  </>
+);
+
+const approaches = (
+  <>
+    There are 4 approaches to AI:
+    <ul>
+      <li>Thinking humanly</li>
+      <li>Thinking rationally</li>
+      <li>Acting humanly</li>
+      <li>Acting rationally</li>
+    </ul>
+  </>
+);
+
+const goals = (
+  <>
+    Goals of AI:
+    <ul>
+      <li>Reasoning</li>
+      <li>Learning</li>
+      <li>Perception</li>
+      <li>Natural language processing </li>
+    </ul>
+  </>
+);
+
+const applications = (
+  <>
+    <Spacer space='1vh' />
+    <b>Real life applications:</b> detecting credit card fraud, search engines,
+    spam filtering, medical diagnosis, face detection, and opponents in video
+    games.
+    <Spacer space='1vh' />
+    How do computers do this? The ways to accomplish this primarily involve
+    using statistics and probability.
+    <Spacer space='1vh' />
+    <b>Machine learning</b> is a subset of artificial intelligence. It is the
+    study of computer algorithms that provides the system the ability to learn
+    through experience. That is, artificial intelligence is the more general
+    topic where machine learning is one of the more specialized topics within
+    it.
+    <Spacer space='1vh' />
   </>
 );
 
@@ -21,36 +70,44 @@ const introContent = (
   <>
     <Spacer space='1vh' />
     <div style={{ fontSize: "500%" }}>chapter 0 - introduction</div>
-    <Spacer space='1vh' />
-    <Description content={text} />
-    <Spacer space='1vh' />
+    <Description content={pretext} />
     <Callout intent={"primary"} title={"Getting familiar with terminology"}>
       In computer science and AI/ML especially, there is a lot of specialized
       terminology. Each chapter will explain every new term or concept
       introduced, and there will also be additional resources provided to help
       you dive a bit deeper if necessary.
     </Callout>
+    <Spacer space='1vh' />
+    <Description content={introAI} />
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "row",
+        justifyContent: "space-around",
+      }}>
+      <Description content={approaches} />
+      <Spacer space='4vh' />
+      <Description content={goals} />
+    </div>
+    <Description content={applications} />
+    <Button
+      className='bp3-large'
+      intent={Intent.PRIMARY}
+      icon='arrow-right'
+      text='Next chapter'
+      style={{ maxWidth: "50%", marginBottom: "5vh" }}
+      onClick={(e) => (window.location.href = "/chapter1")}
+    />
   </>
 );
 
 export default function Introduction() {
-  useEffect(() => {
-    console.log(window.innerHeight);
-  }, []);
-
   return (
     <div>
       <Navigation />
-
-      <div style={{ height: "70vh" }}>
-        <object
-          data='https://laurajjiang.github.io/capstone-notebooks/2021/01/10/Text-Classification.html'
-          width='100%'
-          height='115%'
-          style={{ top: "-12.5%", position: "relative" }}
-        />
+      <div>
+        <Container content={introContent} />
       </div>
-
       <Spacer space='-1vh' />
       <hr style={{ marginTop: "0px" }} />
       <Footer />
