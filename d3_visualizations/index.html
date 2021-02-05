@@ -58,22 +58,6 @@
     function checkNumberIfFloat(value) {
         return Number(value) === value && value % 1 !== 0;
     }
-    function evalColor(d) {
-      if (d == "Green" | d == "Yellow" | d == "Red") {
-        return createSVG(d);
-      }
-      if (d != "Green" | d != "Yellow" | d != "Red") {
-        return d;
-      }
-    }
-
-    function evalText(d) {
-      if (d == "Green" | d == "Yellow" | d == "Red") {
-        console.log(d);
-      } else if (d != "Green" | d != "Yellow" | d != "Red") {
-        return d;
-      }
-    }
 
     d3.json("iris.json", function(dataSet) {
       var div = d3.select('.tables');
@@ -128,11 +112,8 @@
         .enter()
         .append("td")
         .text(function(d) {
-          return evalText(d);
+          return d;
         })
-        // .filter(function(d){
-        //   return checkNumberIfFloat(d);
-        // })
         .append(function(d) {
           return createSVG(d);
         });
@@ -140,8 +121,6 @@
     })
 
     function createSVG(d) {
-        console.log(d)
-
       var w = 75;
       var h = 75;
 
@@ -175,7 +154,6 @@
                 .style("fill", "blue")
                 .attr("dy", 30)
                 .attr("dx", 25)
-                // .text(letterChoice);
         }else{ 
             elemEnter.append("circle")
                 .attr({
@@ -189,7 +167,6 @@
                 .style("fill", "blue")
                 .attr("dy", 30)
                 .attr("dx", 25)
-                // .text(letterChoice);
 
         }
       return kpi;
