@@ -142,8 +142,8 @@
     function createSVG(d) {
         console.log(d)
 
-      var w = 50;
-      var h = 50;
+      var w = 75;
+      var h = 75;
 
       var kpi = document.createElement("div");
 
@@ -164,10 +164,10 @@
             var la = (d/7);
             elemEnter.append("rect")
                 .attr({
-                x: 20,
-                y: h - (30*la) - 5, //this basically makes the svg start from the button instead of the top
-                width: 20,
-                height: 30 * la
+                x: 25,
+                y: 10, //this basically makes the svg start from the button instead of the top
+                width: 60*la,
+                height: 20
                 })
                 .style("fill", "#4078a9");
 
