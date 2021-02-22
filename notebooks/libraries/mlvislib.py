@@ -9,7 +9,6 @@ def say_hello():
 # Desicion needs to be made, what is to be paresd to this library?
 # Should we send it a json? For now it will be a JSON
 
-#json filepath NEEDS to be repaired
 
 class ConfusionMatrix:
 
@@ -25,14 +24,18 @@ class ConfusionMatrix:
 	html_template = Template('''
 		<style> $css_text </style>
 		<h1> Interactive Confusion Matrix </h1>
-		<input id="slider" type="range" min="0" max="1" step=".1" value=".5"/>
+		<h3 id="confidence_setting"> Confidence: 0.5 </h3>
+		<input class="slider" id="confidence_slider" type="range" min="0" max="1" step=".1" value=".5"/>
+		<h3 id="epoch_setting"> Epoch: 1 </h3>
+		<input class="slider" id="epoch_slider" type="range" min="1" max="20" step="1" value="1"/>
 		<div>
-		<h2 id="textInput"> 0.5 </h2>
-		<div>
-		<div id="matrix"> </div>
-		<div id="review">
-			Data 
-			<ul id = "testList"></ul>
+			<div>
+				<div id="matrix"></div>
+				<div id="review">
+					Data 
+					<ul id = "testList"></ul>
+				</div>
+			</div>
 		</div>
 		<script> $js_text </script>
 		''')
@@ -104,80 +107,161 @@ class ConfusionMatrix:
 		'''
 
 	js_template = Template('''
-		console.log("Loading JavaScript...")
-		console.log("Loaded Data:")
-        var dname = $conf_data_filepath
-        console.log(dname)
+		console.log("Visualization: Running JavaScript...");
+        var dname = $conf_data_filepath;
+        var currentConfSetting = .5;
+        var currentEpochSetting = 1;
+        console.log("Visualization: Reading JSON file(", dname, ")...");
+
 		d3.json( $conf_data_filepath, function(d) {
-		    console.log(d)
-		})
-		/* I've temporarily left out the 'getType' function, since the names of these
-		types are not included in the JSON file that is given to the JavaScript. More functionality can be incldued later to bring the names in as well as the raw data. Type will be represented by the given numeric identifier for now. */
-		/* extractTypes: identifies different types each data point can be identified
-		as, based off of the 'true_label' attribute in JSON file
-		given: JSON file
-		returns: dictionary of possible values for 'true_label' */
+			console.log("Visualization: Logging complete JSON...");
+		    console.log(d);
+		});
+
+		/*--------------------------------------------------------------------------------
+		I've temporarily left out the 'getType' function, since the names of these
+		types are not included in the JSON file that is given to the JavaScript. More
+		functionality can be incldued later to bring the names in as well as the raw data.
+		Type will be represented by the given numeric identifier for now.
+		--------------------------------------------------------------------------------*/
+
+		/*--------------------------------------------------------------------------------
+		Function: extractTypes
+		Behavior: Identifies different types each data point can be identified as, based 
+				  off of the 'true_label' attribute in JSON file.
+		Input: JSON file
+		Output: Returns array of possible values for 'Test Label'.
+		--------------------------------------------------------------------------------*/
+
 		function extractTypes(data){
 		    var lookup = {};
-		    var items = data
+		    var items = data["0"];
 		    var result = [];
+
 		    for (var item, i=0; item = items[i++];){
-		        var name = item.true_label;
+		        var name = item['Test Label'];
 		        if(!(name in lookup)){
 		            lookup[name] = 1;
 		            result.push(name);
 		        }
 		    }
-		    return lookup;
+
+		    return result;
 		}
-		d3.select("#slider").on("change", function() {
-		    d3.select("svg").remove()
-		    var currentValue = this.value;
-		    d3.select("#textInput").text(currentValue)
+
+		/*--------------------------------------------------------------------------------
+		Function: Slider Re-Draw
+		Behavior: This d3 code will redraw each time there is a change in the slider.
+		Input: None
+		Output: Visualization should be redrawn
+		--------------------------------------------------------------------------------*/
+		/*--------------------------------------------------------------------------------
+		BUG: This should be adjusted to be called both on load and on change. 
+		--------------------------------------------------------------------------------*/
+
+		d3.selectAll(".slider").on("change", function() {
+		    d3.select("svg").remove();
+
+		    if(this.id == "confidence_slider"){
+		    	currentConfSetting = this.value;
+		    }
+		    if(this.id == "epoch_slider"){
+		    	currentEpochSetting = this.value;
+		    }
+
+		    d3.select("#confidence_setting").text("Confidence: " + currentConfSetting);
+		    d3.select("#epoch_setting").text("Epoch: " + currentEpochSetting);
+		    console.log("Visualization: Confidence set to (", currentConfSetting,
+		     			") Epoch set to (", currentEpochSetting, ")");
+
+		    /*--------------------------------------------------------------------------------
+			Function: Re-Draw
+			Behavior: Adjusting the slider will call this function to redraw the
+					  visualization. First a table is build keep track of the number of
+					  elements to be in each cell. Next, data is read into an array based on
+					  the parameters set by the sliders.
+			Input: filepath to JSON
+			Output: visualization should be redrawn
+			--------------------------------------------------------------------------------*/
+
 		    d3.json($conf_data_filepath, function(d) {
-		        console.log(d); // Ensuring that data is properly read in.
-		        console.log(Object.keys(extractTypes(d))); // Logging list of possible types
-		        // # of Categories x # of Categories Table
-		        tableDimension = Object.keys(extractTypes(d)).length
+		    	var possibleOutputValues = extractTypes(d);
+		        var tableDimension = extractTypes(d).length;
+		        console.log("Visualization: Constructing", tableDimension, "x",
+		        			tableDimension, "chart...");
 		        var table = new Array(tableDimension);
 		        var dataset = [];
+
 		        for(var i=0; i<tableDimension; i++){
 		            table[i] = new Array(tableDimension);
 		            for(var j=0; j<tableDimension; j++){
 		                table[i][j] = 0;
 		            }
 		        }
-		        // Filling out table with prediction counts and recording dataset
-		        /* Code is currently dependent on JSON having the data points: 
-		        "true_label" and "predicted_label" */
-		        for(var i=0; i<d.length; i+=1){ // i+=1 or i++ ?
-		            var ugh = d[i]["confidence_score"][0];
-		            console.log(ugh)
-		            if (ugh < currentValue ){
-		                table[parseInt(d[i]["true_label"])][parseInt(d[i]["predicted_label"])]+=1;
-		                dataset.push([d[i]["true_label"], d[i]["predicted_label"], d[i]["text"], d[i]["index"]]);
-		            }
+
+		        var selectedEpoch = {};
+
+		        for(var singleEpoch, i=0; singleEpoch = d[i++];){
+		        	if((singleEpoch[0]["Epoch"] + 1) == parseInt(currentEpochSetting)){
+		        		selectedEpoch = singleEpoch;
+		        	}
 		        }
-		        console.log(table); // Reporting current state of table values.
+
+		        console.log("Visualization: Parsing epoch (", currentEpochSetting, ")...");
+
+		        /*--------------------------------------------------------------------------------
+				NOTE: Will we need to display just integer representations of classifications,
+					  or will we need to display titles of classicications along the axis
+				--------------------------------------------------------------------------------*/
+
+		        for(var jsonEntry, i=0; jsonEntry = selectedEpoch[i++];){
+		        	var index = i;
+		        	var epoch = jsonEntry["Epoch"];
+		        	var entryText = jsonEntry["Test Sentence"];
+		        	var confidenceScore = jsonEntry["Test Confidence Score"][0];
+		        	var trueLabel = jsonEntry["Test Label"];
+		        	var predictedLabel = jsonEntry["Test Prediction"][0];
+		        	var tableXCoordinate = possibleOutputValues.indexOf(predictedLabel); //Predicted
+		        	var tableYCoordinate = possibleOutputValues.indexOf(trueLabel); // Actual
+
+		        	if(confidenceScore < currentConfSetting){
+		        		table[tableXCoordinate][tableYCoordinate]+=1;
+		        		dataset.push([trueLabel, predictedLabel, entryText, index, epoch]);
+		        	}
+		        }
+
+		        console.log("Visualization: Creating SVG...");
+
+		        /*--------------------------------------------------------------------------------
+				NOTE: Will leave this as the default viz size for now
+				--------------------------------------------------------------------------------*/
+
 		        var w = 750;
-		        var h = 700; // These are dimensions?
-		        // Create SVG element
-		        var svg = d3.select("body") // This could be problematic later
+		        var h = 750;
+
+		        var svg = d3.select("body")
 		                    .select("#matrix")
 		                    .append("svg")
 		                    .attr("width", w)
 		                    .attr("height", h);
+
 		        var rect = svg.selectAll("rect")
 		                      .data(dataset)
 		                      .enter()
 		                      .append("rect");
-		        // Give these a more descriptive name later
+
 		        var counters = new Array(tableDimension * tableDimension).fill(0);
 		        var ycounters = new Array(tableDimension * tableDimension).fill(0);
 		        var confusing = h / tableDimension;
-		        // JSON Object Format Guide: 
-		        // d[0] = true_label ; d[1] = predicted_label ; d[2] = text
-		        rect.attr("x", function (d, i){
+		        var blockStackDimension = Math.round(Math.sqrt(dataset.length));
+		        var marginBuffer = w * .005;
+		        var cubeDimension = Math.round(Math.sqrt(confusing / blockStackDimension));
+
+		        /*--------------------------------------------------------------------------------
+				Format: d[trueLabel, predictedLabel, entryText, index, epoch]
+				--------------------------------------------------------------------------------*/
+
+				rect.attr("x", function (d, i){
 		            var matrixnum = (parseInt(d[1]) * tableDimension) + parseInt(d[0]);
 		            var inmatrixcol = counters[matrixnum] % 16;
 		            counters[matrixnum]++;
@@ -210,6 +294,47 @@ class ConfusionMatrix:
 		                true_label = "true_label_" + d[0];
 		                return true_label + " " + predicted_label;
 		        });
+				
+				/*
+		        rect.attr("x", function (d, i){
+		            var matrixnum = (parseInt(d[1]) * tableDimension) + parseInt(d[0]);
+		            var inmatrixcol = counters[matrixnum] % blockStackDimension;
+		            counters[matrixnum]++;
+		            //return 10 + (d[0] * confusing) + (inmatrixcol * blockStackDimension);
+		            //return  (d[0] * confusing) + (inmatrixcol * blockStackDimension);
+
+		            return ((d[0]*(marginBuffer+confusing)) + (inmatrixcol*blockStackDimension));
+
+		            })
+		            .attr("y", function(d, i){
+		                var matricvol = d[1];
+		                var matrixnum = (parseInt(d[1] * tableDimension) + parseInt(d[0]));
+		                var hm = Math.floor(ycounters[matrixnum]/blockStackDimension);
+		                ycounters[matrixnum]++;
+		                return 10 + (d[1] * confusing) + (hm * blockStackDimension);
+		            })
+		            .attr("id", function(d){
+		                return "rect" + d[3];
+		            })
+		            .attr("width", function(d){
+		                return 15;
+		            })
+		            .attr("height", function(d){
+		                return 15;
+		            })
+		            .attr("opacity", function(d){
+		                return .85;
+		            })
+		            .attr("fill", function(d){
+		                return ("pink");
+		            })
+		            .attr("class", function(d){
+		                predicted_label = "predicted_label_" + d[1];
+		                true_label = "true_label_" + d[0];
+		                return true_label + " " + predicted_label;
+		        });
+		        */
+
 		        d3.select("#review")
 		            .select("testList")
 		            .selectAll("rect")
@@ -236,6 +361,8 @@ class ConfusionMatrix:
 		                table += "</tr> </table>"
 		                return  table;
 		        });
+
+
 		        rect.on("click", function(d_on){
 		            d3.select("#review")
 		                .select("#testList")
@@ -317,6 +444,8 @@ class ConfusionMatrix:
 		                            .attr("fill", "purple");
 		            });
 		        });
+
+
 		        d3.select("#review")
 		            .select("#testList")
 		            .selectAll("li")
@@ -336,12 +465,14 @@ class ConfusionMatrix:
 		                    d3.selectAll(rectId)
 		                        .attr("fill", "pink");
 		        });
+
+		        
 		    });
 		})
 		''')
 
 	def display_internals(self):
-		print(self.css, "\n", self.html, "\n", self.js, self.data_file_name)
+		print(self.css, "\n", self.html_template, "\n", self.js_template, self.data_file_name)
 
 	def html_test(self):
 		say_hello()
