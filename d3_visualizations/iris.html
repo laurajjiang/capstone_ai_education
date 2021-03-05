@@ -60,6 +60,7 @@
     }
 
     d3.json("iris.json", function(dataSet) {
+      console.log(dataSet.length)
       var div = d3.select('.tables');
 
       // append a table to the div
@@ -115,6 +116,7 @@
           return d;
         })
         .append(function(d) {
+          console.log(d)
           return createSVG(d);
         });
         

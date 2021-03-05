@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <script data-require="d3@3.5.3" data-semver="3.5.3" src="//cdnjs.cloudflare.com/ajax/libs/d3/3.5.3/d3.js"></script>
+  <style>
+    #myInput {
+      /* background-image: url('/css/searchicon.png'); Add a search icon to input */
+      background-position: 10px 12px; /* Position the search icon */
+      width: 100%; /* Full-width */
+      font-size: 16px; /* Increase font-size */
+      padding: 12px 20px 12px 40px; /* Add some padding */
+      border: 1px solid #ddd; /* Add a grey border */
+      margin-bottom: 12px; /* Add some space below the input */
+    }
+      .sent{
+        white-space: nowrap;
+      }
+      
+  </style>
+</head>
+
+<body>
+  <h3> Epoch #:</h3>
+  <h4 id="epochNum"></h4>
+  <input class="slider" id="epoch_slider" type="range" min="0" max="19" step="1" value="19" onchange="changedValues()"/>
+  <h3> Number of Sentences:</h3>
+  <h4 id="sentNum"></h4>
+  <input class="slider" id="num_sentences" type="range" min="0" max="496" step="1" value="30" onchange="changedValues()"/>
+
+  <input type="text" id="myInput" placeholder="Filter out words">
+  <button onclick="changedValues()">Filter</button>
+  <div class="tables"></div>
+
+  <script>
+
+    function changedValues() {
+      var x = d3.select("#myInput").property("value").toUpperCase();
+      var epoch_val = d3.select("#epoch_slider").property("value");
+      var sentences_val = d3.select("#num_sentences").property("value");
+
+      d3.selectAll("#epochNum").text(epoch_val);
+      d3.selectAll("#sentNum").text(sentences_val);
+
+      d3.json("simple_nn_epoch_sorted.json", function(largedataset) {
+        dataSet = largedataset[epoch_val];
+
+        d3.selectAll("table").remove();
+        var i; 
+        var test = [];
+        for(i = 0; i < sentences_val; i++){
+            if(dataSet[i]['Test Sentence'].toUpperCase().search(x) > -1){
+              test.push([dataSet[i]["Epoch"], dataSet[i]['Index'], dataSet[i]['Test Label'],dataSet[i]['Test Prediction'],dataSet[i]['Test Confidence Score'],dataSet[i]['Test Sentence'],dataSet[i]['Intermediate Values']]);
+            }
+        }
+        console.log(test);
+        createTable(test);
+      })
+    }
+
+    function automatic(){
+      var epoch_val = d3.select("#epoch_slider").property("value");
+      d3.selectAll("#epochNum").text(epoch_val);
+
+      var sentences_val = d3.select("#num_sentences").property("value");
+      d3.selectAll("#sentNum").text(sentences_val);
+
+      d3.json("simple_nn_epoch_sorted.json", function(largedataset) {
+        dataSet = largedataset[19];
+
+        var i; 
+        var test = [];
+        for(i = 0; i < 30; i++){
+          test.push([dataSet[i]["Epoch"], dataSet[i]['Index'], dataSet[i]['Test Label'],dataSet[i]['Test Prediction'],dataSet[i]['Test Confidence Score'],dataSet[i]['Test Sentence'],dataSet[i]['Intermediate Values']]);
+        }
+
+        createTable(test);
+
+          
+      })
+    }
+    function createSVG(d) {
+      var w = 1;
+      var h = 20;
+
+      var kpi = document.createElement("div");
+
+      var svg = d3.select(kpi).append("svg")
+        .attr({
+          width: w,
+          height: h
+        });
+        
+      var elem = svg.selectAll("div")
+        .data([d]);
+
+      var elemEnter = elem.enter()
+        .append("g");
+    
+        elemEnter.append("rect")
+          .attr({
+          x: 0,
+          y: 0, 
+          width: 1,
+          height: 20
+          })
+          .style("opacity", .5  + d*10)
+          .style("fill", "#4078a9");
+    
+      return kpi;
+    }
+    function createTable(test){
+      var div = d3.select('.tables');
+        // append a table to the div
+        var table = div.append("table")
+          .attr({
+            id: "sample",
+            class: 'table'
+          })
+          .classed("display", true);
+
+        // append a body to the table
+        var tbody = table.append("tbody")
+
+        // table body rows
+        var tableBodyRows = tbody.selectAll("tr")
+          .data(test)
+          .enter()
+          .append("tr");
+
+        tableBodyRows.selectAll("td")
+          .data(function(d) {
+            return [d];
+          })
+          .enter()
+          .append("td")
+          .attr('class', 'sent')
+          .text(function(d) {
+            return d[5];
+          })
+
+        tableBodyRows.selectAll("td")
+          .data(function(d) {
+            return d[6];
+          })
+          .enter()
+          .append("td")
+          .append(function(d) {
+            return createSVG(d);
+          });
+    }
+    
+    automatic();
+  </script>
+</body>
