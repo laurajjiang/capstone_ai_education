@@ -3,7 +3,7 @@ from string import Template
 import json
 
 def say_hello():
-    display(HTML('<h1>Greetings</h1>'))
+	display(HTML('<h1>Greetings</h1>'))
 
 
 # Desicion needs to be made, what is to be paresd to this library?
@@ -42,40 +42,40 @@ class ConfusionMatrix:
 
 	css = '''
 		body {
-		    font-family: Arial, sans-serif;
-		    font-size: larger;
+			font-family: Arial, sans-serif;
+			font-size: larger;
 		}
 		.box_highlighted { 
-		    background-color: #ffb; 
-		    border: 1px solid #b53;
+			background-color: #ffb; 
+			border: 1px solid #b53;
 		}
 		.highlight{
-		    background-color: yellow;
+			background-color: yellow;
 		}
 		.lighthigh{
-		    background-color: green;
+			background-color: green;
 		}
 		li{
-		    font-size: smaller;
+			font-size: smaller;
 		}
 		td{
-		    min-width: 100px;
+			min-width: 100px;
 		}
 		#review{
-		    border:1px solid pink; 
-		    padding: 5px; 
-		    float: left; 
-		    width: 750px; 
-		    height: 500px; 
-		    background-color: white;
-		    margin: 20px;
-		    overflow: scroll;
-		    }
+			border:1px solid pink; 
+			padding: 5px; 
+			float: left; 
+			width: 750px; 
+			height: 500px; 
+			background-color: white;
+			margin: 20px;
+			overflow: scroll;
+			}
 		#matrix{
-		    border:1px solid pink; 
-		    padding: 5px; 
-		    float: left;
-		    margin: 20px;
+			border:1px solid pink; 
+			padding: 5px; 
+			float: left;
+			margin: 20px;
 		}
 		#slider {
 		  -webkit-appearance: none;
@@ -108,15 +108,19 @@ class ConfusionMatrix:
 
 	js_template = Template('''
 		console.log("Visualization: Running JavaScript...");
-        var dname = $conf_data_filepath;
-        var currentConfSetting = .5;
-        var currentEpochSetting = 1;
-        console.log("Visualization: Reading JSON file(", dname, ")...");
+		var dname = $conf_data_filepath;
+		var currentConfSetting = .5;
+		var currentEpochSetting = 1;
+		var lastEpochIndex = 0;
+		console.log("Visualization: Reading JSON file(", dname, ")...");
 
 		d3.json( $conf_data_filepath, function(d) {
 			console.log("Visualization: Logging complete JSON...");
-		    console.log(d);
+			console.log(d);
+			lastEpochIndex = d[0]['Num Epochs']
+			d3.select("#epoch_slider").attr("max", lastEpochIndex);
 		});
+
 
 		/*--------------------------------------------------------------------------------
 		I've temporarily left out the 'getType' function, since the names of these
@@ -134,19 +138,19 @@ class ConfusionMatrix:
 		--------------------------------------------------------------------------------*/
 
 		function extractTypes(data){
-		    var lookup = {};
-		    var items = data["0"];
-		    var result = [];
+			var lookup = {};
+			var items = data;
+			var result = [];
 
-		    for (var item, i=0; item = items[i++];){
-		        var name = item['Test Label'];
-		        if(!(name in lookup)){
-		            lookup[name] = 1;
-		            result.push(name);
-		        }
-		    }
+			for (var item, i=0; item = items[i++];){
+				var name = item['Test Label'];
+				if(!(name in lookup)){
+					lookup[name] = 1;
+					result.push(name);
+				}
+			}
 
-		    return result;
+			return result;
 		}
 
 		/*--------------------------------------------------------------------------------
@@ -160,21 +164,21 @@ class ConfusionMatrix:
 		--------------------------------------------------------------------------------*/
 
 		d3.selectAll(".slider").on("change", function() {
-		    d3.select("svg").remove();
+			d3.select("svg").remove();
 
-		    if(this.id == "confidence_slider"){
-		    	currentConfSetting = this.value;
-		    }
-		    if(this.id == "epoch_slider"){
-		    	currentEpochSetting = this.value;
-		    }
+			if(this.id == "confidence_slider"){
+				currentConfSetting = this.value;
+			}
+			if(this.id == "epoch_slider"){
+				currentEpochSetting = this.value;
+			}
 
-		    d3.select("#confidence_setting").text("Confidence: " + currentConfSetting);
-		    d3.select("#epoch_setting").text("Epoch: " + currentEpochSetting);
-		    console.log("Visualization: Confidence set to (", currentConfSetting,
-		     			") Epoch set to (", currentEpochSetting, ")");
+			d3.select("#confidence_setting").text("Confidence: " + currentConfSetting);
+			d3.select("#epoch_setting").text("Epoch: " + currentEpochSetting);
+			console.log("Visualization: Confidence set to (", currentConfSetting,
+						") Epoch set to (", currentEpochSetting, ")");
 
-		    /*--------------------------------------------------------------------------------
+			/*--------------------------------------------------------------------------------
 			Function: Re-Draw
 			Behavior: Adjusting the slider will call this function to redraw the
 					  visualization. First a table is build keep track of the number of
@@ -184,290 +188,268 @@ class ConfusionMatrix:
 			Output: visualization should be redrawn
 			--------------------------------------------------------------------------------*/
 
-		    d3.json($conf_data_filepath, function(d) {
-		    	var possibleOutputValues = extractTypes(d);
-		        var tableDimension = extractTypes(d).length;
-		        console.log("Visualization: Constructing", tableDimension, "x",
-		        			tableDimension, "chart...");
-		        var table = new Array(tableDimension);
-		        var dataset = [];
+			d3.json($conf_data_filepath, function(d) {
 
-		        for(var i=0; i<tableDimension; i++){
-		            table[i] = new Array(tableDimension);
-		            for(var j=0; j<tableDimension; j++){
-		                table[i][j] = 0;
-		            }
-		        }
+				var totalItems = Object.keys(d).length
+				console.log("Visualization: ", totalItems, "pieces of test data included")
 
-		        var selectedEpoch = {};
+				var possibleOutputValues = extractTypes(d);
+				console.log("Visualization: Possible outcomes inlcudes; ", possibleOutputValues)
 
-		        for(var singleEpoch, i=0; singleEpoch = d[i++];){
-		        	if((singleEpoch[0]["Epoch"] + 1) == parseInt(currentEpochSetting)){
-		        		selectedEpoch = singleEpoch;
-		        	}
-		        }
+				var tableDimension = extractTypes(d).length;
+				console.log("Visualization: Constructing", tableDimension, "x",
+							tableDimension, "chart...");
+				var dataset = [];
 
-		        console.log("Visualization: Parsing epoch (", currentEpochSetting, ")...");
+				var table = new Array(tableDimension);
+				for(var i=0; i<tableDimension; i++){
+					table[i] = new Array(tableDimension);
+					for(var j=0; j<tableDimension; j++){
+						table[i][j] = 0;
+					}
+				}
+				console.log("Visualization: Table initialized as: ", table)
 
-		        /*--------------------------------------------------------------------------------
+
+				/*
+				# NOTE: To be removed, we only need to know the integer representation 
+				#		of which epoch we are using.
+				var selectedEpoch = {};
+
+				for(var singleEpoch, i=0; singleEpoch = d[i++];){
+					if((singleEpoch[0]["Epoch"] + 1) == parseInt(currentEpochSetting)){
+						selectedEpoch = singleEpoch;
+					}
+				}
+				*/
+
+				console.log("Visualization: Preparing to display epoch (", currentEpochSetting, ")...");
+
+				/*--------------------------------------------------------------------------------
 				NOTE: Will we need to display just integer representations of classifications,
 					  or will we need to display titles of classicications along the axis
 				--------------------------------------------------------------------------------*/
 
-		        for(var jsonEntry, i=0; jsonEntry = selectedEpoch[i++];){
-		        	var index = i;
-		        	var epoch = jsonEntry["Epoch"];
-		        	var entryText = jsonEntry["Test Sentence"];
-		        	var confidenceScore = jsonEntry["Test Confidence Score"][0];
-		        	var trueLabel = jsonEntry["Test Label"];
-		        	var predictedLabel = jsonEntry["Test Prediction"][0];
-		        	var tableXCoordinate = possibleOutputValues.indexOf(predictedLabel); //Predicted
-		        	var tableYCoordinate = possibleOutputValues.indexOf(trueLabel); // Actual
+				// NOTE EDITING HERE
 
-		        	if(confidenceScore < currentConfSetting){
-		        		table[tableXCoordinate][tableYCoordinate]+=1;
-		        		dataset.push([trueLabel, predictedLabel, entryText, index, epoch]);
-		        	}
-		        }
+				for(var jsonEntry, i=0; jsonEntry = d[i++];){
+					// console.log(jsonEntry);
+					var index = i;
+					// var epoch = jsonEntry["Epoch"];
+					var entryText = jsonEntry["Test Sentence"];
+					var confidenceScore = jsonEntry["Test Confidence Score"][currentEpochSetting-1];
+					var trueLabel = jsonEntry["Test Label"];
+					var predictedLabel = jsonEntry["Test Prediction"][currentEpochSetting-1];
+					var tableXCoordinate = possibleOutputValues.indexOf(predictedLabel); //Predicted
+					var tableYCoordinate = possibleOutputValues.indexOf(trueLabel); // Actual
 
-		        console.log("Visualization: Creating SVG...");
+					if(confidenceScore < currentConfSetting){
+						table[tableXCoordinate][tableYCoordinate]+=1;
+						dataset.push([trueLabel, predictedLabel, entryText, index]);
+					}
+				}
 
-		        /*--------------------------------------------------------------------------------
+				console.log("Visualization: Table for confidence ", currentConfSetting, " at epoch ", currentEpochSetting, table);
+				console.log("Visualization: Creating SVG...");
+
+				/*--------------------------------------------------------------------------------
 				NOTE: Will leave this as the default viz size for now
 				--------------------------------------------------------------------------------*/
 
-		        var w = 750;
-		        var h = 750;
+				var w = 750;
+				var h = 750;
 
-		        var svg = d3.select("body")
-		                    .select("#matrix")
-		                    .append("svg")
-		                    .attr("width", w)
-		                    .attr("height", h);
+				var svg = d3.select("body")
+							.select("#matrix")
+							.append("svg")
+							.attr("width", w)
+							.attr("height", h);
 
-		        var rect = svg.selectAll("rect")
-		                      .data(dataset)
-		                      .enter()
-		                      .append("rect");
+				var rect = svg.selectAll("rect")
+							  .data(dataset)
+							  .enter()
+							  .append("rect");
 
-		        var counters = new Array(tableDimension * tableDimension).fill(0);
-		        var ycounters = new Array(tableDimension * tableDimension).fill(0);
-		        var confusing = h / tableDimension;
-		        var blockStackDimension = Math.round(Math.sqrt(dataset.length));
-		        var marginBuffer = w * .005;
-		        var cubeDimension = Math.round(Math.sqrt(confusing / blockStackDimension));
+				var counters = new Array(tableDimension * tableDimension).fill(0);
+				var ycounters = new Array(tableDimension * tableDimension).fill(0);
+				var cellDimension = h / tableDimension;
+				var blockStackDimension = Math.round(Math.sqrt(totalItems)) + 1;
+				var marginBuffer = 5;
+				var cubeDimension = ((cellDimension - marginBuffer) / blockStackDimension);
 
-		        /*--------------------------------------------------------------------------------
+				/*--------------------------------------------------------------------------------
 				Format: d[trueLabel, predictedLabel, entryText, index, epoch]
 				--------------------------------------------------------------------------------*/
 
 				rect.attr("x", function (d, i){
-		            var matrixnum = (parseInt(d[1]) * tableDimension) + parseInt(d[0]);
-		            var inmatrixcol = counters[matrixnum] % 16;
-		            counters[matrixnum]++;
-		            return 10 + (d[0] * confusing) + (inmatrixcol * 16);
-		            })
-		            .attr("y", function(d, i){
-		                var matricvol = d[1];
-		                var matrixnum = (parseInt(d[1] * tableDimension) + parseInt(d[0]));
-		                var hm = Math.floor(ycounters[matrixnum]/16);
-		                ycounters[matrixnum]++;
-		                return 10 + (d[1] * confusing) + (hm * 16);
-		            })
-		            .attr("id", function(d){
-		                return "rect" + d[3];
-		            })
-		            .attr("width", function(d){
-		                return 15;
-		            })
-		            .attr("height", function(d){
-		                return 15;
-		            })
-		            .attr("opacity", function(d){
-		                return .85;
-		            })
-		            .attr("fill", function(d){
-		                return ("pink");
-		            })
-		            .attr("class", function(d){
-		                predicted_label = "predicted_label_" + d[1];
-		                true_label = "true_label_" + d[0];
-		                return true_label + " " + predicted_label;
-		        });
-				
-				/*
-		        rect.attr("x", function (d, i){
-		            var matrixnum = (parseInt(d[1]) * tableDimension) + parseInt(d[0]);
-		            var inmatrixcol = counters[matrixnum] % blockStackDimension;
-		            counters[matrixnum]++;
-		            //return 10 + (d[0] * confusing) + (inmatrixcol * blockStackDimension);
-		            //return  (d[0] * confusing) + (inmatrixcol * blockStackDimension);
-
-		            return ((d[0]*(marginBuffer+confusing)) + (inmatrixcol*blockStackDimension));
-
-		            })
-		            .attr("y", function(d, i){
-		                var matricvol = d[1];
-		                var matrixnum = (parseInt(d[1] * tableDimension) + parseInt(d[0]));
-		                var hm = Math.floor(ycounters[matrixnum]/blockStackDimension);
-		                ycounters[matrixnum]++;
-		                return 10 + (d[1] * confusing) + (hm * blockStackDimension);
-		            })
-		            .attr("id", function(d){
-		                return "rect" + d[3];
-		            })
-		            .attr("width", function(d){
-		                return 15;
-		            })
-		            .attr("height", function(d){
-		                return 15;
-		            })
-		            .attr("opacity", function(d){
-		                return .85;
-		            })
-		            .attr("fill", function(d){
-		                return ("pink");
-		            })
-		            .attr("class", function(d){
-		                predicted_label = "predicted_label_" + d[1];
-		                true_label = "true_label_" + d[0];
-		                return true_label + " " + predicted_label;
-		        });
-		        */
-
-		        d3.select("#review")
-		            .select("testList")
-		            .selectAll("rect")
-		            .data(
-		                dataset.filter(d => d[0] != d[1]),
-		                function(d){
-		                    return d[3];
-		                }
-		            )
-		            .enter()
-		            .append("li")
-		            .attr("id", function(d){
-		                return "text" + d[3];
-		            })
-		            .html(function(d){
-		                table = "<table><tr>"
-		                table += "<td> True: ";
-		                table += parseInt(d[0]); //getType(d[0]);
-		                table += "</td>"
-		                table += "<td> Predict: ";
-		                table += parseInt(d[1]); //getType(d[1]);
-		                table += "</td>"
-		                table += "<td>" + d[2].substr(0,200); + "</td>"
-		                table += "</tr> </table>"
-		                return  table;
-		        });
+					var matrixnum = (parseInt(d[1]) * tableDimension) + parseInt(d[0]);
+					var inmatrixcol = counters[matrixnum] % blockStackDimension;
+					counters[matrixnum]++;
+					return (d[1] * (cellDimension + marginBuffer)) + (inmatrixcol * (cubeDimension));
+					})
+					.attr("y", function(d, i){
+						var matrixnum = (parseInt(d[1] * tableDimension) + parseInt(d[0]));
+						var hm = Math.floor(ycounters[matrixnum]/blockStackDimension);
+						ycounters[matrixnum]++;
+						return (d[0] * (cellDimension + marginBuffer)) + (hm * (cubeDimension));
+					})
+					.attr("id", function(d){
+						return "rect" + d[3];
+					})
+					.attr("width", function(d){
+						return cubeDimension;
+					})
+					.attr("height", function(d){
+						return cubeDimension;
+					})
+					.attr("opacity", function(d){
+						return 1;
+					})
+					.attr("fill", function(d){
+						return ("black");
+					})
+					.attr("class", function(d){
+						predicted_label = "predicted_label_" + d[1];
+						true_label = "true_label_" + d[0];
+						return true_label + " " + predicted_label;
+				});
 
 
-		        rect.on("click", function(d_on){
-		            d3.select("#review")
-		                .select("#testList")
-		                .html("");
-		            if(!this.classList.contains("past")){
-		                d3.selectAll(".past")
-		                    .attr("fill", "pink")
-		                    .classed("past", false);
-		                d3.selectAll(".reclick")
-		                    .attr("fill", "pink")
-		                    .classed("reclick", false)
-		            }
-		            if(!this.classList.contains("reclick")){
-		                d3.selectAll(".reclick")
-		                    .attr("fill", "pink")
-		                    .classed("reclick", false);
-		            }
-		            d3.select(this);
-		            textId = "";
-		            x = "." + this.classList[0];
-		            y = "." + this.classList[1];
-		            test = x + y;
-		            x1 = x.charAt(x.length - 1);
-		            y1 = y.charAt(y.length - 1);
-		            if(this.classList.contains("past")){
-		                d3.select(this)
-		                    .classed("reclick", true)
-		                Id = this.id;
-		                textId = "#text" + Id.substring(4);
-		            }
-		            d3.selectAll(test)
-		                .attr("fill", "purple")
-		                .classed("past", "true");
-		            d3.select("#review")
-		                .select("#testList")
-		                .selectAll("rect")
-		                .data(
-		                    dataset
-		                        .filter(d => d[0] == x1)
-		                        .filter(d => d[1] == y1),
-		                        function(d){
-		                            return d[3];
-		                        }
-		                )
-		                .enter()
-		                .append("li")
-		                .attr("id", function(d){
-		                    return "text" + d[3];
-		                })
-		                .html(function(d){
-		                    table = "<table><tr>"
-		                    table += "<td> True: ";
-		                    table += parseInt(d[0]); //getType(d[0]);
-		                    table += "</td>"
-		                    table += "<td> Predict: ";
-		                    table += parseInt(d[1]); //getType(d[1]);
-		                    table += "</td>"
-		                    table += "<td>" + d[2].substr(0,200); + "</td>"
-		                    table += "</tr> </table>"
-		                    return table;
-		            });
-		            d3.select("#review")
-		                .select("testList")
-		                .selectAll("li")
-		                .on("mouseover", function(d_on){
-		                    d3.select(this)
-		                        .classed("lighthigh", true)
-		                        id = this.id;
-		                        rectId = "#rect" + id.substring(4);
-		                        d3.selectAll(rectId)
-		                            .attr("fill", "green");
-		                })
-		                .on("mouseout", function(d_on){
-		                    d3.select(this)
-		                        .classed("lighthigh", false)
-		                        id = this.id;
-		                        rectId = "#rect" + id.substring(4);
-		                        d3.selectAll(rectId)
-		                            .attr("fill", "purple");
-		            });
-		        });
+
+				d3.select("#review")
+					.select("testList")
+					.selectAll("rect")
+					.data(
+						dataset.filter(d => d[0] != d[1]),
+						function(d){
+							return d[3];
+						}
+					)
+					.enter()
+					.append("li")
+					.attr("id", function(d){
+						return "text" + d[3];
+					})
+					.html(function(d){
+						table = "<table><tr>"
+						table += "<td> True: ";
+						table += parseInt(d[0]); //getType(d[0]);
+						table += "</td>"
+						table += "<td> Predict: ";
+						table += parseInt(d[1]); //getType(d[1]);
+						table += "</td>"
+						table += "<td>" + d[2].substr(0,200); + "</td>"
+						table += "</tr> </table>"
+						return  table;
+				});
 
 
-		        d3.select("#review")
-		            .select("#testList")
-		            .selectAll("li")
-		            .on("mouseover", function(d_on){
-		                d3.select(this)
-		                    .classed("lighthigh", true)
-		                    id = this.id;
-		                    rectId = "#rect" + id.substring(4);
-		                    d3.selectAll(rectId)
-		                        .attr("fill", "green");
-		            })
-		          .on("mouseout", function(d_on){
-		                d3.select(this)
-		                    .classed("lighthigh", false)
-		                    id = this.id;
-		                    rectId = "#rect" + id.substring(4);
-		                    d3.selectAll(rectId)
-		                        .attr("fill", "pink");
-		        });
 
-		        
-		    });
+				rect.on("click", function(d_on){
+					d3.select("#review")
+						.select("#testList")
+						.html("");
+					if(!this.classList.contains("past")){
+						d3.selectAll(".past")
+							.attr("fill", "pink")
+							.classed("past", false);
+						d3.selectAll(".reclick")
+							.attr("fill", "pink")
+							.classed("reclick", false)
+					}
+					if(!this.classList.contains("reclick")){
+						d3.selectAll(".reclick")
+							.attr("fill", "pink")
+							.classed("reclick", false);
+					}
+					d3.select(this);
+					textId = "";
+					x = "." + this.classList[0];
+					y = "." + this.classList[1];
+					test = x + y;
+					x1 = x.charAt(x.length - 1);
+					y1 = y.charAt(y.length - 1);
+					if(this.classList.contains("past")){
+						d3.select(this)
+							.classed("reclick", true)
+						Id = this.id;
+						textId = "#text" + Id.substring(4);
+					}
+					d3.selectAll(test)
+						.attr("fill", "purple")
+						.classed("past", "true");
+					d3.select("#review")
+						.select("#testList")
+						.selectAll("rect")
+						.data(
+							dataset
+								.filter(d => d[0] == x1)
+								.filter(d => d[1] == y1),
+								function(d){
+									return d[3];
+								}
+						)
+						.enter()
+						.append("li")
+						.attr("id", function(d){
+							return "text" + d[3];
+						})
+						.html(function(d){
+							table = "<table><tr>"
+							table += "<td> True: ";
+							table += parseInt(d[0]); //getType(d[0]);
+							table += "</td>"
+							table += "<td> Predict: ";
+							table += parseInt(d[1]); //getType(d[1]);
+							table += "</td>"
+							table += "<td>" + d[2].substr(0,200); + "</td>"
+							table += "</tr> </table>"
+							return table;
+					});
+					d3.select("#review")
+						.select("testList")
+						.selectAll("li")
+						.on("mouseover", function(d_on){
+							d3.select(this)
+								.classed("lighthigh", true)
+								id = this.id;
+								rectId = "#rect" + id.substring(4);
+								d3.selectAll(rectId)
+									.attr("fill", "green");
+						})
+						.on("mouseout", function(d_on){
+							d3.select(this)
+								.classed("lighthigh", false)
+								id = this.id;
+								rectId = "#rect" + id.substring(4);
+								d3.selectAll(rectId)
+									.attr("fill", "purple");
+					});
+				});
+
+
+				d3.select("#review")
+					.select("#testList")
+					.selectAll("li")
+					.on("mouseover", function(d_on){
+						d3.select(this)
+							.classed("lighthigh", true)
+							id = this.id;
+							rectId = "#rect" + id.substring(4);
+							d3.selectAll(rectId)
+								.attr("fill", "green");
+					})
+				  .on("mouseout", function(d_on){
+						d3.select(this)
+							.classed("lighthigh", false)
+							id = this.id;
+							rectId = "#rect" + id.substring(4);
+							d3.selectAll(rectId)
+								.attr("fill", "pink");
+				});
+
+
+			});
 		})
 		''')
 
