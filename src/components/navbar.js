@@ -45,13 +45,13 @@ export default function Navigation() {
               <MenuDivider />
               <MenuItem
                 icon='new-link'
-                text='Chapter 1 - Sentiment Classification'
+                text='Chapter 1 - Linear Regression'
                 onClick={(e) => (window.location.href = "/chapter1")}
               />
               <MenuDivider />
               <MenuItem
                 icon='new-link'
-                text='Chapter 2'
+                text='Chapter 2 - Classification with Neural Networks'
                 onClick={(e) => (window.location.href = "/chapter2")}
               />
             </Menu>

@@ -8,13 +8,14 @@ import About from "./About";
 import Error from "./Error";
 import Introduction from "./chapters/Intro";
 import SentimentClassification from "./chapters/SentimentClassification";
+import LogisticRegression from "./chapters/LogisticRegression"
 
 const routing = (
   <Router>
     <Switch>
       <Route exact path='/' component={Home} />
       <Route exact path='/chapter0' component={Introduction} />
-      <Route exact path='/chapter1' component={SentimentClassification} />
+      <Route exact path='/chapter1' component={LogisticRegression} />
       <Route exact path='/about' component={About} />
       <Route component={Error} />
     </Switch>
