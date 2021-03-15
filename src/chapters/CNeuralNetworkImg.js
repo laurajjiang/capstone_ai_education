@@ -8,12 +8,12 @@ import ConfusionMatrix from "../components/confusionMatrix";
 import Container from "../components/container";
 import "../index.css";
 
-export default function SentimentClassification() {
+export default function ConvolutionalNN() {
   return (
     <div>
       <Navigation />
       <div className='container'>
-        <Container content={"SENTIMENT CLASSIFICATION"} />
+        <Container content={"CONVOLUTIONAL NN"} />
       </div>
     </div>
   );

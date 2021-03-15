@@ -8,15 +8,22 @@ import About from "./About";
 import Error from "./Error";
 import Introduction from "./chapters/Intro";
 import SentimentClassification from "./chapters/SentimentClassification";
-import LogisticRegression from "./chapters/LogisticRegression"
+import LogisticRegression from "./chapters/LogisticRegression";
+import NeuralNetworkClass from "./chapters/NeuralNetworkClass";
+import NeuralNetworkImg from "./chapters/NeuralNetworkImg";
+import ConvolutionalNN from "./chapters/CNeuralNetworkImg";
 
 const routing = (
   <Router>
     <Switch>
       <Route exact path='/' component={Home} />
+      <Route exact path='/about' component={About} />
       <Route exact path='/chapter0' component={Introduction} />
       <Route exact path='/chapter1' component={LogisticRegression} />
-      <Route exact path='/about' component={About} />
+      <Route exact path='/chapter2' component={NeuralNetworkClass} />
+      <Route exact path='/chapter3' component={NeuralNetworkImg} />
+      <Route exact path='/chapter4' component={ConvolutionalNN} />
+      <Route exact path='/chapter5' component={SentimentClassification} />
       <Route component={Error} />
     </Switch>
   </Router>
