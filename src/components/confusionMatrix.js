@@ -1,9 +1,8 @@
 import React, { useEffect } from "react";
 import * as d3 from "d3";
-import data from "./predict.json";
 import "./App.css";
 
-export default function ConfusionMatrix() {
+export default function ConfusionMatrix({ data }) {
   useEffect(() => {
     // let width = 960,
     //   height = 600;
@@ -145,7 +144,7 @@ export default function ConfusionMatrix() {
       .html(function (d) {
         table = "<table><tr>";
 
-        table += "<td> True: ";
+        table += "<td> Actual: ";
         table += parseInt(d[0]); //getType(d[0]);
         table += "</td>";
 
@@ -207,7 +206,7 @@ export default function ConfusionMatrix() {
         .html(function (d) {
           table = "<table><tr>";
 
-          table += "<td> True: ";
+          table += "<td> Actual: ";
           table += parseInt(d[0]); //getType(d[0]);
           table += "</td>";
 
