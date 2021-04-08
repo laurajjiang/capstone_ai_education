@@ -151,12 +151,13 @@
           })
           .enter()
           .append("td")
-          .attr('class', 'bar')
+          .attr("id", function(d,i) { return 'bar ' + i; })
           .append(function(d) {
             return createSVG(d);
           });
 
         tableBodyRows.on("click", function(d){
+          console.log(this)
           d3.selectAll(".clicked").classed("clicked", false);
           d3.select(this).classed("clicked", true);
           bars = d[6]
@@ -165,7 +166,6 @@
 
           d3.select(this).selectAll("td")
             .data(function(d) {
-              console.log(bars)
               return bars.sort(function(a, b){return b-a});
             })
             .enter()
