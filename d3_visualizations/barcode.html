@@ -151,6 +151,7 @@
           })
           .enter()
           .append("td")
+          .attr('class', 'bar')
           .append(function(d) {
             return createSVG(d);
           });
@@ -158,6 +159,22 @@
         tableBodyRows.on("click", function(d){
           d3.selectAll(".clicked").classed("clicked", false);
           d3.select(this).classed("clicked", true);
+          bars = d[6]
+
+          d3.select(this).selectAll('.bar').remove();
+
+          d3.select(this).selectAll("td")
+            .data(function(d) {
+              console.log(bars)
+              return bars.sort(function(a, b){return b-a});
+            })
+            .enter()
+            .append("td")
+            .attr('class', 'bar')
+            .append(function(d) {
+              return createSVG(d);
+            });
+
         })
 
         
