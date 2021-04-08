@@ -151,6 +151,7 @@
           })
           .enter()
           .append("td")
+          .attr("class", function(d,i) { return 'bar ' + i; }) //im having trouble applying 2 classes and/or ids  :/
           .attr("id", function(d,i) { return 'bar ' + i; })
           .append(function(d) {
             return createSVG(d);
