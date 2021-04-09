@@ -79,7 +79,6 @@
               test.push([dataSet[i]["Epoch"], dataSet[i]['Index'], dataSet[i]['Test Label'],dataSet[i]['Test Prediction'],dataSet[i]['Test Confidence Score'],dataSet[i]['Test Sentence'],dataSet[i]['Intermediate Values']]);
             }
         }
-        // console.log(test);
         createTable(test);
       })
     }
@@ -171,7 +170,7 @@
           })
           .enter()
           .append("td")
-          .attr("class", function(d,i) { return 'bar ' + i; }) //im having trouble applying 2 classes and/or ids  :/
+          .attr("class", function(d,i) { return 'bar ' + i; })
           .append(function(d) {
             return createSVG(d);
           });
@@ -181,29 +180,10 @@
           d3.selectAll(".clicked").classed("clicked", false);
           d3.select(this).classed("clicked", true);
           bars = [...d[6]]
-          changed_indicies = []
+          changed_indicies = argsort(bars)
 
-          d3.select(this).selectAll('.bar').remove();
-
-          d3.select(this).selectAll("td")
-            .data(function(d) {
-              bars2 = bars
-              changed_indicies = argsort(bars2)
-              // console.log(changed_indicies)
-
-              return bars.sort(function(a, b){
-                return b-a});
-            })
-            .enter()
-            .append("td")
-            .attr('class', 'bar')
-            .append(function(d) {
-              return createSVG(d);
-            });
-
+          // here we basically delete the current table & remake it except with different ordering for the barcode (done on line 207)
           d3.select('tbody').remove()
-
-          // // append a body to the table
           tbody = table.append("tbody")
 
           // table body rows
