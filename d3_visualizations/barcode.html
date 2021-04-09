@@ -153,7 +153,6 @@
           .append("td")
           .attr("class", function(d,i) { return 'bar ' + i; }) //im having trouble applying 2 classes and/or ids  :/
           .attr("id", function(d,i) {
-            console.log(i);
             return 'bar ' + i; })
           .append(function(d) {
             return createSVG(d);
@@ -161,7 +160,6 @@
 
         tableBodyRows.on({
           "click": function(d){
-          console.log(this)
           d3.selectAll(".clicked").classed("clicked", false);
           d3.select(this).classed("clicked", true);
           bars = d[6]
@@ -181,12 +179,6 @@
               return createSVG(d);
             });
 
-        },
-        "mouseover": function(d){
-          d3.select(this).style("cursor", "pointer");
-        },
-        "mouseout": function(d){
-          d3.select(this).style("cursor", "default");
         }
       });
 
