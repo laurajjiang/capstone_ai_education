@@ -19,6 +19,7 @@
       white-space: nowrap;
     }
 
+
     .clicked{
       background-color: aqua;
     }
@@ -32,13 +33,32 @@
   <input class="slider" id="epoch_slider" type="range" min="0" max="19" step="1" value="19" onchange="changedValues()"/>
   <h3> Number of Sentences:</h3>
   <h4 id="sentNum"></h4>
-  <input class="slider" id="num_sentences" type="range" min="0" max="496" step="1" value="30" onchange="changedValues()"/>
+  <input class="slider" id="num_sentences" type="range" min="0" max="496" step="1" value="10" onchange="changedValues()"/>
 
   <input type="text" id="myInput" placeholder="Filter out words">
   <button onclick="changedValues()">Filter</button>
   <div class="tables"></div>
 
   <script>
+
+// https://titanwolf.org/Network/Articles/Article?AID=135aa377-6989-4a7c-8da9-6eb73ef33086#gsc.tab=0 - code that does numpy's argsort
+    function argsort(array) {
+      const arrayObject = array.map((value, idx) => { return { value, idx }; });
+      arrayObject.sort((a, b) => {
+          if (a.value < b.value) {
+            return 1;
+          }
+
+          if (a.value > b.value) {
+            return -1;
+          }
+          return 0;
+      });
+
+      const argIndices = arrayObject.map(data => data.idx);
+
+      return argIndices;
+    }
 
     function changedValues() {
       var x = d3.select("#myInput").property("value").toUpperCase();
@@ -59,7 +79,7 @@
               test.push([dataSet[i]["Epoch"], dataSet[i]['Index'], dataSet[i]['Test Label'],dataSet[i]['Test Prediction'],dataSet[i]['Test Confidence Score'],dataSet[i]['Test Sentence'],dataSet[i]['Intermediate Values']]);
             }
         }
-        console.log(test);
+        // console.log(test);
         createTable(test);
       })
     }
@@ -76,7 +96,7 @@
 
         var i; 
         var test = [];
-        for(i = 0; i < 30; i++){
+        for(i = 0; i <10; i++){
           test.push([dataSet[i]["Epoch"], dataSet[i]['Index'], dataSet[i]['Test Label'],dataSet[i]['Test Prediction'],dataSet[i]['Test Confidence Score'],dataSet[i]['Test Sentence'],dataSet[i]['Intermediate Values']]);
         }
 
@@ -152,8 +172,6 @@
           .enter()
           .append("td")
           .attr("class", function(d,i) { return 'bar ' + i; }) //im having trouble applying 2 classes and/or ids  :/
-          .attr("id", function(d,i) {
-            return 'bar ' + i; })
           .append(function(d) {
             return createSVG(d);
           });
@@ -162,14 +180,18 @@
           "click": function(d){
           d3.selectAll(".clicked").classed("clicked", false);
           d3.select(this).classed("clicked", true);
-          bars = d[6]
+          bars = [...d[6]]
+          changed_indicies = []
 
           d3.select(this).selectAll('.bar').remove();
 
           d3.select(this).selectAll("td")
             .data(function(d) {
+              bars2 = bars
+              changed_indicies = argsort(bars2)
+              // console.log(changed_indicies)
+
               return bars.sort(function(a, b){
-                //console.log(b-a);
                 return b-a});
             })
             .enter()
@@ -179,6 +201,43 @@
               return createSVG(d);
             });
 
+          d3.select('tbody').remove()
+
+          // // append a body to the table
+          tbody = table.append("tbody")
+
+          // table body rows
+          tableBodyRows = tbody.selectAll("tr")
+            .data(test)
+            .enter()
+            .append("tr");
+
+          tableBodyRows.selectAll("td")
+            .data(function(d) {
+              return [d];
+            })
+            .enter()
+            .append("td")
+            .attr('class', 'sent')
+            .text(function(d) {
+              return d[5];
+            })
+
+          tableBodyRows.selectAll("td")
+            .data(function(d) {
+              temp_array = []
+              var ugh = 0
+              for(ugh = 0; ugh < d[6].length; ugh++){
+                temp_array.push(d[6][changed_indicies[ugh]])
+              }
+              return temp_array;
+            })
+            .enter()
+            .append("td")
+            .attr("class", function(d,i) { return 'bar ' + i; }) 
+            .append(function(d) {
+              return createSVG(d);
+            });
         }
       });
 
