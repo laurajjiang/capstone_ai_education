@@ -19,10 +19,6 @@
       white-space: nowrap;
     }
 
-
-    .clicked{
-      background-color: aqua;
-    }
     #container{
       height: 150px;
       width: auto;
@@ -201,32 +197,15 @@
           });
 
         tableBodyRows.on({
-          "click": function(d){
-          d3.selectAll(".clicked").classed("highlighted", false);
+          "click": function(f){
+          d3.selectAll(".highlighted").classed("highlighted", false);
           d3.select(this).classed("highlighted", true);
-          bars = [...d[6]]
+          bars = [...f[6]]
           changed_indicies = argsort(bars)
 
           // here we basically delete the current table & remake it except with different ordering for the barcode (done on line 207)
-          d3.select('tbody').remove()
-          tbody = table.append("tbody")
+          d3.selectAll('.bar').remove()
 
-          // table body rows
-          tableBodyRows = tbody.selectAll("tr")
-            .data(test)
-            .enter()
-            .append("tr");
-
-          tableBodyRows.selectAll("td")
-            .data(function(d) {
-              return [d];
-            })
-            .enter()
-            .append("td")
-            .attr('class', 'sent')
-            .text(function(d) {
-              return d[5];
-            })
 
           tableBodyRows.selectAll("td")
             .data(function(d) {
