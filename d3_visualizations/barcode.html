@@ -96,7 +96,7 @@
         var test = [];
         for(i = 0; i < sentences_val; i++){
             if(dataSet[i]['Test Sentence'].toUpperCase().search(x) > -1){
-              test.push([dataSet[i]["Epoch"], dataSet[i]['Index'], dataSet[i]['Test Label'],dataSet[i]['Test Prediction'],dataSet[i]['Test Confidence Score'],dataSet[i]['Test Sentence'],dataSet[i]['Intermediate Values']]);
+              test.push([dataSet[i]["Epoch"], dataSet[i]['Index'], dataSet[i]['Test Label'],dataSet[i]['Test Prediction'],dataSet[i]['Test Confidence Score'],dataSet[i]['Test Sentence'],dataSet[i]['Intermediate Values'], dataSet[i]["Test Prediction"]]);
             }
         }
         createTable(test);
@@ -116,7 +116,7 @@
         var i; 
         var test = [];
         for(i = 0; i <10; i++){
-          test.push([dataSet[i]["Epoch"], dataSet[i]['Index'], dataSet[i]['Test Label'],dataSet[i]['Test Prediction'],dataSet[i]['Test Confidence Score'],dataSet[i]['Test Sentence'],dataSet[i]['Intermediate Values']]);
+          test.push([dataSet[i]["Epoch"], dataSet[i]['Index'], dataSet[i]['Test Label'],dataSet[i]['Test Prediction'],dataSet[i]['Test Confidence Score'],dataSet[i]['Test Sentence'],dataSet[i]['Intermediate Values'], dataSet[i]["Test Prediction"]]);
         }
 
         createTable(test);
@@ -182,8 +182,13 @@
           .append("td")
           .attr('class', 'sent')
           .text(function(d) {
-            return d[5];
+            return d[7] + " - " +  d[5];
           })
+          // .append("td")
+          // .attr('class', 'sent')
+          // .text(function(d) {
+          //   return "Hello!";
+          // })
 
         tableBodyRows.selectAll("td")
           .data(function(d) {
