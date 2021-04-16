@@ -19,6 +19,15 @@
       white-space: nowrap;
     }
 
+    .cosinesim{
+      max-width:100%
+    }
+    
+    table{
+      width: 100%;
+      display: inline-block;
+    }
+
     #container{
       height: 150px;
       width: auto;
@@ -38,6 +47,10 @@
       background-color: aqua;
       stroke-width: 1px;
       stroke: black;
+    }
+
+    td, th {
+      max-width:100%
     }
       
   </style>
@@ -228,8 +241,7 @@
 
           // here we basically delete the current table & remake it except with different ordering for the barcode (done on line 207)
           d3.selectAll('.bar').remove()
-
-          var answers = []
+          d3.selectAll('.cosinesim').remove()
 
           tableBodyRows.selectAll("td")
             .data(function(d) {
@@ -240,7 +252,23 @@
               }
 
               var answer = cosinesim(temp_array, sorted_bars);
-              answers.push(answer)
+              return [answer];
+            })
+            .append('td')
+            .attr('class', 'cosinesim')
+            .text(function(d){
+              return d;
+            })
+
+          d3.selectAll('.bar').remove()
+
+          tableBodyRows.selectAll("td")
+            .data(function(d) {
+              temp_array = []
+              var ugh = 0
+              for(ugh = 0; ugh < d[6].length; ugh++){
+                temp_array.push(d[6][changed_indicies[ugh]])
+              }
               return temp_array;
             })
             .enter()
@@ -249,18 +277,6 @@
             .append(function(d) {
               return createSVG(d);
             });
-
-          
-          console.log(answers)
-
-          tableBodyRows
-            .data(answers)
-            .insert("td", ".bar")
-            .attr('class', 'sent')
-            .text(function(d){
-              console.log(d)
-              return d;
-            })
         }
       });
 
