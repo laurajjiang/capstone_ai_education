@@ -260,16 +260,13 @@
               return [];
             })
 
-            console.log(answers)
-            tableBodyRows.selectAll("td")
-            .data(function(d,i){
-              return [answers[i]]
-            })
-            .insert('td','.bar')
-            .attr('class', 'cosinesim')
-            .text(function(d,i){
-              console.log(d)
-              return d;
+            tableBodyRows.each(function(k,l){
+              d3.select(this)
+              .append("td")
+              .attr('class', 'cosinesim')
+              .text(function(d,i){
+                return answers[l];
+             })
             })
 
           tableBodyRows.selectAll("td")
