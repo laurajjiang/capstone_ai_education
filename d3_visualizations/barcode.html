@@ -259,15 +259,26 @@
               answers.push(answer)
               return [];
             })
+          
+          console.log(answers)
+          answers2 = argsort(answers)
+          console.log(answers)
+          console.log(answers2)
+          tryitout = []
 
-            tableBodyRows.each(function(k,l){
-              d3.select(this)
-              .append("td")
-              .attr('class', 'cosinesim')
-              .text(function(d,i){
-                return answers[l];
-             })
+          for(blah = 0; blah < answers.length; blah ++){
+            tryitout.push(answers[answers2[blah]])
+          }
+          console.log(tryitout)
+
+          tableBodyRows.each(function(k,l){
+            d3.select(this)
+            .append("td")
+            .attr('class', 'cosinesim')
+            .text(function(d,i){
+              return answers[l];
             })
+          })
 
           tableBodyRows.selectAll("td")
             .data(function(d,i) {
