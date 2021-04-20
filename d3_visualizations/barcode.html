@@ -214,11 +214,6 @@
           .text(function(d) {
             return d[7] + " - " +  d[5];
           })
-          // .append("td")
-          // .attr('class', 'sent')
-          // .text(function(d) {
-          //   return "Hello!";
-          // })
 
         tableBodyRows.selectAll("td")
           .data(function(d) {
@@ -235,6 +230,7 @@
           "click": function(f){
           d3.selectAll(".highlighted").classed("highlighted", false);
           d3.select(this).classed("highlighted", true);
+
           bars = [...f[6]]
           changed_indicies = argsort(bars)
           sorted_bars = bars.sort(function(a, b){return b-a});
@@ -260,23 +256,24 @@
               return [];
             })
           
-          console.log(answers)
-          answers2 = argsort(answers)
-          console.log(answers)
-          console.log(answers2)
-          tryitout = []
 
-          for(blah = 0; blah < answers.length; blah ++){
-            tryitout.push(answers[answers2[blah]])
-          }
-          console.log(tryitout)
+          console.log("================================")
+          tableBodyRows.each(function(k,l){
+            console.log(k)
+            d3.select(this)
+              .data(function(d){
+                test = [...k]
+                test[8] = answers[l]
+                return [test];
+            })
+          })
 
           tableBodyRows.each(function(k,l){
             d3.select(this)
             .append("td")
             .attr('class', 'cosinesim')
             .text(function(d,i){
-              return answers[l];
+              return answers[l].toFixed(3);
             })
           })
 
@@ -290,6 +287,16 @@
             .append(function(d) {
               return createSVG(d);
             });
+
+          tableBodyRows.sort(function(a,b) {
+            if (a[8] < b[8]) { 
+              return 1; 
+            } else if (a[8] > b[8]) { 
+              return -1; 
+            } else {
+              return 0;
+            }
+          })
         }
       });
 
