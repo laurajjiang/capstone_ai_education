@@ -253,9 +253,9 @@ const introBlock = (
 const setupBlock = (
   <div>
     <h1>Set up libraries</h1>
-    We'll first install and import any necessary Python libraries, as well as
-    load the dataset in for use. For further detail and commentary on how the
-    code functions, refer to the notebooks linked above.
+    We'll first install and import any necessary Python libraries. For further
+    detail and commentary on how the code functions, refer to the notebooks
+    linked above.
     <Spacer space='1vh' />
     <CopyBlock
       text={importCode}
@@ -270,9 +270,8 @@ const setupBlock = (
 const exploreDataBlock = (
   <div>
     <h1>Load and explore the dataset</h1>
-    We'll first install and import any necessary Python libraries, as well as
-    load the dataset in for use. For further detail and commentary on how the
-    code functions, refer to the notebooks linked above.
+    Let's load the dataset in for use. For further detail and commentary on how
+    the code functions, refer to the notebooks linked above.
     <Spacer space='1vh' />
     <CopyBlock
       text={loadDataCode}
@@ -305,7 +304,7 @@ const exploreDataBlock = (
 
 const manipDataBlock = (
   <div id='explore_data'>
-    <h1>Preparing and manipulate the data for our model</h1>
+    <h1>Preparing and manipulating the data for our model</h1>
     Before we can feed this dataset to any machine learning model, we have to do
     some pre-processing with the data.
     <Spacer space='1vh' />
