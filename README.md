@@ -2,11 +2,22 @@
 
 Senior Capstone, Group 21
 
-The goal of this project is to design and develop a web-based interactive visualization tool for novices to learn about AI or machine learning (ML). The tool will enable users to actively learn about AI on their web browsers without programming, specifically by uploading their datasets (e.g., a set of images), train ML models, visually analyze results, and test them. We plan to evaluate our tool by conducting human-subject studies with potential users who aspire to learn about AI. We also aim to open-source the tool, so that anyone can use our tool for their learning.
+The goal of this project is to design and develop a web-based interactive visualization tool for novices to learn about AI or machine learning (ML). The tool will enable users to actively learn about AI on their web browsers without programming, specifically by uploading their datasets (e.g., a set of images), train ML models, visually analyze results, and test them. We plan to evaluate our tool by conducting human-subject studies with potential users who aspire to learn about AI. We also aim to open-source the tool, so that anyone can use our tool for their learning. 
 
-## Getting Started with Create React App
+The current state of the project supports multi-categorical classificaion using logistic regression and a neural network, image classification using a neural network and a convolutional neural network, and text (sentiment) classification using a neural network. There is an interactive confusion matrix supported for each model as well as unique interactive visualizations for the text classification section.
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## Built With 
+
+* [React](https://reactjs.org/)
+* [d3.js](https://d3js.org/)
+* Python & [Tensorflow](https://www.tensorflow.org/overview)
+* [Jupyter](https://jupyter.org/)
+
+## Running the Project
+
+There are two components to this project: the site, bootstrapped with [Create React App](https://github.com/facebook/create-react-app), and the notebooks which are ideally run on the Jupyter platform. This repository is home to both of these components as well. You can find the notebooks inside the `/notebooks` folder. Please clone this repo to your machine, then follow the steps as described below. 
+
+## Running the Site
 
 ## Available Scripts
 
@@ -26,11 +37,6 @@ Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 The page will reload if you make edits.\
 You will also see any lint errors in the console.
 
-### `yarn test`
-
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
-
 ### `yarn build`
 
 Builds the app for production to the `build` folder.\
@@ -41,42 +47,23 @@ Your app is ready to be deployed!
 
 See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
 
-### `yarn eject`
+### Running the Notebooks
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+To run the notebooks locally and to view all the integrated visualiations properly, make sure that you have Jupyter installed. You can find Jupyter installation instructions [here](https://jupyter.org/install.html). 
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+Once Jupyter has been successfully installed, navigate to the directory where the notebooks are located and run the command `jupyter notebook`. An instance of JupyterLab will spin up, and you can view and change any of the notebooks as desired. 
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+## Software Architecture 
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+There is no back-end aspect to this project, just the two stand-alone aspects of the site and notebooks. As such, the architecture for this project is not incredibly complicated. There is also no state management involved with the React site. 
 
-## Learn More
+## Authors
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+* **Thuy-Vy Nguyen** - [thuyvyng](https://github.com/thuyvyng)
+* **Laura Jiang** - [laurajjiang](https://github.com/laurajjiang)
+* **Junhyeok (Derek) Jeong** - [wnsgur4322](https://github.com/wnsgur4322)
+* **Owen Markley** - [MarkleyO](https://github.com/MarkleyO)
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+## Contributing
 
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `yarn build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+If you are externally interested in contributing to the project, feel free to fork the project directory from master. When you have a change that you are interested in merging, submit a pull request so that your changes may be reviewed. 
