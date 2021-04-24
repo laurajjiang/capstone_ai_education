@@ -43,8 +43,9 @@
       d3.selectAll("#epochNum").text(epoch_val);
       d3.selectAll("#sentNum").text(sentences_val);
 
-      d3.json("simple_nn_epoch_sorted.json", function(largedataset) {
+      d3.json("hub_nn_epoch_sorted.json", function(largedataset) {
         dataSet = largedataset[epoch_val];
+        console.log(dataSet)
 
         d3.selectAll("table").remove();
         var i; 
@@ -66,7 +67,7 @@
       var sentences_val = d3.select("#num_sentences").property("value");
       d3.selectAll("#sentNum").text(sentences_val);
 
-      d3.json("simple_nn_epoch_sorted.json", function(largedataset) {
+      d3.json("hub_nn_epoch_sorted.json", function(largedataset) {
         dataSet = largedataset[19];
 
         var i; 
