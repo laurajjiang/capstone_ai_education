@@ -124,6 +124,12 @@
       d3.json("hub.json", function(largedataset) {
         dataSet = largedataset[epoch_val];
 
+        var max_sent = document.getElementById("num_sentences");
+        var ep_num = document.getElementById("epoch_slider");
+
+        max_sent.max = (Math.min(Object.keys(largedataset[0]).length -1), 300)
+        ep_num.max = Object.keys(largedataset).length -1;
+
         var i; 
         var test = [];
         for(i = 0; i <10; i++){
@@ -232,9 +238,6 @@
           w = d3.select(this)
             .select(".sent")
             .attr("id", "highlighted")
-
-          test = d3.selectAll("#highlighted")
-          console.log(test)
 
           bars = [...f[6]]
           changed_indicies = argsort(bars)
