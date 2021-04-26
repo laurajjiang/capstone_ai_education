@@ -16,18 +16,18 @@
       margin-bottom: 12px; /* Add some space below the input */
     }
 
-    .sent{
-      white-space: nowrap;
-    }
 
     .cosinesim{
       max-width:100%
     }
-    
-    table{
-      width: 100%;
-      display: inline-block;
+
+    .sent {
+      max-width: 1000px;
+      white-space: nowrap;
+      overflow: scroll;
+      text-overflow: ellipsis; 
     }
+
 
     #container{
       height: 150px;
@@ -44,14 +44,12 @@
     .center{
       text-align: center;
     }
-    .highlighted {  
+    #highlighted {  
       background-color: aqua;
+      white-space: normal;
       stroke-width: 1px;
       stroke: black;
-    }
-
-    td, th {
-      max-width:100%
+      overflow: visible;
     }
       
   </style>
@@ -62,7 +60,7 @@
     <div class="left">
       <h3> Epoch #:</h3>
       <h4 id="epochNum"></h4>
-      <input class="slider" id="epoch_slider" type="range" min="0" max="19" step="1" value="19" onchange="changedValues()"/>
+      <input class="slider" id="epoch_slider" type="range" min="0" max="19" step="1" value="0" onchange="changedValues()"/>
     </div>
     <div class="left">
       <h3> Number of Sentences:</h3>
@@ -102,7 +100,7 @@
       d3.selectAll("#epochNum").text(epoch_val);
       d3.selectAll("#sentNum").text(sentences_val);
 
-      d3.json("simple_nn_epoch_sorted.json", function(largedataset) {
+      d3.json("hub.json", function(largedataset) {
         dataSet = largedataset[epoch_val];
         dataSet = largedataset[epoch_val];
 
@@ -125,9 +123,20 @@
       var sentences_val = d3.select("#num_sentences").property("value");
       d3.selectAll("#sentNum").text(sentences_val);
 
+<<<<<<< HEAD
       d3.json("simple_nn_epoch_sorted.json", function(largedataset) {
         dataSet = largedataset[epoch_val];
         dataSet = largedataset[19];
+=======
+      d3.json("hub.json", function(largedataset) {
+        dataSet = largedataset[epoch_val];
+
+        var max_sent = document.getElementById("num_sentences");
+        var ep_num = document.getElementById("epoch_slider");
+
+        max_sent.max = (Math.min(Object.keys(largedataset[0]).length -1), 300)
+        ep_num.max = Object.keys(largedataset).length -1;
+>>>>>>> origin/main
 
         var i; 
         var test = [];
@@ -158,7 +167,7 @@
     }
 
     function createSVG(d) {
-      var w = 1;
+      var w = 3;
       var h = 20;
 
       var kpi = document.createElement("div");
@@ -179,7 +188,7 @@
           .attr({
           x: 0,
           y: 0, 
-          width: 1,
+          width: 3,
           height: 20
           })
           .style("opacity", .5  + d*10)
@@ -228,11 +237,15 @@
           .append(function(d) {
             return createSVG(d);
           });
-
+      
         tableBodyRows.on({
           "click": function(f){
-          d3.selectAll(".highlighted").classed("highlighted", false);
-          d3.select(this).classed("highlighted", true);
+          d3.selectAll("#highlighted")
+            .attr("id", null)
+            .classed("sent", true)
+          w = d3.select(this)
+            .select(".sent")
+            .attr("id", "highlighted")
 
           bars = [...f[6]]
           changed_indicies = argsort(bars)
@@ -260,9 +273,7 @@
             })
           
 
-          console.log("================================")
           tableBodyRows.each(function(k,l){
-            console.log(k)
             d3.select(this)
               .data(function(d){
                 test = [...k]
