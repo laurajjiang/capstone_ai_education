@@ -112,6 +112,7 @@ class ConfusionMatrix:
 		var currentConfSetting = .5;
 		var currentEpochSetting = 1;
 		var lastEpochIndex = 0;
+        // Delete this line below just in case it slows down the program
 		console.log("Visualization: Reading JSON file(", dname, ")...");
 
 		d3.json( $conf_data_filepath, function(d) {
@@ -131,7 +132,7 @@ class ConfusionMatrix:
 
 		/*--------------------------------------------------------------------------------
 		Function: extractTypes
-		Behavior: Identifies different types each data point can be identified as, based 
+		Behavior: Identifies what different types each data point can be identified as based 
 				  off of the 'true_label' attribute in JSON file.
 		Input: JSON file
 		Output: Returns array of possible values for 'Test Label'.
@@ -149,9 +150,43 @@ class ConfusionMatrix:
 					result.push(name);
 				}
 			}
-
-			return result;
+			return result.sort();
 		}
+
+		/*--------------------------------------------------------------------------------
+		Function: fetchDataWindowResults
+		Behavior: Fetches subset of 'd' variable to be displayed in 'Data' window
+		Input: 'd' variable, testLabel, predLabel, epoch, conf
+		Output: Subset of 'd' variable formatted the same as 'd'
+		--------------------------------------------------------------------------------*/
+        function fetchDataWindowResults(d, testLabel, predLabel, epoch, conf){
+            console.log("Visualization: Calling fetchDataWindowResults...");
+            var fullDataSet = d;
+            var selectedTestLabel = testLabel;
+            var selectedPredictionLabel = predLabel;
+            var selectedEpoch = epoch;
+            var selectedConfMin = conf;
+
+            var selectedEntries = []
+            console.log(d);
+            console.log("Visualization: fetchDataWindowResults: for testLabel, predLabel, epoch, conf of: ", 
+                testLabel, predLabel, epoch, conf);
+            for (const dataPoint of Object.entries(d)){
+                var currentPrediction = dataPoint[1]['Test Prediction'][epoch];
+                var currentTestLabel = dataPoint[1]['Test Label'];
+                var currentSentence = dataPoint[1]['Test Sentence'];
+                var currentConfScore = dataPoint[1]['Test Confidence Score'][epoch];
+                if (currentPrediction == selectedPredictionLabel &&
+                currentTestLabel == selectedTestLabel &&
+                currentConfScore > selectedConfMin){
+                    selectedEntries.push(dataPoint);
+                    // console.log("Prediction:", currentPrediction,
+                    //     "Test Sentence:", currentSentence,
+                    //     "Confidence Score:", currentConfScore);
+                }
+            }
+            return selectedEntries;
+        }
 
 		/*--------------------------------------------------------------------------------
 		Function: Slider Re-Draw
@@ -189,6 +224,8 @@ class ConfusionMatrix:
 			--------------------------------------------------------------------------------*/
 
 			d3.json($conf_data_filepath, function(d) {
+                console.log("Debugging: displaying variable d: ", d);
+                
 
 				var totalItems = Object.keys(d).length
 				console.log("Visualization: ", totalItems, "pieces of test data included")
@@ -238,6 +275,7 @@ class ConfusionMatrix:
 					// var epoch = jsonEntry["Epoch"];
 					var entryText = jsonEntry["Test Sentence"];
 					var confidenceScore = jsonEntry["Test Confidence Score"][currentEpochSetting-1];
+                    // console.log("Debugging: confidenceScore ", confidenceScore);
 					var trueLabel = jsonEntry["Test Label"];
                     // console.log("Debugging: trueLabel ", trueLabel);
                     // console.log(typeof trueLabel);
@@ -251,7 +289,7 @@ class ConfusionMatrix:
                     // console.log("Debugging: tableYCoordinate ", tableYCoordinate);
                     // console.log(typeof tableYCoordinate);
 
-					if(confidenceScore < currentConfSetting){
+					if(confidenceScore > currentConfSetting){
 						table[tableXCoordinate][tableYCoordinate]+=1;
 						dataset.push([trueLabel, predictedLabel, entryText, index]);
 					}
@@ -289,6 +327,10 @@ class ConfusionMatrix:
 				Format: d[trueLabel, predictedLabel, entryText, index, epoch]
 				--------------------------------------------------------------------------------*/
 
+				/*--------------------------------------------------------------------------------
+				Filling each cell of the matrix with the proper number of squares
+                NOTE: boxes have the attributes: x, y, id, width, height, opacity, fill, and class
+				--------------------------------------------------------------------------------*/
 				rect.attr("x", function (d, i){
 					var matrixnum = (parseInt(d[1]) * tableDimension) + parseInt(d[0]);
 					var inmatrixcol = counters[matrixnum] % blockStackDimension;
@@ -322,8 +364,32 @@ class ConfusionMatrix:
 						return true_label + " " + predicted_label;
 				});
 
+                // fetchDataWindowResults(d, 1, 1, (currentEpochSetting - 1), currentConfSetting);
 
+                rect.on("click", function(d_on){
+                    console.log("Actual: ", d_on[0], "Predicted: ", d_on[1]);
+                    var actual = d_on[0];
+                    var prediction = d_on[1];
+                    var selectedDataSet = fetchDataWindowResults(d, actual, prediction,
+                        (currentEpochSetting - 1), currentConfSetting);
+                    console.log(selectedDataSet);
 
+                    d3.select("#testList").selectAll("li").remove();
+                    for (var i = 0; i < selectedDataSet.length; i++){
+                        var tableRowData = selectedDataSet[i][1];
+                        var dataPointString = "Label: " + actual +
+                        " Prediction: " + prediction + 
+                        " Confidence Score: " +  tableRowData['Test Confidence Score'][currentEpochSetting - 1] +
+                        " Input Data: " + tableRowData['Test Sentence'];
+                        d3.select("#testList").append("li").text(dataPointString);
+                        
+                    }
+
+                    d3.select("#testList").append("li").text("Appended");
+                }
+                );
+
+/*
 				d3.select("#review")
 					.select("testList")
 					.selectAll("rect")
@@ -350,8 +416,6 @@ class ConfusionMatrix:
 						table += "</tr> </table>"
 						return  table;
 				});
-
-
 
 				rect.on("click", function(d_on){
 					d3.select("#review")
@@ -414,6 +478,7 @@ class ConfusionMatrix:
 							table += "</tr> </table>"
 							return table;
 					});
+
 					d3.select("#review")
 						.select("testList")
 						.selectAll("li")
@@ -434,8 +499,12 @@ class ConfusionMatrix:
 									.attr("fill", "purple");
 					});
 				});
+*/
 
-
+				/*--------------------------------------------------------------------------------
+				Changing the color of rows in the Data section on mouseover/mouseout (repeat of above?)
+				--------------------------------------------------------------------------------*/
+/*
 				d3.select("#review")
 					.select("#testList")
 					.selectAll("li")
@@ -455,7 +524,7 @@ class ConfusionMatrix:
 							d3.selectAll(rectId)
 								.attr("fill", "pink");
 				});
-
+*/
 
 			});
 		})
