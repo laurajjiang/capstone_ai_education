@@ -244,9 +244,13 @@ const introBlock = (
     Now, we're going to move onto tackling a completely new topic - text
     classification. Specifically, this chapter will cover sentiment
     classification using restaurant reviews pulled from Yelp. We'll still use a
-    familiar model (neural network) but also with an extra trick that you may
+    familiar model (a neural network) but also with an extra trick that you may
     not have seen before.
     <Spacer space='1vh' />
+    Language and text can get very complicated which makes creating these
+    algorithms difficult. Some things that make language difficult could be
+    words that have multiple meanings, negation words (words such as not),
+    slang, etc.
   </div>
 );
 
@@ -269,9 +273,9 @@ const setupBlock = (
 const exploreDataBlock = (
   <div>
     <h1>Load and explore the dataset</h1>
-    Again, we will be using the same FashionMNIST dataset as the previous
-    chapter for consistency. We can see the same preview of a sample image from
-    the dataset.
+    We will be using a new dataset here since the type of classification we are
+    working with works best when using a textual dataset. Each item in this data
+    set will be a sentence marked as a positive or negative review.
     <Spacer space='1vh' />
     <CopyBlock
       text={loadDataCode}
@@ -287,16 +291,40 @@ const exploreDataBlock = (
       theme={a11yLight}
       style={{ maxWidth: "100%" }}
     />
+    <Spacer space='1vh' />
+    We can look at what some of these reviews are as well:
+    <Spacer space='1vh' />
+    <CopyBlock
+      text={exploreData}
+      language='python'
+      theme={nord}
+      codeBlock
+      style={{ maxWidth: "100%" }}
+    />
+    <Spacer space='1vh' />
+    <CopyBlock
+      text={exploreDataOutput}
+      language='python'
+      theme={a11yLight}
+      style={{ maxWidth: "100%" }}
+    />
   </div>
 );
 
 const manipDataBlock = (
   <div id='explore_data'>
-    <h1>Preparing and manipulating the data for our model</h1>
-    Since we are starting from scratch again, the images have to scaled down and
-    eliminated of any RGB. This dataset is already split up into a training and
-    test set for us so we do not need to manually perform any separation, just
-    vectorization.
+    <h1>Preparing and manipulating the data for our model</h1>A new type of data
+    transformation is needed to work with our model. Namely, we need to strip
+    our sentences clean of any punctuation and also transform them into
+    individual tokens. To make sure that no errors occur, in our{" "}
+    <code>preProcess</code> function we will turn the entire sentence into
+    lowercase, replace any punctuation with spaces, and split the sentence into
+    individual words -- or tokens, for our model's sake.
+    <Spacer space='1vh' />
+    As with most datasets, we also have to split our dataset up into a training
+    set and test set on our own using the <code>train_test_split</code> function
+    imported from <code>sklearn.model_selection</code> that we've used in
+    previous chapters.
     <Spacer space='1vh' />
     <CopyBlock
       text={dataManip}
@@ -320,41 +348,24 @@ const manipDataBlock = (
 const buildModelBlock = (
   <div id='build_model'>
     <h1>Building our model</h1>
-    This model looks quite a bit different from our previous model but the
-    structure to a CNN is fairly standardized, so once you've built one it
-    should be easy enough to build another.
+    This model is fairly straightforward, except the extra catch is the addition
+    of a hub, or a model that has already been trained in some regards. Since we
+    are working with text classification, we have a few options available to
+    use. For now, we'll use one called{" "}
+    <a href='https://tfhub.dev/google/nnlm-en-dim50/2'>
+      google/nnlm-en-dim50/2
+    </a>
+    but there are a few others that you can check out from the{" "}
+    <a href='https://tfhub.dev/s?module-type=text-embedding'>
+      Tensorflow Hub page.
+    </a>
     <Spacer space='1vh' />
-    The first layer is a convolutional layer. For the given line{" "}
-    <code>
-      tf.keras.layers.Conv2D(32, (3,3), activation='relu',
-      input_shape=(28,28,1))
-    </code>
-    , the first two arguments are for the filter and convolution size
-    respectively. The filter integer determines the number of output nodes. The
-    most common convolution filter size is 3x3, so we've continued to use a 3x3
-    filter here. Like every other non-output layer, we use the ReLU activation
-    function. Lastly, our input shape is determined by the images we're passing
-    to the model. Earlier, these were resized down to 28x28 pixels so our input
-    size is (28,28, 1).
-    <Spacer space='1vh' />
-    The next layer is a pooling layer. There are two types of pooling: max
-    pooling and average pooling. Pooling layers take the output from the
-    previous layer and flatten that output into a single neuron, viewing the
-    input image through a specified tile size (in our case, 2x2). Max pooling
-    takes the max value from each tile while average pooling takes the average
-    value from each tile.
-    <Spacer space='1vh' />
-    Once we've set up our convolutional and pooling layers, we then need to
-    flatten the image so that it is no longer two-dimensional. The two dense
-    layers at the end are for actually predicting which class an image belongs
-    to, with the final output layer being the same number as the total number of
-    classes.
-    <Spacer space='1vh' />
-    Using two convolution and pooling layers is not set in stone. You'll likely
-    have to do some more research and experimentation to figure out what is
-    right for you. You can see how the shape of the image changes throughtout
-    each layer though to get a better idea of how these convolutional and max
-    pooling layers interact with the input.
+    We'll first create a Keras layer from the Hub model and use it as our first
+    layer in our model. Then, we'll create a single Dense hidden layer with 16
+    nodes. Our last layer is just a single output node, connected to the hidden
+    layer. You'll notice that our optimizer and loss function will stay
+    consistent, using <code>sgd</code> and <code>categorical_crossentropy</code>
+    .
     <Spacer space='1vh' />
     <CopyBlock
       text={createModel}
@@ -376,8 +387,13 @@ const buildModelBlock = (
 const trainModelBlock = (
   <div id='train_model'>
     <h1>Training the model</h1>
-    We now have our model in hand and can start to train with model on our
-    training dataset.
+    Our batch size will be adjusted a bit from some of our previous chapters.
+    Since we have more input, we'll increase our batch size and decrease the
+    number of epochs that we spend training our model.
+    <Spacer space='1vh' />
+    How does the accuracy change using the Hub as our first layer compared to
+    one of the regular neural network model that we used earlier? Why do you
+    think that is?
     <Spacer space='1vh' />
     <CopyBlock
       text={trainModel}
