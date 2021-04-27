@@ -2,29 +2,6 @@
 <html>
 
 <head>
-  <!-- The core Firebase JS SDK is always required and must be listed first -->
-  <script src="https://www.gstatic.com/firebasejs/8.4.2/firebase-app.js"></script>
-
-  <!-- TODO: Add SDKs for Firebase products that you want to use
-      https://firebase.google.com/docs/web/setup#available-libraries -->
-  <script src="https://www.gstatic.com/firebasejs/8.4.2/firebase-analytics.js"></script>
-
-  <script>
-    // Your web app's Firebase configuration
-    // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-    var firebaseConfig = {
-      apiKey: "AIzaSyCZNIoxZDSwS37N5f5FsEu8UwAgA_Hg8rA",
-      authDomain: "capstone-be4fe.firebaseapp.com",
-      projectId: "capstone-be4fe",
-      storageBucket: "capstone-be4fe.appspot.com",
-      messagingSenderId: "865720385920",
-      appId: "1:865720385920:web:2f75d70a84d923102e4165",
-      measurementId: "G-71Z8301E4N"
-    };
-    // Initialize Firebase
-    firebase.initializeApp(firebaseConfig);
-    firebase.analytics();
-  </script>
 
   <script data-require="d3@3.5.3" data-semver="3.5.3" src="//cdnjs.cloudflare.com/ajax/libs/d3/3.5.3/d3.js"></script>
   <style>
@@ -39,18 +16,19 @@
       margin-bottom: 12px; /* Add some space below the input */
     }
 
-    .sent{
-      white-space: nowrap;
-    }
 
     .cosinesim{
-      max-width:100%
+      margin: auto;
     }
-    
-    table{
-      width: 100%;
-      display: inline-block;
+
+    .sent {
+      width: 65%;
+      max-width: 1000px;
+      white-space: nowrap;
+      overflow: scroll;
+      text-overflow: ellipsis; 
     }
+
 
     #container{
       height: 150px;
@@ -67,14 +45,12 @@
     .center{
       text-align: center;
     }
-    .highlighted {  
+    #highlighted {  
       background-color: aqua;
+      white-space: normal;
       stroke-width: 1px;
       stroke: black;
-    }
-
-    td, th {
-      max-width:100%
+      overflow: visible;
     }
       
   </style>
@@ -85,7 +61,7 @@
     <div class="left">
       <h3> Epoch #:</h3>
       <h4 id="epochNum"></h4>
-      <input class="slider" id="epoch_slider" type="range" min="0" max="19" step="1" value="19" onchange="changedValues()"/>
+      <input class="slider" id="epoch_slider" type="range" min="0" max="19" step="1" value="0" onchange="changedValues()"/>
     </div>
     <div class="left">
       <h3> Number of Sentences:</h3>
@@ -125,10 +101,8 @@
       d3.selectAll("#epochNum").text(epoch_val);
       d3.selectAll("#sentNum").text(sentences_val);
 
-      // try to connect with google firebase storage because "simple_nn_epoch_sorted.json" file is too big
-      //var storage = firebase.storage();
-      //var pathReference = storage.ref('simple_nn_epoch_sorted.json');
-      d3.json("./libraries/simple_nn_epoch_sorted.json", function(largedataset) {
+      d3.json("../d3_visualizations/hub.json", function(largedataset) {
+        dataSet = largedataset[epoch_val];
         dataSet = largedataset[epoch_val];
 
         d3.selectAll("table").remove();
@@ -150,11 +124,14 @@
       var sentences_val = d3.select("#num_sentences").property("value");
       d3.selectAll("#sentNum").text(sentences_val);
 
-      //var storage = firebase.storage();
-      //var pathReference = storage.ref('simple_nn_epoch_sorted.json');
-      d3.json("./libraries/simple_nn_epoch_sorted.json", function(largedataset) {
+      d3.json("hub.json", function(largedataset) {
         dataSet = largedataset[epoch_val];
-        dataSet = largedataset[19];
+
+        var max_sent = document.getElementById("num_sentences");
+        var ep_num = document.getElementById("epoch_slider");
+
+        max_sent.max = (Math.min(Object.keys(largedataset[0]).length -1), 300)
+        ep_num.max = Object.keys(largedataset).length -1;
 
         var i; 
         var test = [];
@@ -180,12 +157,12 @@
         }
         mA = Math.sqrt(mA);
         mB = Math.sqrt(mB);
-        var similarity = (dotproduct)/((mA)*(mB)) 
+        var similarity = (dotproduct)/((mA)*(mB));
         return Math.abs(similarity);
     }
 
     function createSVG(d) {
-      var w = 1;
+      var w = 3;
       var h = 20;
 
       var kpi = document.createElement("div");
@@ -206,7 +183,7 @@
           .attr({
           x: 0,
           y: 0, 
-          width: 1,
+          width: 3,
           height: 20
           })
           .style("opacity", .5  + d*10)
@@ -255,11 +232,15 @@
           .append(function(d) {
             return createSVG(d);
           });
-
+      
         tableBodyRows.on({
           "click": function(f){
-          d3.selectAll(".highlighted").classed("highlighted", false);
-          d3.select(this).classed("highlighted", true);
+          d3.selectAll("#highlighted")
+            .attr("id", null)
+            .classed("sent", true)
+          w = d3.select(this)
+            .select(".sent")
+            .attr("id", "highlighted")
 
           bars = [...f[6]]
           changed_indicies = argsort(bars)
@@ -287,9 +268,7 @@
             })
           
 
-          console.log("================================")
           tableBodyRows.each(function(k,l){
-            console.log(k)
             d3.select(this)
               .data(function(d){
                 test = [...k]
@@ -303,7 +282,7 @@
             .append("td")
             .attr('class', 'cosinesim')
             .text(function(d,i){
-              return answers[l].toFixed(3);
+              return answers[l].toFixed(2);
             })
           })
 
