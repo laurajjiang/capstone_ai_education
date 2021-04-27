@@ -5,6 +5,7 @@ import Description from "../components/description";
 import { Callout, Button, Intent } from "@blueprintjs/core";
 import Spacer from "../components/spacer";
 import Container from "../components/container";
+import "../index.css";
 
 const pretext = (
   <>
@@ -69,7 +70,7 @@ const applications = (
 const introContent = (
   <>
     <Spacer space='1vh' />
-    <div style={{ fontSize: "500%" }}>chapter 0 - introduction</div>
+    <div className='title'>chapter 0 - introduction</div>
     <Description content={pretext} />
     <Callout intent={"primary"} title={"Getting familiar with terminology"}>
       In computer science and AI/ML especially, there is a lot of specialized
@@ -79,12 +80,7 @@ const introContent = (
     </Callout>
     <Spacer space='1vh' />
     <Description content={introAI} />
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "row",
-        justifyContent: "space-around",
-      }}>
+    <div className='flex-row-space'>
       <Description content={approaches} />
       <Spacer space='4vh' />
       <Description content={goals} />
@@ -105,12 +101,9 @@ export default function Introduction() {
   return (
     <div>
       <Navigation />
-      <div>
+      <div className='container'>
         <Container content={introContent} />
       </div>
-      <Spacer space='-1vh' />
-      <hr style={{ marginTop: "0px" }} />
-      <Footer />
     </div>
   );
 }

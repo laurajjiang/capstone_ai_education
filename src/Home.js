@@ -1,6 +1,5 @@
 import React from "react";
 import Navigation from "./components/navbar";
-import Footer from "./components/footer";
 import "./index.css";
 import { Button, Intent } from "@blueprintjs/core";
 import TextLoop from "react-text-loop";
@@ -60,11 +59,9 @@ export default function Home() {
     <>
       <div>
         <Navigation />
-        <div style={{ backgroundColor: "#f5f8fa" }}>
-          <Container height='75vh' content={homeContent} />
+        <div className='container'>
+          <Container height='92vh' content={homeContent} />
         </div>
-        <hr style={{ marginTop: "0px" }} />
-        <Footer />
       </div>
     </>
   );
