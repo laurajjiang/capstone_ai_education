@@ -202,7 +202,14 @@ const buttonGroup = (
     <Button
       className='primary-button'
       intent={Intent.PRIMARY}
-      text='View on GitHub'
+      text={
+        <a
+          href='https://github.com/laurajjiang/capstone_ai_education/blob/main/notebooks/logistic_regression_keras.ipynb'
+          target='_blank'
+          rel='noopener noreferrer'>
+          View on GitHub
+        </a>
+      }
     />
     <Button
       className='primary-button'

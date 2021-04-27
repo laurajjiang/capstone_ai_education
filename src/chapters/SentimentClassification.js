@@ -211,7 +211,14 @@ const buttonGroup = (
     <Button
       className='primary-button'
       intent={Intent.PRIMARY}
-      text='View on GitHub'
+      text={
+        <a
+          href='https://github.com/laurajjiang/capstone_ai_education/blob/main/notebooks/text_classification_with_hub.ipynb'
+          target='_blank'
+          rel='noopener noreferrer'>
+          View on GitHub
+        </a>
+      }
     />
     <Button
       className='primary-button'
