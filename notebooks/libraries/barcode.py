@@ -75,9 +75,11 @@ class BarcodePlot:
       margin-bottom: 12px; /* Add some space below the input */
     }
     .cosinesim{
-      max-width:100%
+      margin: auto;
+      /* max-width:100% */
     }
     .sent {
+      width: 65%;
       max-width: 1000px;
       white-space: nowrap;
       overflow: scroll;
@@ -104,6 +106,9 @@ class BarcodePlot:
       stroke-width: 1px;
       stroke: black;
       overflow: visible;
+    }
+    .bar {
+      padding: 0px;
     }
     '''
 

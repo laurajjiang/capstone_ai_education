@@ -17,6 +17,7 @@ class ConfusionMatrix:
 	def __init__(self, json_name):
 		# JSON file must be located in libraries directory with python file. 
 		self.data_file_name = "\"" + json_name + "\""
+		display(HTML(self.d3_source_html))
 
 
 	d3_source_html = '<script src="https://d3js.org/d3.v3.min.js" charset="utf-8"></script>'
@@ -537,7 +538,8 @@ class ConfusionMatrix:
 		say_hello()
 
 	def display(self):
-		display(HTML(self.d3_source_html))
+        # HTML(self.d3_source_html)
+		# display(HTML(self.d3_source_html))
 
 		js_text = self.js_template.substitute({'conf_data_filepath': self.data_file_name})
 
