@@ -1,9 +1,8 @@
 import React, { useEffect } from "react";
 import * as d3 from "d3";
-import data from "./predict.json";
 import "./App.css";
 
-export default function ConfusionMatrix() {
+export default function ConfusionMatrix({ data }) {
   useEffect(() => {
     // let width = 960,
     //   height = 600;
@@ -145,7 +144,7 @@ export default function ConfusionMatrix() {
       .html(function (d) {
         table = "<table><tr>";
 
-        table += "<td> True: ";
+        table += "<td> Actual: ";
         table += parseInt(d[0]); //getType(d[0]);
         table += "</td>";
 
@@ -207,7 +206,7 @@ export default function ConfusionMatrix() {
         .html(function (d) {
           table = "<table><tr>";
 
-          table += "<td> True: ";
+          table += "<td> Actual: ";
           table += parseInt(d[0]); //getType(d[0]);
           table += "</td>";
 
@@ -254,10 +253,50 @@ export default function ConfusionMatrix() {
         let rectId = "#rect" + id.substring(4);
         d3.selectAll(rectId).attr("fill", "pink");
       });
+
+    d3.select("#slider").on("change", function () {
+      console.log("SLIDER");
+      d3.select("svg").remove();
+      var currentValue = this.value;
+      d3.select("#textInput").text(currentValue);
+      for (var i = 0; i < data.length; i += 1) {
+        // i+=1 or i++ ?
+        var ugh = data[i]["confidence_score"][0];
+        console.log(ugh);
+        if (ugh < currentValue) {
+          table[parseInt(data[i]["true_label"])][
+            parseInt(data[i]["predicted_label"])
+          ] += 1;
+          dataset.push([
+            data[i]["true_label"],
+            data[i]["predicted_label"],
+            data[i]["text"],
+            data[i]["index"],
+          ]);
+        }
+      }
+    });
   }, []);
 
   return (
     <div>
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+        }}>
+        <input
+          id='slider'
+          type='range'
+          min='0'
+          max='1'
+          step='.1'
+          defaultValue='.5'
+          style={{ maxWidth: "50%" }}
+        />
+        <h2 id='textInput'>0.5</h2>
+      </div>
       <div style={{ display: "flex", flexDirection: "row" }}>
         <div id='matrix'> </div>
         <div id='review'>
