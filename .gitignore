@@ -3,3 +3,5 @@ d3_visualizations/simple_nn_epoch_sorted.json
 /d3_visualizations/simple_nn_epoch_sorted.json
 notebooks/libraries/__pycache__
 notebooks/.ipynb_checkpoints
+notebooks/libraries/predict_LR_extended.json
+notebooks/libraries/predict_nn.json
