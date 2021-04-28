@@ -1,23 +1,24 @@
 import React, { useEffect } from "react";
 import * as d3 from "d3";
-import dataset from "./assets/iris";
+import dataSet from "./assets/iris.json";
 
 export default function IrisVis() {
+  function colorPicker(value) {
+    if (value == "Iris-setosa") {
+      return "#7aa25c";
+    } else if (value == "Iris-versicolor") {
+      return "#f4f85e";
+    } else {
+      return "#d84b2a";
+    }
+  }
+
+  function checkNumberIfFloat(value) {
+    return Number(value) === value && value % 1 !== 0;
+  }
+
   useEffect(() => {
-    function colorPicker(value) {
-      if (value == "Iris-setosa") {
-        return "#7aa25c";
-      } else if (value == "Iris-versicolor") {
-        return "#f4f85e";
-      } else {
-        return "#d84b2a";
-      }
-    }
-
-    function checkNumberIfFloat(value) {
-      return Number(value) === value && value % 1 !== 0;
-    }
-
+    console.log("useEffect hook");
     console.log(dataSet.length);
     var div = d3.select(".tables");
 
@@ -48,7 +49,7 @@ export default function IrisVis() {
     // return the text string for each item in the data array
     theadRow
       .selectAll("th")
-      .data(d3.keys(dataSet[0]))
+      .data(d3.map.keys(dataSet[0]))
       .enter()
       .append("th")
       .text(function (d) {
@@ -69,7 +70,7 @@ export default function IrisVis() {
     tableBodyRows
       .selectAll("td")
       .data(function (d) {
-        return d3.values(d);
+        return d3.map.values(d);
       })
       .enter()
       .append("td")
