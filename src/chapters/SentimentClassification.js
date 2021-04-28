@@ -8,6 +8,7 @@ import ConfusionMatrix from "../components/confusionMatrix";
 import Container from "../components/container";
 import "../index.css";
 import data from "./predict_nn.json";
+import BarcodeVis from "../components/barcodeVis";
 
 const objectives = [
   {
@@ -258,6 +259,7 @@ const introBlock = (
     algorithms difficult. Some things that make language difficult could be
     words that have multiple meanings, negation words (words such as not),
     slang, etc.
+    <BarcodeVis />
   </div>
 );
 
