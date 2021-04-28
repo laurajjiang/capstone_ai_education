@@ -8,6 +8,7 @@ import ConfusionMatrix from "../components/confusionMatrix";
 import Container from "../components/container";
 import "../index.css";
 import data from "./predict_LR.json";
+import IrisVis from "../components/irisVis";
 
 const objectives = [
   {
@@ -254,6 +255,7 @@ const introBlock = (
     we use logistic regression, which is typically a binary classifer, for
     multiclass classification? We split the problem up into multiple binary
     classification problems.
+    <IrisVis />
   </div>
 );
 
