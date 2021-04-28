@@ -20,36 +20,33 @@ export default function IrisVis() {
   useEffect(() => {
     console.log("useEffect hook");
     console.log(dataSet.length);
-    var div = d3.select(".tables");
+    var div = d3.select("body").select("#tables");
 
     // append a table to the div
     var table = div
       .append("table")
-      .attr({
-        id: "sample",
-        class: "table",
-      })
-      .classed("display", true);
+      .attr("id", "sample")
+      .classed("table display", true);
 
     // append a header to the table
     var thead = table.append("thead");
 
     // append a body to the table
     var tbody = table.append("tbody");
-
     // append a row to the header
-    var theadRow = thead.append("tr").attr({
-      class: "headerRowStyle",
-    });
+    var theadRow = thead.append("tr").attr("class", "headerRowStyle");
 
     // return a selection of cell elements in the header row
     // attribute (join) data to the selection
     // update (enter) the selection with nodes that have data
     // append the cell elements to the header row
     // return the text string for each item in the data array
+
+    console.log(dataSet[0]);
+    console.log(Object.keys(dataSet[0]));
     theadRow
       .selectAll("th")
-      .data(d3.map.keys(dataSet[0]))
+      .data(Object.keys(dataSet[0]))
       .enter()
       .append("th")
       .text(function (d) {
@@ -62,15 +59,13 @@ export default function IrisVis() {
       .data(dataSet)
       .enter()
       .append("tr")
-      .attr({
-        class: "tableRowStyle",
-      });
+      .attr("class", "tableRowStyle");
 
     //table body row cells
     tableBodyRows
       .selectAll("td")
       .data(function (d) {
-        return d3.map.values(d);
+        return Object.values(d);
       })
       .enter()
       .append("td")
@@ -89,10 +84,7 @@ export default function IrisVis() {
 
     var kpi = document.createElement("div");
 
-    var svg = d3.select(kpi).append("svg").attr({
-      width: w,
-      height: h,
-    });
+    var svg = d3.select(kpi).append("svg").attr("width", w).attr("height", h);
 
     var elem = svg.selectAll("div").data([d]);
 
@@ -102,12 +94,10 @@ export default function IrisVis() {
       var la = d / 7;
       elemEnter
         .append("rect")
-        .attr({
-          x: 25,
-          y: 10, //this basically makes the svg start from the button instead of the top
-          width: 60 * la,
-          height: 20,
-        })
+        .attr("x", 25)
+        .attr("y", 10)
+        .attr("width", 60 * la)
+        .attr("height", 20)
         .style("fill", "#4078a9");
 
       elemEnter
@@ -118,11 +108,9 @@ export default function IrisVis() {
     } else {
       elemEnter
         .append("circle")
-        .attr({
-          cx: 28,
-          cy: 25,
-          r: 20,
-        })
+        .attr("cx", 28)
+        .attr("cy", 25)
+        .attr("r", 20)
         .style("fill", colorPicker);
 
       elemEnter
