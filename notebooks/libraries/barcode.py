@@ -22,9 +22,9 @@ class BarcodePlot:
         print(self.source_data_path)
         # NOTE: For simplitity, the path is hard-coded into the file, and
         #       text of the first data entry is output.
-        with open('../d3_visualizations/hub.json') as f:
+        with open('libraries/hub_nn_epoch_sorted.json') as f:
             data = json.load(f)
-        print(data["0"]["0"]["Test Sentence"])
+        print(data["0"]["Test Sentence"])
 
     """------------------------------------------------------------------------
     Variable: html_template
@@ -118,6 +118,10 @@ class BarcodePlot:
         of source data file is hard coded into this string.
     -------------------------------------------------------------------------"""
     js_code = '''
+    /*------------------------------------------------------------------------
+    Function: argsort
+        NOTE: Insert Description
+    -------------------------------------------------------------------------*/
     function argsort(array) {
       const arrayObject = array.map((value, idx) => { return { value, idx }; });
       arrayObject.sort((a, b) => {
@@ -136,6 +140,10 @@ class BarcodePlot:
       return argIndices;
     }
 
+    /*------------------------------------------------------------------------
+    Function: changedValues
+        NOTE: Insert Description
+    -------------------------------------------------------------------------*/
     function changedValues() {
       var x = d3.select("#myInput").property("value").toUpperCase();
       var epoch_val = d3.select("#epoch_slider").property("value");
@@ -144,21 +152,30 @@ class BarcodePlot:
       d3.selectAll("#epochNum").text(epoch_val);
       d3.selectAll("#sentNum").text(sentences_val);
 
-      d3.json('../d3_visualizations/hub.json', function(largedataset) {
-        dataSet = largedataset[epoch_val];
+      d3.json('libraries/hub_nn_epoch_sorted.json', function(largedataset) {
+        // dataSet = largedataset[epoch_val];
 
         d3.selectAll("table").remove();
         var i;
         var test = [];
         for(i = 0; i < sentences_val; i++){
-            if(dataSet[i]['Test Sentence'].toUpperCase().search(x) > -1){
-              test.push([dataSet[i]["Epoch"], dataSet[i]['Index'], dataSet[i]['Test Label'],dataSet[i]['Test Prediction'],dataSet[i]['Test Confidence Score'],dataSet[i]['Test Sentence'],dataSet[i]['Intermediate Values'], dataSet[i]["Test Prediction"]]);
+        // Had to make some changes to this conditional
+            if(largedataset[String(i)]['Test Sentence'].toUpperCase().search(x) > -1){
+              // test.push([dataSet[i]["Epoch"], dataSet[i]['Index'], dataSet[i]['Test Label'],dataSet[i]['Test Prediction'],dataSet[i]['Test Confidence Score'],dataSet[i]['Test Sentence'],dataSet[i]['Intermediate Values'], dataSet[i]["Test Prediction"]]);
+              
+              test.push([epoch_val, largedataset[i]["Index"], largedataset[i]["Test Label"], largedataset[i]["Test Prediction"][String(epoch_val)],
+              largedataset[i]["Test Confidence Score"][epoch_val], largedataset[i]["Test Sentence"],
+              largedataset[i]["Intermediate Values"][epoch_val], largedataset[i]["Test Prediction"][epoch_val]]);
             }
         }
         createTable(test);
       })
     }
 
+    /*------------------------------------------------------------------------
+    Function: automatic
+        NOTE: Insert Description
+    -------------------------------------------------------------------------*/
     function automatic(){
       var epoch_val = d3.select("#epoch_slider").property("value");
       d3.selectAll("#epochNum").text(epoch_val);
@@ -166,8 +183,10 @@ class BarcodePlot:
       var sentences_val = d3.select("#num_sentences").property("value");
       d3.selectAll("#sentNum").text(sentences_val);
 
-      d3.json('../d3_visualizations/hub.json', function(largedataset) {
-        dataSet = largedataset[epoch_val];
+      d3.json('libraries/hub_nn_epoch_sorted.json', function(largedataset) {
+        console.log("Debugging: largedataset: ", largedataset);
+        // Fetching the data for the current epoch possibly just modify this portion?
+        // dataSet = largedataset[epoch_val];
 
         var max_sent = document.getElementById("num_sentences");
         var ep_num = document.getElementById("epoch_slider");
@@ -176,10 +195,18 @@ class BarcodePlot:
         ep_num.max = Object.keys(largedataset).length -1;
 
         var i;
-        var test = [];
-        for(i = 0; i <10; i++){
-          test.push([dataSet[i]["Epoch"], dataSet[i]['Index'], dataSet[i]['Test Label'],dataSet[i]['Test Prediction'],dataSet[i]['Test Confidence Score'],dataSet[i]['Test Sentence'],dataSet[i]['Intermediate Values'], dataSet[i]["Test Prediction"]]);
+        // var test = [];
+        // for(i = 0; i <10; i++){
+        //   test.push([dataSet[i]["Epoch"], dataSet[i]['Index'], dataSet[i]['Test Label'],dataSet[i]['Test Prediction'],dataSet[i]['Test Confidence Score'],dataSet[i]['Test Sentence'],dataSet[i]['Intermediate Values'], dataSet[i]["Test Prediction"]]);
+        // }
+        // console.log("Debugging: test: ", test);
+        var test = []
+        for( i = 0; i < 10; i++ ){
+          test.push([epoch_val, largedataset[i]["Index"], largedataset[i]["Test Label"], largedataset[i]["Test Prediction"][String(epoch_val)],
+          largedataset[i]["Test Confidence Score"][epoch_val], largedataset[i]["Test Sentence"],
+          largedataset[i]["Intermediate Values"][epoch_val], largedataset[i]["Test Prediction"][epoch_val]]);
         }
+        console.log("Debugging: test after new for loop: ", test);
 
         createTable(test);
 
@@ -187,7 +214,11 @@ class BarcodePlot:
       })
     }
 
-// https://stackoverflow.com/questions/51362252/javascript-cosine-similarity-function
+    /*------------------------------------------------------------------------
+    Function: cosinesim
+        NOTE: Insert Description
+    -------------------------------------------------------------------------*/
+    // https://stackoverflow.com/questions/51362252/javascript-cosine-similarity-function
     function cosinesim(A,B){
         var dotproduct=0;
         var mA=0;
@@ -203,6 +234,10 @@ class BarcodePlot:
         return Math.abs(similarity);
     }
 
+    /*------------------------------------------------------------------------
+    Function: createSVG
+        NOTE: Insert Description
+    -------------------------------------------------------------------------*/
     function createSVG(d) {
       var w = 3;
       var h = 20;
@@ -234,7 +269,12 @@ class BarcodePlot:
       return kpi;
     }
 
+    /*------------------------------------------------------------------------
+    Function: createTable
+        NOTE: Insert Description
+    -------------------------------------------------------------------------*/
     function createTable(test){
+      console.log("Debugging: test: ", test);
       var div = d3.select('.tables');
         // append a table to the div
         var table = div.append("table")
@@ -358,6 +398,11 @@ class BarcodePlot:
     '''
 
 
+    """------------------------------------------------------------------------
+    Function: display
+        Called from object in notebook, this function will display the
+        complete visualization.
+    -------------------------------------------------------------------------"""
     def display(self):
         display(HTML(self.html_template.substitute({'css_text': self.css_text, 'js_code': self.js_code})))
 
