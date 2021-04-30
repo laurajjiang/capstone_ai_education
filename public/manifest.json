@@ -1,3 +1,25 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:c5d8777754e949e3780ebb97bc9d83dea6c28ed6813271710845fd427e1bf9d0
-size 514
+{
+  "short_name": "AI Education",
+  "name": "Interactive Visualization for AI Education",
+  "icons": [
+    {
+      "src": "favicon.ico",
+      "sizes": "64x64 32x32 24x24 16x16",
+      "type": "image/x-icon"
+    },
+    {
+      "src": "logo192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "logo512.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ],
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#000000",
+  "background_color": "#ffffff"
+}

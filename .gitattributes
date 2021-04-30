@@ -1,1 +1,2 @@
-*.json filter=lfs diff=lfs merge=lfs -text
+./d3_visualizations/hub.json filter=lfs diff=lfs merge=lfs -text
+./d3_visualizations/simple_nn_epoch_sorted.json filter=lfs diff=lfs merge=lfs -text
