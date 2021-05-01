@@ -59,7 +59,7 @@ class ConfusionMatrix:
 		li{
 			font-size: smaller;
 		}
-		td{
+		td.confm{
 			min-width: 100px;
 		}
 		#review{
@@ -407,13 +407,13 @@ class ConfusionMatrix:
 					})
 					.html(function(d){
 						table = "<table><tr>"
-						table += "<td> True: ";
+						table += "<td class="confm"> True: ";
 						table += parseInt(d[0]); //getType(d[0]);
 						table += "</td>"
-						table += "<td> Predict: ";
+						table += "<td class="confm"> Predict: ";
 						table += parseInt(d[1]); //getType(d[1]);
 						table += "</td>"
-						table += "<td>" + d[2].substr(0,200); + "</td>"
+						table += "<td class="confm">" + d[2].substr(0,200); + "</td>"
 						table += "</tr> </table>"
 						return  table;
 				});
@@ -469,13 +469,13 @@ class ConfusionMatrix:
 						})
 						.html(function(d){
 							table = "<table><tr>"
-							table += "<td> True: ";
+							table += "<td class="confm"> True: ";
 							table += parseInt(d[0]); //getType(d[0]);
 							table += "</td>"
-							table += "<td> Predict: ";
+							table += "<td class="confm"> Predict: ";
 							table += parseInt(d[1]); //getType(d[1]);
 							table += "</td>"
-							table += "<td>" + d[2].substr(0,200); + "</td>"
+							table += "<td class="confm">" + d[2].substr(0,200); + "</td>"
 							table += "</tr> </table>"
 							return table;
 					});
