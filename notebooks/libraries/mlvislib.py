@@ -424,7 +424,6 @@ class ConfusionMatrix:
                     d3.selectAll('rect').style('fill', "black");
                     d3.selectAll('rect')
                         .filter(function(d) { 
-                            console.log("DEBUGGING: D: ", d);
                             if( d[0] == actual && d[1] == prediction)
                                 return 1;
                             else
