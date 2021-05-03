@@ -142,29 +142,6 @@ class ConfusionMatrix:
     '''
 
     js_template = Template('''
-        console.log("Visualization: Running JavaScript...");
-        var dname = $conf_data_filepath;
-        var currentConfSetting = .5;
-        var currentEpochSetting = 1;
-        var lastEpochIndex = 0;
-        // Delete this line below just in case it slows down the program
-        console.log("Visualization: Reading JSON file(", dname, ")...");
-
-        d3.json( $conf_data_filepath, function(d) {
-            console.log("Visualization: Logging complete JSON...");
-            console.log(d);
-            lastEpochIndex = d[0]['Num Epochs']
-            d3.select("#epoch_slider").attr("max", lastEpochIndex);
-        });
-
-
-        /*--------------------------------------------------------------------------------
-        I've temporarily left out the 'getType' function, since the names of these
-        types are not included in the JSON file that is given to the JavaScript. More
-        functionality can be incldued later to bring the names in as well as the raw data.
-        Type will be represented by the given numeric identifier for now.
-        --------------------------------------------------------------------------------*/
-
         /*--------------------------------------------------------------------------------
         Function: extractTypes
         Behavior: Identifies what different types each data point can be identified as based 
@@ -212,9 +189,6 @@ class ConfusionMatrix:
                 currentTestLabel == selectedTestLabel &&
                 currentConfScore > selectedConfMin){
                     selectedEntries.push(dataPoint);
-                    // console.log("Prediction:", currentPrediction,
-                    //     "Test Sentence:", currentSentence,
-                    //     "Confidence Score:", currentConfScore);
                 }
             }
             return selectedEntries;
@@ -222,9 +196,9 @@ class ConfusionMatrix:
 
         /*--------------------------------------------------------------------------------
         Function: addAxisLabels
-        Behavior: 
-        Input: 
-        Output: 
+        Behavior: Adds x and y axis components to the DOM
+        Input: takes two string arrays, one for the x and one for the y axis
+        Output: Text labels should be placed next to div for matrix
         --------------------------------------------------------------------------------*/
         function addAxisLabels(){
             var xaxis_labels = $x
@@ -239,166 +213,51 @@ class ConfusionMatrix:
                     .attr("height", (750 / yaxis_labels.length)).classed("ylabel", true);
             }
         }
-        addAxisLabels()
+        addAxisLabels()                               // Calling function to add axis' to the DOM
 
-        /*--------------------------------------------------------------------------------
-        Function: Slider Re-Draw
-        Behavior: This d3 code will redraw each time there is a change in the slider.
-        Input: None
-        Output: Visualization should be redrawn
-        --------------------------------------------------------------------------------*/
-        /*--------------------------------------------------------------------------------
-        BUG: This should be adjusted to be called both on load and on change. 
-        --------------------------------------------------------------------------------*/
-
-        d3.selectAll(".slider").on("change", function() {
-            d3.select("svg").remove();
-
-            if(this.id == "confidence_slider"){
-                currentConfSetting = this.value;
-            }
-            if(this.id == "epoch_slider"){
-                currentEpochSetting = this.value;
-            }
-
-            d3.select("#confidence_setting").text("Confidence: " + currentConfSetting);
-            d3.select("#epoch_setting").text("Epoch: " + currentEpochSetting);
-            console.log("Visualization: Confidence set to (", currentConfSetting,
-                        ") Epoch set to (", currentEpochSetting, ")");
-
-            /*--------------------------------------------------------------------------------
-            Function: Re-Draw
-            Behavior: Adjusting the slider will call this function to redraw the
-                      visualization. First a table is build keep track of the number of
-                      elements to be in each cell. Next, data is read into an array based on
-                      the parameters set by the sliders.
-            Input: filepath to JSON
-            Output: visualization should be redrawn
-            --------------------------------------------------------------------------------*/
-
-            d3.json($conf_data_filepath, function(d) {
-                var totalItems = Object.keys(d).length
-                console.log("Visualization: ", totalItems, "pieces of test data included")
-
-                var possibleOutputValues = extractTypes(d);
-                console.log("Visualization: Possible outcomes inlcudes; ", possibleOutputValues)
-
-                var tableDimension = extractTypes(d).length;
-                console.log("Visualization: Constructing", tableDimension, "x",
-                            tableDimension, "chart...");
-                var dataset = [];
-
-                var table = new Array(tableDimension);
-                for(var i=0; i<tableDimension; i++){
-                    table[i] = new Array(tableDimension);
-                    for(var j=0; j<tableDimension; j++){
-                        table[i][j] = 0;
-                    }
-                }
-
-                console.log("Visualization: Table initialized as: ", table)
-                console.log("Visualization: Preparing to display epoch (", currentEpochSetting, ")...");
-
-                /*--------------------------------------------------------------------------------
-                NOTE: Will we need to display just integer representations of classifications,
-                      or will we need to display titles of classicications along the axis
-                --------------------------------------------------------------------------------*/
-
-                for(var jsonEntry, i=0; jsonEntry = d[i++];){
-                    var index = i;
-                    var entryText = jsonEntry["Test Sentence"];
-                    var confidenceScore = jsonEntry["Test Confidence Score"][currentEpochSetting-1];
-                    var trueLabel = jsonEntry["Test Label"];
-                    var predictedLabel = jsonEntry["Test Prediction"][currentEpochSetting-1];
-                    var tableXCoordinate = possibleOutputValues.indexOf(predictedLabel); //Predicted
-                    var tableYCoordinate = possibleOutputValues.indexOf(trueLabel); // Actual
-
-                    if(confidenceScore > currentConfSetting){
-                        table[tableXCoordinate][tableYCoordinate]+=1;
-                        dataset.push([trueLabel, predictedLabel, entryText, index]);
-                    }
-                }
-
-                console.log("Visualization: Table for confidence ", currentConfSetting, " at epoch ", currentEpochSetting, table);
-                console.log("Visualization: Creating SVG...");
-
-                /*--------------------------------------------------------------------------------
-                NOTE: Will leave this as the default viz size for now
-                --------------------------------------------------------------------------------*/
-
-                var w = 750;
-                var h = 750;
-
-                var svg = d3.select("body")
-                            .select("#matrix")
-                            .append("svg")
-                            .attr("width", w)
-                            .attr("height", h);
-
-                var rect = svg.selectAll("rect")
-                              .data(dataset)
-                              .enter()
-                              .append("rect");
-
-                var counters = new Array(tableDimension * tableDimension).fill(0);
-                var ycounters = new Array(tableDimension * tableDimension).fill(0);
-                var cellDimension = h / tableDimension;
-                var blockStackDimension = Math.round(Math.sqrt(totalItems)) + 1;
-                var marginBuffer = 5;
-                var cubeDimension = ((cellDimension - marginBuffer) / blockStackDimension);
-
-                /*--------------------------------------------------------------------------------
-                Format: d[trueLabel, predictedLabel, entryText, index, epoch]
-                --------------------------------------------------------------------------------*/
-
-                /*--------------------------------------------------------------------------------
-                Filling each cell of the matrix with the proper number of squares
-                NOTE: boxes have the attributes: x, y, id, width, height, opacity, fill, and class
-                --------------------------------------------------------------------------------*/
-                rect.attr("x", function (d, i){
-                    var matrixnum = (parseInt(d[1]) * tableDimension) + parseInt(d[0]);
-                    var inmatrixcol = counters[matrixnum] % blockStackDimension;
-                    counters[matrixnum]++;
-                    return (d[1] * (cellDimension + marginBuffer)) + (inmatrixcol * (cubeDimension));
-                    })
-                    .attr("y", function(d, i){
-                        var matrixnum = (parseInt(d[1] * tableDimension) + parseInt(d[0]));
-                        var hm = Math.floor(ycounters[matrixnum]/blockStackDimension);
-                        ycounters[matrixnum]++;
-                        return (d[0] * (cellDimension + marginBuffer)) + (hm * (cubeDimension));
-                    })
-                    .attr("id", function(d){
-                        return "rect" + d[3];
-                    })
-                    .attr("width", function(d){
-                        return cubeDimension;
-                    })
-                    .attr("height", function(d){
-                        return cubeDimension;
-                    })
-                    .attr("opacity", function(d){
-                        return 1;
-                    })
-                    .attr("fill", function(d){
-                        return ("black");
-                    })
-                    .attr("class", function(d){
-                        predicted_label = "predicted_label_" + d[1];
-                        true_label = "true_label_" + d[0];
-                        return true_label + " " + predicted_label;
-                });
-
-                rect.on("click",function(d_on){ clickedRect(d_on, d) });
-            });
-        })
-
-        
         /*--------------------------------------------------------------------------------
         Function: fillMatrix
         Behavior:
         Input:
         Output:
         --------------------------------------------------------------------------------*/
+        function fillMatrix(){
+            /*--------------------------------------------------------------------------------
+            Format: d[trueLabel, predictedLabel, entryText, index, conf_scores]
+            --------------------------------------------------------------------------------*/
+            rect.attr("x", function (d){
+                    var matrixnum = (parseInt(d[1][currentEpochSetting]) * tableDimension) + parseInt(d[0]);
+                    var inmatrixcol = counters[matrixnum] % blockStackDimension;
+                    counters[matrixnum]++;
+                    return (d[1][currentEpochSetting] * (cellDimension + marginBuffer)) + (inmatrixcol * (cubeDimension));
+                })
+                .attr("y", function(d){
+                    var matrixnum = (parseInt(d[1][currentEpochSetting] * tableDimension) + parseInt(d[0]));
+                    var hm = Math.floor(ycounters[matrixnum]/blockStackDimension);
+                    ycounters[matrixnum]++;
+                    return (d[0] * (cellDimension + marginBuffer)) + (hm * (cubeDimension));
+                })
+                .attr("id", function(d){
+                    return "rect" + d[3];
+                })
+                .attr("width", function(d){
+                    return cubeDimension;
+                })
+                .attr("height", function(d){
+                    return cubeDimension;
+                })
+                .attr("opacity", function(d){
+                    return 1;
+                })
+                .attr("fill", function(d){
+                    return ("black");
+                })
+                .attr("class", function(d){
+                    predicted_label = "predicted_label_" + d[1][currentEpochSetting];
+                    true_label = "true_label_" + d[0];
+                    return true_label + " " + predicted_label;
+            });
+        }
 
         /*--------------------------------------------------------------------------------
         Function: clickedRect
@@ -407,7 +266,6 @@ class ConfusionMatrix:
         Output:
         --------------------------------------------------------------------------------*/
         function clickedRect(d_on, d){
-            console.log("Debugging: d_on: ", d_on);
             console.log("Actual: ", d_on[0], "Predicted: ", d_on[1]);
             var actual = d_on[0];
             var prediction = d_on[1];
@@ -441,6 +299,177 @@ class ConfusionMatrix:
                 
             }
         }
+
+        /*--------------------------------------------------------------------------------
+        Function: emptyMatrix
+        Behavior:
+        Input:
+        Output:
+        --------------------------------------------------------------------------------*/
+        function emptyMatrix(){
+            console.log("CALLEWD EMPTY");
+            counters = new Array(tableDimension * tableDimension).fill(0);
+            ycounters = new Array(tableDimension * tableDimension).fill(0);
+            /*
+            cellDimension = h / tableDimension;
+            blockStackDimension = Math.round(Math.sqrt(totalItems)) + 1;
+            marginBuffer = 5;
+            cubeDimension = ((cellDimension - marginBuffer) / blockStackDimension);
+            */
+            svg.selectAll("*").remove();
+        }
+
+        /*--------------------------------------------------------------------------------
+        Function: refineChoice
+        Behavior:
+        Input:
+        Output:
+        --------------------------------------------------------------------------------*/
+        function refineChoice(){
+            console.log("Debugging: dataset filter:", dataset);
+            var filterEpoch = currentEpochSetting;
+            var filterConf = currentConfSetting;
+            
+            for( var i = 0; i < dataset.length; i++ ){
+                datapoint = dataset[i];
+                // datapoint[1]
+                if( i < 10 ) {
+                    console.log(dataset[i]);
+                }
+                
+            }
+        }
+
+        /*--------------------------------------------------------------------------------
+        GLOBAL VARIABLES: DECLARATIONS
+        --------------------------------------------------------------------------------*/
+        console.log("Visualization: Running JavaScript...");
+        var dname = $conf_data_filepath;              // Path to local JSON file storing data
+        var currentConfSetting = .5;                  // Set confidence score minimum to default
+        var currentEpochSetting = 1;                  // Set epoch setting to default
+        var lastEpochIndex = 0;                       // Max value that epoch slider can reach
+        var totalItems = null;                        // Total number of boxes that should appear
+        var possibleOutputValues = null;              // Possible values that predictions may produce
+        var tableDimension = null;                    // Dimensions of table (square so x and y are same)
+        var dataset = []                              // JSON is read into this array
+        var datasubset = []                           // Selected values from dataset
+        var table = null;                             // Reference for how many boxes should be in each matrix cell
+        var svg = null;                               // SVG graphic
+        var rect = null;                              // Rectangles which are put into above graphic
+        var w = 750;                                  // Width of matrix
+        var h = 750;                                  // Height of matrix
+        
+        var counters = null;
+        var ycounters = null;
+        var cellDimension = null;
+        var blockStackDimension = null;
+        var marginBuffer = null;
+        var cubeDimension = null;
+
+        /*--------------------------------------------------------------------------------
+        Creating Visualization / Main
+        --------------------------------------------------------------------------------*/
+        d3.json( $conf_data_filepath, function(d) {
+            /*--------------------------------------------------------------------------------
+            GLOBAL VARIABLES: DEFINITIONS
+            --------------------------------------------------------------------------------*/
+            console.log("Visualization: Reading JSON file(", dname, ")...");
+            totalItems = Object.keys(d).length                                                             // Defining totalItems
+            console.log("Visualization: totalItems: ", totalItems);
+            possibleOutputValues = extractTypes(d);                                                        // Defining possibleOutputValues
+            console.log("Visualization: possibleOutputValues: ", possibleOutputValues);
+            tableDimension = possibleOutputValues.length;                                                  // Defining tableDimension
+            console.log("Visualization: tableDimension: ", tableDimension);
+            table = new Array(tableDimension);                                                             // Initializing table
+            for(var i=0; i<tableDimension; i++){
+                table[i] = new Array(tableDimension);
+                for(var j=0; j<tableDimension; j++){
+                    table[i][j] = 0;
+                }
+            }
+            lastEpochIndex = d[0]['Num Epochs']                                                            // Defining lastEpochIndex
+            d3.select("#epoch_slider").attr("max", lastEpochIndex);                                        // Embedding lastEpochIndex
+            console.log("Visualization: lastEpochIndex: ", lastEpochIndex);
+            for(var jsonEntry, i=0; jsonEntry = d[i++];){                                                  // Storing JSON data in memory
+                var index = i;
+                var entryText = jsonEntry["Test Sentence"];
+                var confidenceScore = jsonEntry["Test Confidence Score"];
+                var trueLabel = jsonEntry["Test Label"];
+                var predictedLabel = jsonEntry["Test Prediction"];
+                var tableXCoordinate = possibleOutputValues.indexOf(predictedLabel[currentEpochSetting-1]); //Predicted
+                var tableYCoordinate = possibleOutputValues.indexOf(trueLabel); // Actual
+                table[tableXCoordinate][tableYCoordinate]+=1;
+                dataset.push([trueLabel, predictedLabel, entryText, index, confidenceScore]);
+            }
+            console.log("Visualization: table: ", table);
+            console.log("Visualization: dataset: ", dataset);
+            svg = d3.select("body")                                                                        // Defining svg
+                        .select("#matrix")
+                        .append("svg")
+                        .attr("width", w)
+                        .attr("height", h);
+            console.log("Visualization: svg: ", svg);
+            rect = svg.selectAll("rect")                                                                   // Defining rect
+                          .data(dataset)
+                          .enter()
+                          .append("rect");
+            console.log("Visualization: rect: ", rect);
+
+            
+            /*--------------------------------------------------------------------------------
+            Defining variables for drawing matrix
+            --------------------------------------------------------------------------------*/
+            counters = new Array(tableDimension * tableDimension).fill(0);
+            ycounters = new Array(tableDimension * tableDimension).fill(0);
+            cellDimension = h / tableDimension;
+            blockStackDimension = Math.round(Math.sqrt(totalItems)) + 1;
+            marginBuffer = 5;
+            cubeDimension = ((cellDimension - marginBuffer) / blockStackDimension);
+
+            // refineChoice();
+            fillMatrix();
+
+            
+            rect.on("click",function(d_on){ clickedRect(d_on, d) });
+        });
+ 
+        /*--------------------------------------------------------------------------------
+        Function: Slider Re-Draw
+        Behavior: This d3 code will redraw each time there is a change in the slider.
+        Input: None
+        Output: Visualization should be redrawn
+        --------------------------------------------------------------------------------*/
+        d3.selectAll(".slider").on("change", function() {
+            // d3.select("svg").remove();
+
+            if(this.id == "confidence_slider"){
+                currentConfSetting = this.value;
+            }
+            if(this.id == "epoch_slider"){
+                currentEpochSetting = this.value;
+            }
+
+            d3.select("#confidence_setting").text("Confidence: " + currentConfSetting);
+            d3.select("#epoch_setting").text("Epoch: " + currentEpochSetting);
+            console.log("Visualization: Confidence set to (", currentConfSetting,
+                        ") Epoch set to (", currentEpochSetting, ")");
+
+            emptyMatrix();
+            fillMatrix();
+
+            /*
+            d3.json($conf_data_filepath, function(d) {
+
+
+                emptyMatrix();
+                console.log("from inside");
+                // fillMatrix();
+
+                rect.on("click",function(d_on){ clickedRect(d_on, d) });
+            });
+            */
+        })
+        
     ''')
     
     def display_column_labels(self):
