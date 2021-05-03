@@ -139,7 +139,7 @@ class ConfusionMatrix:
           background: #4ca2af;
           cursor: pointer;
         }
-        '''
+    '''
 
     js_template = Template('''
         console.log("Visualization: Running JavaScript...");
@@ -172,12 +172,10 @@ class ConfusionMatrix:
         Input: JSON file
         Output: Returns array of possible values for 'Test Label'.
         --------------------------------------------------------------------------------*/
-
         function extractTypes(data){
             var lookup = {};
             var items = data;
             var result = [];
-
             for (var item, i=0; item = items[i++];){
                 var name = item['Test Label'];
                 if(!(name in lookup)){
@@ -201,7 +199,6 @@ class ConfusionMatrix:
             var selectedPredictionLabel = predLabel;
             var selectedEpoch = epoch;
             var selectedConfMin = conf;
-
             var selectedEntries = []
             console.log(d);
             console.log("Visualization: fetchDataWindowResults: for testLabel, predLabel, epoch, conf of: ", 
@@ -223,6 +220,12 @@ class ConfusionMatrix:
             return selectedEntries;
         }
 
+        /*--------------------------------------------------------------------------------
+        Function: addAxisLabels
+        Behavior: 
+        Input: 
+        Output: 
+        --------------------------------------------------------------------------------*/
         function addAxisLabels(){
             var xaxis_labels = $x
             var yaxis_labels = $y
@@ -274,9 +277,6 @@ class ConfusionMatrix:
             --------------------------------------------------------------------------------*/
 
             d3.json($conf_data_filepath, function(d) {
-                console.log("Debugging: displaying variable d: ", d);
-                
-
                 var totalItems = Object.keys(d).length
                 console.log("Visualization: ", totalItems, "pieces of test data included")
 
@@ -295,21 +295,8 @@ class ConfusionMatrix:
                         table[i][j] = 0;
                     }
                 }
+
                 console.log("Visualization: Table initialized as: ", table)
-
-
-                /*
-                # NOTE: To be removed, we only need to know the integer representation 
-                #       of which epoch we are using.
-                var selectedEpoch = {};
-
-                for(var singleEpoch, i=0; singleEpoch = d[i++];){
-                    if((singleEpoch[0]["Epoch"] + 1) == parseInt(currentEpochSetting)){
-                        selectedEpoch = singleEpoch;
-                    }
-                }
-                */
-
                 console.log("Visualization: Preparing to display epoch (", currentEpochSetting, ")...");
 
                 /*--------------------------------------------------------------------------------
@@ -317,27 +304,14 @@ class ConfusionMatrix:
                       or will we need to display titles of classicications along the axis
                 --------------------------------------------------------------------------------*/
 
-                // NOTE EDITING HERE
-
                 for(var jsonEntry, i=0; jsonEntry = d[i++];){
-                    // console.log("Debugging: jsonEntry ", jsonEntry);
                     var index = i;
-                    // var epoch = jsonEntry["Epoch"];
                     var entryText = jsonEntry["Test Sentence"];
                     var confidenceScore = jsonEntry["Test Confidence Score"][currentEpochSetting-1];
-                    // console.log("Debugging: confidenceScore ", confidenceScore);
                     var trueLabel = jsonEntry["Test Label"];
-                    // console.log("Debugging: trueLabel ", trueLabel);
-                    // console.log(typeof trueLabel);
                     var predictedLabel = jsonEntry["Test Prediction"][currentEpochSetting-1];
-                    // console.log("Debugging: predictedLabel ", predictedLabel);
-                    // console.log(typeof predictedLabel);
                     var tableXCoordinate = possibleOutputValues.indexOf(predictedLabel); //Predicted
-                    // console.log("Debugging: tableXCoordinate ", tableXCoordinate);
-                    // console.log(typeof tableXCoordinate);
                     var tableYCoordinate = possibleOutputValues.indexOf(trueLabel); // Actual
-                    // console.log("Debugging: tableYCoordinate ", tableYCoordinate);
-                    // console.log(typeof tableYCoordinate);
 
                     if(confidenceScore > currentConfSetting){
                         table[tableXCoordinate][tableYCoordinate]+=1;
@@ -414,183 +388,60 @@ class ConfusionMatrix:
                         return true_label + " " + predicted_label;
                 });
 
-                rect.on("click", function(d_on){
-                    console.log("Actual: ", d_on[0], "Predicted: ", d_on[1]);
-                    var actual = d_on[0];
-                    var prediction = d_on[1];
-                    var selectedDataSet = fetchDataWindowResults(d, actual, prediction,
-                        (currentEpochSetting - 1), currentConfSetting);
-
-                    d3.selectAll('rect').style('fill', "black");
-                    d3.selectAll('rect')
-                        .filter(function(d) { 
-                            if( d[0] == actual && d[1] == prediction)
-                                return 1;
-                            else
-                                return 0;
-                        })
-                        .style('fill', "blue");
-
-                    // Updating the Label on the Chart
-                    var data_section_title = "Data for: Label (" + d_on[0] + ") Prediction (" + d_on[1] + ")";
-                    d3.select('#review').text(data_section_title);
-
-                    // For some reason the above code deletes the ul
-                    d3.select('#review').append("ul").attr("id", "testList")
-
-                    d3.select("#testList").selectAll("li").remove();
-                    for (var i = 0; i < selectedDataSet.length; i++){
-                        var tableRowData = selectedDataSet[i][1];
-                        // Label and Actual is no longer included since its shown on the box title
-                        var dataPointString = " Input Data: " + tableRowData['Test Sentence'] +
-                        " Confidence Score: " +  tableRowData['Test Confidence Score'][currentEpochSetting - 1];
-                        d3.select("#testList").append("li").text(dataPointString).classed("dataPoint", true);
-                        
-                    }
-
-                }
-                );
-
-/*
-                d3.select("#review")
-                    .select("testList")
-                    .selectAll("rect")
-                    .data(
-                        dataset.filter(d => d[0] != d[1]),
-                        function(d){
-                            return d[3];
-                        }
-                    )
-                    .enter()
-                    .append("li")
-                    .attr("id", function(d){
-                        return "text" + d[3];
-                    })
-                    .html(function(d){
-                        table = "<table><tr>"
-                        table += "<td class="confm"> True: ";
-                        table += parseInt(d[0]); //getType(d[0]);
-                        table += "</td>"
-                        table += "<td class="confm"> Predict: ";
-                        table += parseInt(d[1]); //getType(d[1]);
-                        table += "</td>"
-                        table += "<td class="confm">" + d[2].substr(0,200); + "</td>"
-                        table += "</tr> </table>"
-                        return  table;
-                });
-
-                rect.on("click", function(d_on){
-                    d3.select("#review")
-                        .select("#testList")
-                        .html("");
-                    if(!this.classList.contains("past")){
-                        d3.selectAll(".past")
-                            .attr("fill", "blue")
-                            .classed("past", false);
-                        d3.selectAll(".reclick")
-                            .attr("fill", "blue")
-                            .classed("reclick", false)
-                    }
-                    if(!this.classList.contains("reclick")){
-                        d3.selectAll(".reclick")
-                            .attr("fill", "blue")
-                            .classed("reclick", false);
-                    }
-                    d3.select(this);
-                    textId = "";
-                    x = "." + this.classList[0];
-                    y = "." + this.classList[1];
-                    test = x + y;
-                    x1 = x.charAt(x.length - 1);
-                    y1 = y.charAt(y.length - 1);
-                    if(this.classList.contains("past")){
-                        d3.select(this)
-                            .classed("reclick", true)
-                        Id = this.id;
-                        textId = "#text" + Id.substring(4);
-                    }
-                    d3.selectAll(test)
-                        .attr("fill", "purple")
-                        .classed("past", "true");
-                    d3.select("#review")
-                        .select("#testList")
-                        .selectAll("rect")
-                        .data(
-                            dataset
-                                .filter(d => d[0] == x1)
-                                .filter(d => d[1] == y1),
-                                function(d){
-                                    return d[3];
-                                }
-                        )
-                        .enter()
-                        .append("li")
-                        .attr("id", function(d){
-                            return "text" + d[3];
-                        })
-                        .html(function(d){
-                            table = "<table><tr>"
-                            table += "<td class="confm"> True: ";
-                            table += parseInt(d[0]); //getType(d[0]);
-                            table += "</td>"
-                            table += "<td class="confm"> Predict: ";
-                            table += parseInt(d[1]); //getType(d[1]);
-                            table += "</td>"
-                            table += "<td class="confm">" + d[2].substr(0,200); + "</td>"
-                            table += "</tr> </table>"
-                            return table;
-                    });
-
-                    d3.select("#review")
-                        .select("testList")
-                        .selectAll("li")
-                        .on("mouseover", function(d_on){
-                            d3.select(this)
-                                .classed("lighthigh", true)
-                                id = this.id;
-                                rectId = "#rect" + id.substring(4);
-                                d3.selectAll(rectId)
-                                    .attr("fill", "green");
-                        })
-                        .on("mouseout", function(d_on){
-                            d3.select(this)
-                                .classed("lighthigh", false)
-                                id = this.id;
-                                rectId = "#rect" + id.substring(4);
-                                d3.selectAll(rectId)
-                                    .attr("fill", "purple");
-                    });
-                });
-*/
-
-                /*--------------------------------------------------------------------------------
-                Changing the color of rows in the Data section on mouseover/mouseout (repeat of above?)
-                --------------------------------------------------------------------------------*/
-/*
-                d3.select("#review")
-                    .select("#testList")
-                    .selectAll("li")
-                    .on("mouseover", function(d_on){
-                        d3.select(this)
-                            .classed("lighthigh", true)
-                            id = this.id;
-                            rectId = "#rect" + id.substring(4);
-                            d3.selectAll(rectId)
-                                .attr("fill", "green");
-                    })
-                  .on("mouseout", function(d_on){
-                        d3.select(this)
-                            .classed("lighthigh", false)
-                            id = this.id;
-                            rectId = "#rect" + id.substring(4);
-                            d3.selectAll(rectId)
-                                .attr("fill", "blue");
-                });
-*/
-
+                rect.on("click",function(d_on){ clickedRect(d_on, d) });
             });
         })
-        ''')
+
+        
+        /*--------------------------------------------------------------------------------
+        Function: fillMatrix
+        Behavior:
+        Input:
+        Output:
+        --------------------------------------------------------------------------------*/
+
+        /*--------------------------------------------------------------------------------
+        Function: clickedRect
+        Behavior:
+        Input:
+        Output:
+        --------------------------------------------------------------------------------*/
+        function clickedRect(d_on, d){
+            console.log("Debugging: d_on: ", d_on);
+            console.log("Actual: ", d_on[0], "Predicted: ", d_on[1]);
+            var actual = d_on[0];
+            var prediction = d_on[1];
+            var selectedDataSet = fetchDataWindowResults(d, actual, prediction,
+                (currentEpochSetting - 1), currentConfSetting);
+
+            d3.selectAll('rect').style('fill', "black");
+            d3.selectAll('rect')
+                .filter(function(d) { 
+                    if( d[0] == actual && d[1] == prediction)
+                        return 1;
+                    else
+                        return 0;
+                })
+                .style('fill', "blue");
+
+            // Updating the Label on the Chart
+            var data_section_title = "Data for: Label (" + d_on[0] + ") Prediction (" + d_on[1] + ")";
+            d3.select('#review').text(data_section_title);
+
+            // For some reason the above code deletes the ul
+            d3.select('#review').append("ul").attr("id", "testList")
+
+            d3.select("#testList").selectAll("li").remove();
+            for (var i = 0; i < selectedDataSet.length; i++){
+                var tableRowData = selectedDataSet[i][1];
+                // Label and Actual is no longer included since its shown on the box title
+                var dataPointString = " Input Data: " + tableRowData['Test Sentence'] +
+                " Confidence Score: " +  tableRowData['Test Confidence Score'][currentEpochSetting - 1];
+                d3.select("#testList").append("li").text(dataPointString).classed("dataPoint", true);
+                
+            }
+        }
+    ''')
     
     def display_column_labels(self):
         print(self.x_labels)
@@ -602,10 +453,6 @@ class ConfusionMatrix:
         say_hello()
 
     def display(self):
-        # HTML(self.d3_source_html)
-        # display(HTML(self.d3_source_html))
-
-        self.display_column_labels()
         js_text = self.js_template.substitute({'conf_data_filepath': self.data_file_name, 'x': self.x_labels, 'y': self.y_labels})
 
         display(HTML(self.html_template.substitute({'css_text': self.css, 'js_text': js_text})))

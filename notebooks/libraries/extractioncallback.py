@@ -89,7 +89,7 @@ class CallbackDataExtractor(Callback):
                 np.full(len(self.validation_data[0]), epoch),
                 self.validation_data[1],
                 predictions,
-                conf_scores,
+                np.around(conf_scores, decimals=3),
                 features[layer_number].numpy().tolist(),
                 sentences
             ))
@@ -99,7 +99,7 @@ class CallbackDataExtractor(Callback):
                 np.full(len(self.validation_data[0]), epoch),
                 self.validation_data[1],
                 predictions,
-                conf_scores,
+                np.around(conf_scores, decimals=3),
                 sentences
             ))
             column_list = [ 'epoch', 'actual', 'prediction', 'confidence_score', 'input' ]
