@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import * as d3 from "d3";
-import dataSet from "./assets/iris.json";
+import dataSet from "./iris.json";
+import "./iris.css";
 
 export default function IrisVis() {
   function colorPicker(value) {
@@ -42,11 +43,14 @@ export default function IrisVis() {
     // append the cell elements to the header row
     // return the text string for each item in the data array
 
-    console.log(dataSet[0]);
-    console.log(Object.keys(dataSet[0]));
+    let regexNames = [];
+    Object.keys(dataSet[0]).forEach((name) =>
+      regexNames.push(name.replace(/_/g, " "))
+    );
+
     theadRow
       .selectAll("th")
-      .data(Object.keys(dataSet[0]))
+      .data(regexNames)
       .enter()
       .append("th")
       .text(function (d) {
@@ -80,7 +84,7 @@ export default function IrisVis() {
 
   function createSVG(d) {
     var w = 75;
-    var h = 75;
+    var h = 30;
 
     var kpi = document.createElement("div");
 
@@ -97,30 +101,22 @@ export default function IrisVis() {
         .attr("x", 25)
         .attr("y", 10)
         .attr("width", 60 * la)
-        .attr("height", 20)
+        .attr("height", 15)
         .style("fill", "#4078a9");
-
-      elemEnter
-        .append("text")
-        .style("fill", "blue")
-        .attr("dy", 30)
-        .attr("dx", 25);
     } else {
       elemEnter
         .append("circle")
-        .attr("cx", 28)
-        .attr("cy", 25)
-        .attr("r", 20)
+        .attr("cx", 35)
+        .attr("cy", 15)
+        .attr("r", 10)
         .style("fill", colorPicker);
-
-      elemEnter
-        .append("text")
-        .style("fill", "blue")
-        .attr("dy", 30)
-        .attr("dx", 25);
     }
     return kpi;
   }
 
-  return <div id='tables'></div>;
+  return (
+    <div className='container'>
+      <div id='tables'></div>
+    </div>
+  );
 }

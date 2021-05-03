@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import * as d3 from "d3";
-import largedataset from "./assets/barcodes.json";
+import largedataset from "./barcodes.json";
+import "./barcode.css";
 
 export default function BarcodeVis() {
   function argsort(array) {
@@ -24,7 +25,7 @@ export default function BarcodeVis() {
   }
 
   function changedValues() {
-    var x = d3.select(".myInput").property("value").toUpperCase();
+    var x = d3.select("#myInput").property("value").toUpperCase();
     var epoch_val = d3.select("#epoch_slider").property("value");
     var sentences_val = d3.select("#num_sentences").property("value");
 
