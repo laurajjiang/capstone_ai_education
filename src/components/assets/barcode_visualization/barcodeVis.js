@@ -55,6 +55,7 @@ export default function BarcodeVis() {
   }
 
   function automatic() {
+    console.log();
     var epoch_val = d3.select("#epoch_slider").property("value");
     d3.selectAll("#epochNum").text(epoch_val);
 
@@ -68,7 +69,6 @@ export default function BarcodeVis() {
 
     max_sent.max = (Math.min(Object.keys(largedataset[0]).length - 1), 300);
     ep_num.max = Object.keys(largedataset).length - 1;
-
     var i;
     var test = [];
     for (i = 0; i < 10; i++) {
@@ -93,13 +93,15 @@ export default function BarcodeVis() {
     var mA = 0;
     var mB = 0;
     for (let i = 0; i < A.length; i++) {
-      dotproduct += A[i] * B[i];
+      console.log(i, ":", A[i], B[i][1]);
+      dotproduct += A[i] * B[i][1];
       mA += A[i] * A[i];
-      mB += B[i] * B[i];
+      mB += B[i][1] * B[i][1];
     }
     mA = Math.sqrt(mA);
     mB = Math.sqrt(mB);
     var similarity = dotproduct / (mA * mB);
+    console.log(mA, mB, similarity, dotproduct);
     return Math.abs(similarity);
   }
 
@@ -117,8 +119,6 @@ export default function BarcodeVis() {
 
     elemEnter
       .append("rect")
-      .attr("x", 0)
-      .attr("y", 0)
       .attr("width", 3)
       .attr("height", 20)
       .style("opacity", 0.5 + d * 10)
@@ -164,78 +164,76 @@ export default function BarcodeVis() {
         return createSVG(d);
       });
 
-    tableBodyRows.on({
-      click: function (f) {
-        d3.selectAll("#highlighted").attr("id", null).classed("sent", true);
-        let w = d3.select(this).select(".sent").attr("id", "highlighted");
+    tableBodyRows.on("click", function (f, i) {
+      console.log("f", f, "i", i);
+      d3.selectAll("#highlighted").attr("id", this).classed("sent", true);
+      let w = d3.select(this).select(".sent").attr("id", "highlighted");
+      let bars = Object.entries(i[6]);
+      let changed_indicies = argsort(bars);
+      let sorted_bars = bars.sort(function (a, b) {
+        return b - a;
+      });
 
-        let bars = [...f[6]];
-        let changed_indicies = argsort(bars);
-        let sorted_bars = bars.sort(function (a, b) {
-          return b - a;
+      // here we basically delete the current table & remake it except with different ordering for the barcode (done on line 207)
+      d3.selectAll(".bar").remove();
+      d3.selectAll(".cosinesim").remove();
+
+      let big_array = [];
+      let answers = [];
+
+      tableBodyRows.selectAll("td").data(function (d) {
+        let temp_array = [];
+        var ugh = 0;
+        for (ugh = 0; ugh < d[6].length; ugh++) {
+          temp_array.push(d[6][changed_indicies[ugh]]);
+        }
+        big_array.push(temp_array);
+        console.log("sorted", sorted_bars);
+        var answer = cosinesim(temp_array, Object.values(sorted_bars));
+        answers.push(answer);
+        return [];
+      });
+
+      tableBodyRows.each(function (k, l) {
+        d3.select(this).data(function (d) {
+          test = [...k];
+          test[8] = answers[l];
+          return [test];
         });
+      });
 
-        // here we basically delete the current table & remake it except with different ordering for the barcode (done on line 207)
-        d3.selectAll(".bar").remove();
-        d3.selectAll(".cosinesim").remove();
-
-        let big_array = [];
-        let answers = [];
-
-        tableBodyRows.selectAll("td").data(function (d) {
-          let temp_array = [];
-          var ugh = 0;
-          for (ugh = 0; ugh < d[6].length; ugh++) {
-            temp_array.push(d[6][changed_indicies[ugh]]);
-          }
-          big_array.push(temp_array);
-
-          var answer = cosinesim(temp_array, sorted_bars);
-          answers.push(answer);
-          return [];
-        });
-
-        tableBodyRows.each(function (k, l) {
-          d3.select(this).data(function (d) {
-            test = [...k];
-            test[8] = answers[l];
-            return [test];
-          });
-        });
-
-        tableBodyRows.each(function (k, l) {
-          d3.select(this)
-            .append("td")
-            .attr("class", "cosinesim")
-            .text(function (d, i) {
-              return answers[l].toFixed(3);
-            });
-        });
-
-        tableBodyRows
-          .selectAll("td")
-          .data(function (d, i) {
-            return big_array[i];
-          })
-          .enter()
+      tableBodyRows.each(function (k, l) {
+        d3.select(this)
           .append("td")
-          .attr("class", function (d, i) {
-            return "bar " + i;
-          })
-          .append(function (d) {
-            return createSVG(d);
+          .attr("class", "cosinesim")
+          .text(function (d, i) {
+            return answers[l].toFixed(3);
           });
+      });
 
-        tableBodyRows.sort(function (a, b) {
-          if (a[8] < b[8]) {
-            return 1;
-          } else if (a[8] > b[8]) {
-            return -1;
-          } else {
-            return 0;
-          }
+      tableBodyRows
+        .selectAll("td")
+        .data(function (d, i) {
+          return big_array[i];
+        })
+        .enter()
+        .append("td")
+        .attr("class", function (d, i) {
+          return "bar " + i;
+        })
+        .append(function (d) {
+          return createSVG(d);
         });
-      },
+
+      tableBodyRows.sort(function (a, b) {
+        if (a[8] < b[8]) {
+          return 1;
+        } else if (a[8] > b[8]) {
+          return -1;
+        } else {
+          return 0;
+        }
+      });
     });
   }
 
@@ -254,9 +252,9 @@ export default function BarcodeVis() {
             id='epoch_slider'
             type='range'
             min='0'
-            max='19'
+            max={Object.entries(largedataset).length}
             step='1'
-            value='0'
+            defaultValue='0'
             onChange={(e) => changedValues()}
           />
         </div>
@@ -268,9 +266,9 @@ export default function BarcodeVis() {
             id='num_sentences'
             type='range'
             min='0'
-            max='496'
-            step='1'
-            value='10'
+            max={Object.entries(largedataset[0]).length - 1}
+            step='10'
+            defaultValue='10'
             onChange={(e) => changedValues()}
           />
         </div>
@@ -278,7 +276,7 @@ export default function BarcodeVis() {
       <input
         type='text'
         id='myInput'
-        placeholder='Filter out words'
+        placeholder='Search for a word'
         style={{ width: "auto" }}
       />
       <button onClick={(e) => changedValues()}>Filter</button>

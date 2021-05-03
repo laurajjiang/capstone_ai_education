@@ -7,7 +7,7 @@ import Spacer from "../components/spacer";
 import ConfusionMatrix from "../components/assets/confusion_matrix/confusionMatrix";
 import Container from "../components/container";
 import "../index.css";
-// import BarcodeVis from "../components/assets/barcode_visualization/barcodeVis";
+import BarcodeVis from "../components/assets/barcode_visualization/barcodeVis";
 
 const objectives = [
   {
@@ -454,6 +454,17 @@ const evaluateModelBlock = (
 const visualizationBlock = (
   <div>
     <h1>Intepreting the results</h1>
+    We've created an interactive table to help demonstrate what the model is
+    doing in each epoch. You can see the sentence data used in the model and
+    adjust how many sentences you'd like the see. The classification of the
+    sentence is on the left (0 or 1), and you can also click on a particular
+    sentence to see its similarity with other sentences around it. Finally, you
+    can also filter for a specific type of review by word.
+    <Spacer space='1vh' />
+    <div style={{ maxWidth: "700px", maxHeight: "500px", overflow: "scroll" }}>
+      <BarcodeVis />
+    </div>
+    <Spacer space='1vh' />
     Here is the confusion matrix for our neural network.
     <Spacer space='1vh' />
     <span>PLACEHOLDER</span>

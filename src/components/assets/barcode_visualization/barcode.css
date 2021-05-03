@@ -3,10 +3,10 @@
   background-position: 10px 12px; /* Position the search icon */
   background-repeat: no-repeat; /* Do not repeat the icon image */
   width: 100%; /* Full-width */
-  font-size: 16px; /* Increase font-size */
-  padding: 12px 20px 12px 40px; /* Add some padding */
+  font-size: 14px; /* Increase font-size */
+  padding: 1%;
   border: 1px solid #ddd; /* Add a grey border */
-  margin-bottom: 12px; /* Add some space below the input */
+  margin: 1%;
 }
 
 .cosinesim {
@@ -14,29 +14,33 @@
 }
 
 .sent {
-  max-width: 1000px;
+  max-width: 500px;
   white-space: nowrap;
   overflow: scroll;
-  text-overflow: ellipsis;
 }
 
 #container {
+  padding-left: 3%;
+  background-color: #ffffff;
   height: 150px;
   width: auto;
   border: 1px solid black;
   border-radius: 3px;
   margin-bottom: 1%;
 }
+
 .left {
   margin-right: 15px;
   float: left;
   text-align: center;
 }
+
 .center {
   text-align: center;
 }
+
 #highlighted {
-  background-color: aqua;
+  background-color: #aec6cfff;
   white-space: normal;
   stroke-width: 1px;
   stroke: black;
