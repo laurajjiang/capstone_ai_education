@@ -21,6 +21,7 @@
   max-width: 700px;
   white-space: nowrap;
   overflow: scroll;
+  text-overflow: ellipsis;
 }
 
 #container {
