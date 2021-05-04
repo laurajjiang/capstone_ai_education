@@ -5,25 +5,35 @@ import json
 def say_hello():
     display(HTML('<h1>Greetings</h1>'))
 
-
-# Desicion needs to be made, what is to be paresd to this library?
-# Should we send it a json? For now it will be a JSON
-
-
+'''--------------------------------------------------------------------------------
+Class: ConfusionMatrix
+Behavior: Displays confusion matrix powered by JS in Jupyter output cell
+Input: require JSON path, and arrays of strings for x and y axis labels
+Returns: Should return instance of ConfusionMatrix object
+--------------------------------------------------------------------------------'''
 class ConfusionMatrix:
 
-    data_file_name = ""
+    data_file_name = ""                                                # Filepath with " character appended
 
     def __init__(self, json_name, x_labels, y_labels):
-        # JSON file must be located in libraries directory with python file.
-        self.data_file_name = "\"" + json_name + "\""
-        self.x_labels = x_labels
-        self.y_labels = y_labels
-        display(HTML(self.d3_source_html))
+        # NOTE: JSON should reside in same folder as .py file
+        self.data_file_name = "\"" + json_name + "\""                  # Store user provided filepath string as class variable
+        self.x_labels = x_labels                                       # String of labels for X-Axis
+        self.y_labels = y_labels                                       # String of labels for Y-Axis
+        display(HTML(self.d3_source_html))                             # Calling d3 source library
 
 
+    '''--------------------------------------------------------------------------------
+    Variable: d3_source_html
+        Directs to d3 source code, however this is also called in the notebook itself
+    --------------------------------------------------------------------------------'''
     d3_source_html = '<script src="https://d3js.org/d3.v3.min.js" charset="utf-8"></script>'
 
+    '''--------------------------------------------------------------------------------
+    Variable: html_template
+        Contains HTML for website, includes variables to insert css, and javascript
+        which are replaced when the display function is called.
+    --------------------------------------------------------------------------------'''
     html_template = Template('''
         <style> $css_text </style>
         <h1> Interactive Confusion Matrix </h1>
@@ -50,6 +60,11 @@ class ConfusionMatrix:
         <script> $js_text </script>
         ''')
 
+    '''--------------------------------------------------------------------------------
+    Variable: css
+        Contains all styling for entire visualization. changes to this css code may
+        also change the styling of the entire jupyter notebook.
+    --------------------------------------------------------------------------------'''
     css = '''
         body {
             font-family: Arial, sans-serif;
@@ -65,7 +80,7 @@ class ConfusionMatrix:
         .lighthigh{
             background-color: green;
         }
-        #testList {
+        #testList {                                           /* List in data Section */
             list-style-type: none;
             padding-left: 0;
             margin: 0;
@@ -73,10 +88,10 @@ class ConfusionMatrix:
         li.dataPoint{
             font-size: smaller;
         }
-        li.dataPoint:nth-child(odd){
+        li.dataPoint:nth-child(odd){                          /* Alternating list item color */
             background: #999;
         }
-        table.xaxis {
+        table.xaxis {                                         /* X-axis of table */
             table-layout: auto;
             width: 750px;
             margin-left: 26px !important;
@@ -85,7 +100,7 @@ class ConfusionMatrix:
         td.xlabel {
             text-align: center;
         }
-        table.yaxis {
+        table.yaxis {                                         /* Y-axis of table */
             float: left;
             display: inline;
             table-layout: auto;
@@ -95,7 +110,7 @@ class ConfusionMatrix:
         td.ylabel {
             text-align: center;
         }
-        #review{
+        #review{                                              /* Data Section */
             border:1px solid blue;
             padding: 5px;
             float: left;
@@ -145,9 +160,9 @@ class ConfusionMatrix:
         /*--------------------------------------------------------------------------------
         Function: extractTypes
         Behavior: Identifies what different types each data point can be identified as based
-                  off of the 'true_label' attribute in JSON file.
+            off of the 'true_label' attribute in JSON file.
         Input: JSON file
-        Output: Returns array of possible values for 'Test Label'.
+        Returns: Returns array of possible values for 'Test Label'.
         --------------------------------------------------------------------------------*/
         function extractTypes(data){
             var lookup = {};
@@ -167,7 +182,7 @@ class ConfusionMatrix:
         Function: fetchDataWindowResults
         Behavior: Fetches subset of 'd' variable to be displayed in 'Data' window
         Input: 'd' variable, testLabel, predLabel, epoch, conf
-        Output: Subset of 'd' variable formatted the same as 'd'
+        Returns: Subset of 'd' variable formatted the same as 'd'
         --------------------------------------------------------------------------------*/
         function fetchDataWindowResults(d, testLabel, predLabel, epoch, conf){
             console.log("Visualization: Calling fetchDataWindowResults...");
@@ -177,17 +192,12 @@ class ConfusionMatrix:
             var selectedEpoch = epoch;
             var selectedConfMin = conf;
             var selectedEntries = []
-            console.log(d);
-            console.log("Visualization: fetchDataWindowResults: for testLabel, predLabel, epoch, conf of: ",
-                testLabel, predLabel, epoch, conf);
             for (const dataPoint of Object.entries(d)){
-                console.log(dataPoint);
                 var currentPrediction = dataPoint[1]['Test Prediction'][epoch];
                 var currentTestLabel = dataPoint[1]['Test Label'];
                 var currentSentence = dataPoint[1]['Test Sentence'];
                 var currentConfScore = dataPoint[1]['Test Confidence Score'][epoch];
                 var bestConfScore = Math.max.apply(Math, currentConfScore);
-                console.log("Debugging: conf: ", currentConfScore, bestConfScore, selectedConfMin, currentConfScore > selectedConfMin);
                 if(
                 currentPrediction == selectedPredictionLabel &&
                 currentTestLabel == selectedTestLabel &&
@@ -195,15 +205,15 @@ class ConfusionMatrix:
                     selectedEntries.push(dataPoint);
                 }
             }
-            console.log(selectedEntries);
             return selectedEntries;
         }
 
         /*--------------------------------------------------------------------------------
         Function: addAxisLabels
-        Behavior: Adds x and y axis components to the DOM
+        Behavior: Adds x and y axis components to the DOM and text labels should be
+            placed next to div for matrix
         Input: takes two string arrays, one for the x and one for the y axis
-        Output: Text labels should be placed next to div for matrix
+        Returns: N/A
         --------------------------------------------------------------------------------*/
         function addAxisLabels(){
             var xaxis_labels = $x
@@ -221,49 +231,48 @@ class ConfusionMatrix:
 
         /*--------------------------------------------------------------------------------
         Function: fillMatrix
-        Behavior:
-        Input:
-        Output:
+        Behavior: Does the work of actually placing selected datapoints into 'rect' items
+            and inserting them into the matrix svg (redefines 'rect' variable)
+        Input: None
+        Output: None
         --------------------------------------------------------------------------------*/
         function fillMatrix(){
             console.log("Debugging: Filling Matrix...");
-            console.log("Debugging: rect: ", rect);
-            rect = svg.selectAll("rect")                                                                   // Defining rect
+            rect = svg.selectAll("rect")                                                                                       // Defining rect as child of SVG
                           .data(datasubset)
                           .enter()
                           .append("rect");
-            console.log("Visualization: rect: ", rect);
             /*--------------------------------------------------------------------------------
             Format: d[trueLabel, predictedLabel, entryText, index, conf_scores]
             --------------------------------------------------------------------------------*/
-            rect.attr("x", function (d){
+            rect.attr("x", function (d){                                                                                       // Define x coordinate to place rect
                     var matrixnum = (parseInt(d[1][currentEpochSetting -1]) * tableDimension) + parseInt(d[0]);
                     var inmatrixcol = counters[matrixnum] % blockStackDimension;
                     counters[matrixnum]++;
                     return (d[1][currentEpochSetting -1] * (cellDimension + marginBuffer)) + (inmatrixcol * (cubeDimension));
                 })
-                .attr("y", function(d){
+                .attr("y", function(d){                                                                                        // Define y coordinate to place rect
                     var matrixnum = (parseInt(d[1][currentEpochSetting -1] * tableDimension) + parseInt(d[0]));
                     var hm = Math.floor(ycounters[matrixnum]/blockStackDimension);
                     ycounters[matrixnum]++;
                     return (d[0] * (cellDimension + marginBuffer)) + (hm * (cubeDimension));
                 })
-                .attr("id", function(d){
+                .attr("id", function(d){                                                                                       // Define unique id of rect
                     return "rect" + d[3];
                 })
-                .attr("width", function(d){
+                .attr("width", function(d){                                                                                    // Define width of rect
                     return cubeDimension;
                 })
-                .attr("height", function(d){
+                .attr("height", function(d){                                                                                   // Define height of rect
                     return cubeDimension;
                 })
-                .attr("opacity", function(d){
+                .attr("opacity", function(d){                                                                                  // Define opacity of rect
                     return 1;
                 })
-                .attr("fill", function(d){
+                .attr("fill", function(d){                                                                                     // Define color of rect
                     return ("black");
                 })
-                .attr("class", function(d){
+                .attr("class", function(d){                                                                                    // Define class of rect ( currently unused )
                     predicted_label = "predicted_label_" + d[1][currentEpochSetting -1];
                     true_label = "true_label_" + d[0];
                     return true_label + " " + predicted_label;
@@ -272,19 +281,20 @@ class ConfusionMatrix:
 
         /*--------------------------------------------------------------------------------
         Function: clickedRect
-        Behavior:
-        Input:
-        Output:
+        Behavior: Activates when a rect is clicked, will find all rect's in same matrix
+            cell and color these blue, and all other cells black. This will then make a
+            call to fetchDataWindowResults to provide entries to the data window that
+            correspond with the entries to this cell
+        Input: Reference to clicked rect as well as the entire dataset to parse through
+        Returns: N/A
         --------------------------------------------------------------------------------*/
         function clickedRect(d_on, d){
-            console.log("Actual: ", d_on[0], "Predicted: ", d_on[1][currentEpochSetting-1]);
             var actual = d_on[0];
             var prediction = d_on[1][currentEpochSetting-1];
-            var selectedDataSet = fetchDataWindowResults(d, actual, prediction,
+            var selectedDataSet = fetchDataWindowResults(d, actual, prediction,                                                 // Fetch data points for selected cell
                 (currentEpochSetting - 1), currentConfSetting);
-
-            d3.selectAll('rect').style('fill', "black");
-            d3.selectAll('rect')
+            d3.selectAll('rect').style('fill', "black");                                                                        // Selecting all rects and coloring black
+            d3.selectAll('rect')                                                                                                // Coloring rects in selected quadrent blue
                 .filter(function(d) {
                     if( d[0] == actual && d[1][currentEpochSetting-1] == prediction)
                         return 1;
@@ -292,54 +302,42 @@ class ConfusionMatrix:
                         return 0;
                 })
                 .style('fill', "blue");
-
-            // Updating the Label on the Chart
             var data_section_title = "Data for: Label (" + d_on[0] + ") Prediction (" + d_on[1][currentEpochSetting-1] + ")";
-            d3.select('#review').text(data_section_title);
-
-            // For some reason the above code deletes the ul
-            d3.select('#review').append("ul").attr("id", "testList")
-
-            d3.select("#testList").selectAll("li").remove();
-            for (var i = 0; i < selectedDataSet.length; i++){
+            d3.select('#review').text(data_section_title);                                                                      // Updating title of 'Data' window
+            d3.select('#review').append("ul").attr("id", "testList")                                                            // Creating a new list to display
+            d3.select("#testList").selectAll("li").remove();                                                                    // Removing all old list items
+            for (var i = 0; i < selectedDataSet.length; i++){                                                                   // Add list entries for 'Sentence' and Confidence score of selected data
                 var tableRowData = selectedDataSet[i][1];
-                // Label and Actual is no longer included since its shown on the box title
                 var dataPointString = " Input Data: " + tableRowData['Test Sentence'] +
                 " Confidence Score: " +  tableRowData['Test Confidence Score'][currentEpochSetting - 1];
                 d3.select("#testList").append("li").text(dataPointString).classed("dataPoint", true);
-
             }
         }
 
         /*--------------------------------------------------------------------------------
         Function: emptyMatrix
-        Behavior:
-        Input:
-        Output:
+        Behavior: Empties out entire confusion matrix of any rect's, as well as resets
+            counters used when placing in new rects
+        Input: N/A
+        Returns: N/A
         --------------------------------------------------------------------------------*/
         function emptyMatrix(){
             console.log("CALLEWD EMPTY");
             counters = new Array(tableDimension * tableDimension).fill(0);
             ycounters = new Array(tableDimension * tableDimension).fill(0);
-            /*
-            cellDimension = h / tableDimension;
-            blockStackDimension = Math.round(Math.sqrt(totalItems)) + 1;
-            marginBuffer = 5;
-            cubeDimension = ((cellDimension - marginBuffer) / blockStackDimension);
-            */
             svg.selectAll("*").remove();
         }
 
         /*--------------------------------------------------------------------------------
         Function: refineChoice
-        Behavior:
-        Input:
-        Output:
+        Behavior: Filters the dataset referenced when adding rect's to the matrix to only
+            include data that has a confidence score greater than that selected on the
+            slider.
+        Input: N/A
+        Returns: N/A
         --------------------------------------------------------------------------------*/
         function refineChoice(){
             datasubset = [];
-            console.log("Debugging: dataset filter:", dataset);
-
             for( var i = 0; i < dataset.length; i++ ){
                 datapoint = dataset[i];
                 cScore = Math.max.apply(Math, dataset[i][4][currentEpochSetting-1]);
@@ -347,7 +345,6 @@ class ConfusionMatrix:
                     datasubset.push(datapoint);
                 }
             }
-            console.log(datasubset.length);
         }
 
         /*--------------------------------------------------------------------------------
@@ -355,7 +352,7 @@ class ConfusionMatrix:
         --------------------------------------------------------------------------------*/
         console.log("Visualization: Running JavaScript...");
         var dname = $conf_data_filepath;              // Path to local JSON file storing data
-        var rawJSONData = null;
+        var rawJSONData = null;                       // Data from JSON read operation
         var currentConfSetting = .5;                  // Set confidence score minimum to default
         var currentEpochSetting = 1;                  // Set epoch setting to default
         var lastEpochIndex = 0;                       // Max value that epoch slider can reach
@@ -369,29 +366,24 @@ class ConfusionMatrix:
         var rect = null;                              // Rectangles which are put into above graphic
         var w = 750;                                  // Width of matrix
         var h = 750;                                  // Height of matrix
-
-        var counters = null;
-        var ycounters = null;
-        var cellDimension = null;
-        var blockStackDimension = null;
-        var marginBuffer = null;
-        var cubeDimension = null;
+        var counters = null;                          // Current 'x' position when placing rects
+        var ycounters = null;                         // Curent 'y' position when placing rects
+        var cellDimension = null;                     // Height and width to make each cell on matrix
+        var blockStackDimension = null;               // How many cubes to place on a single row in matrix
+        var marginBuffer = null;                      // How much room to leave between cells in matrix
+        var cubeDimension = null;                     // Dimensions of each rect
 
         /*--------------------------------------------------------------------------------
         Creating Visualization / Main
         --------------------------------------------------------------------------------*/
         d3.json( $conf_data_filepath, function(d) {
-            rawJSONData = d;
+            rawJSONData = d;                                                                               // Storing JSON after read operation
             /*--------------------------------------------------------------------------------
             GLOBAL VARIABLES: DEFINITIONS
             --------------------------------------------------------------------------------*/
-            console.log("Visualization: Reading JSON file(", dname, ")...");
             totalItems = Object.keys(d).length                                                             // Defining totalItems
-            console.log("Visualization: totalItems: ", totalItems);
             possibleOutputValues = extractTypes(d);                                                        // Defining possibleOutputValues
-            console.log("Visualization: possibleOutputValues: ", possibleOutputValues);
             tableDimension = possibleOutputValues.length;                                                  // Defining tableDimension
-            console.log("Visualization: tableDimension: ", tableDimension);
             table = new Array(tableDimension);                                                             // Initializing table
             for(var i=0; i<tableDimension; i++){
                 table[i] = new Array(tableDimension);
@@ -401,7 +393,6 @@ class ConfusionMatrix:
             }
             lastEpochIndex = d[0]['Num Epochs']                                                            // Defining lastEpochIndex
             d3.select("#epoch_slider").attr("max", lastEpochIndex);                                        // Embedding lastEpochIndex
-            console.log("Visualization: lastEpochIndex: ", lastEpochIndex);
             for(var jsonEntry, i=0; jsonEntry = d[i++];){                                                  // Storing JSON data in memory
                 var index = i;
                 var entryText = jsonEntry["Test Sentence"];
@@ -413,73 +404,76 @@ class ConfusionMatrix:
                 table[tableXCoordinate][tableYCoordinate]+=1;
                 dataset.push([trueLabel, predictedLabel, entryText, index, confidenceScore]);
             }
-            console.log("Visualization: table: ", table);
-            console.log("Visualization: dataset: ", dataset);
             svg = d3.select("body")                                                                        // Defining svg
                         .select("#matrix")
                         .append("svg")
                         .attr("width", w)
                         .attr("height", h);
-            console.log("Visualization: svg: ", svg);
-
+            counters = new Array(tableDimension * tableDimension).fill(0);                                 // Defining conters
+            ycounters = new Array(tableDimension * tableDimension).fill(0);                                // Defining ycounters
+            cellDimension = h / tableDimension;                                                            // Defining celldimension
+            blockStackDimension = Math.round(Math.sqrt(totalItems)) + 1;                                   // Defining blockStackDimension
+            marginBuffer = 5;                                                                              // Defining marginBuffer
+            cubeDimension = ((cellDimension - marginBuffer) / blockStackDimension);                        // Defining cubeDimension
             /*--------------------------------------------------------------------------------
-            Defining variables for drawing matrix
+            INITIALIZING MATRIX
             --------------------------------------------------------------------------------*/
-            counters = new Array(tableDimension * tableDimension).fill(0);
-            ycounters = new Array(tableDimension * tableDimension).fill(0);
-            cellDimension = h / tableDimension;
-            blockStackDimension = Math.round(Math.sqrt(totalItems)) + 1;
-            marginBuffer = 5;
-            cubeDimension = ((cellDimension - marginBuffer) / blockStackDimension);
-
-            refineChoice();
-            fillMatrix();
-
-
-            rect.on("click",function(d_on){ clickedRect(d_on, d) });
+            refineChoice();                                                                                // Filter based on default confidence score
+            fillMatrix();                                                                                  // Place rects on matrix
+            rect.on("click",function(d_on){ clickedRect(d_on, d) });                                       // Define 'click' behavior
+            /*--------------------------------------------------------------------------------
+            Function: Slider Re-Draw
+            Behavior: This d3 code will redraw each time there is a change in the slider.
+            Input: None
+            Returns: N/A
+            --------------------------------------------------------------------------------*/
+            d3.selectAll(".slider").on("change", function() {
+                if(this.id == "confidence_slider"){
+                    currentConfSetting = this.value;
+                }
+                if(this.id == "epoch_slider"){
+                    currentEpochSetting = this.value;
+                }
+                d3.select("#confidence_setting").text("Confidence: " + currentConfSetting);                    // Update confidence slider header to reflect change
+                d3.select("#epoch_setting").text("Epoch: " + currentEpochSetting);                             // Update epoch slider header to reflect change
+                emptyMatrix();                                                                                 // Remove all current rects from matrix
+                refineChoice();                                                                                // Filter data for changes in min confidence score
+                fillMatrix();                                                                                  // Place new set of datapoints in matrix
+                rect.on("click",function(d_on){ clickedRect(d_on, rawJSONData) });                             // Re-assign click function to rects
+            })
         });
-
-        /*--------------------------------------------------------------------------------
-        Function: Slider Re-Draw
-        Behavior: This d3 code will redraw each time there is a change in the slider.
-        Input: None
-        Output: Visualization should be redrawn
-        --------------------------------------------------------------------------------*/
-        d3.selectAll(".slider").on("change", function() {
-            // d3.select("svg").remove();
-
-            if(this.id == "confidence_slider"){
-                currentConfSetting = this.value;
-            }
-            if(this.id == "epoch_slider"){
-                currentEpochSetting = this.value;
-            }
-
-            d3.select("#confidence_setting").text("Confidence: " + currentConfSetting);
-            d3.select("#epoch_setting").text("Epoch: " + currentEpochSetting);
-            console.log(
-                "Visualization: Confidence set to (", currentConfSetting,
-                ") Epoch set to (", currentEpochSetting, ")");
-
-            emptyMatrix();
-            refineChoice();
-            fillMatrix();
-
-            rect.on("click",function(d_on){ clickedRect(d_on, rawJSONData) });
-        })
 
     ''')
 
+    '''--------------------------------------------------------------------------------
+    Testing function, please ignore
+    --------------------------------------------------------------------------------'''
     def display_column_labels(self):
         print(self.x_labels)
 
+    '''--------------------------------------------------------------------------------
+    Testing function, please ignore
+    --------------------------------------------------------------------------------'''
     def display_internals(self):
         print(self.css, "\n", self.html_template, "\n", self.js_template, self.data_file_name)
 
+
+    '''--------------------------------------------------------------------------------
+    Testing function, please ignore
+    --------------------------------------------------------------------------------'''
     def html_test(self):
         say_hello()
 
+    '''--------------------------------------------------------------------------------
+    Function: display
+    Behavior: Fills HTML template with js code and css, as well as replaces variable
+        for location of JSON file with class cariable data_file_name. This template
+        is then rendered using the IPython HTML function in the Jypyter notebook
+        output cell.
+    Input: Variables data_file_name, x_labels, y_labels, css, js_text, and html_template
+        must all be defined before calling this function
+    Returns: N/A
+    --------------------------------------------------------------------------------'''
     def display(self):
         js_text = self.js_template.substitute({'conf_data_filepath': self.data_file_name, 'x': self.x_labels, 'y': self.y_labels})
-
         display(HTML(self.html_template.substitute({'css_text': self.css, 'js_text': js_text})))
