@@ -15,7 +15,7 @@ class ConfusionMatrix:
     data_file_name = ""
 
     def __init__(self, json_name, x_labels, y_labels):
-        # JSON file must be located in libraries directory with python file. 
+        # JSON file must be located in libraries directory with python file.
         self.data_file_name = "\"" + json_name + "\""
         self.x_labels = x_labels
         self.y_labels = y_labels
@@ -55,8 +55,8 @@ class ConfusionMatrix:
             font-family: Arial, sans-serif;
             font-size: larger;
         }
-        .box_highlighted { 
-            background-color: #ffb; 
+        .box_highlighted {
+            background-color: #ffb;
             border: 1px solid #b53;
         }
         .highlight{
@@ -96,18 +96,18 @@ class ConfusionMatrix:
             text-align: center;
         }
         #review{
-            border:1px solid blue; 
-            padding: 5px; 
-            float: left; 
-            width: 750px; 
-            height: 500px; 
+            border:1px solid blue;
+            padding: 5px;
+            float: left;
+            width: 750px;
+            height: 500px;
             background-color: white;
             margin: 20px;
             overflow: scroll;
             }
         #matrix{
-            border:1px solid blue; 
-            padding: 5px; 
+            border:1px solid blue;
+            padding: 5px;
             float: left;
             width: 750px;
             display: inline;
@@ -116,7 +116,7 @@ class ConfusionMatrix:
           -webkit-appearance: none;
           width: 100%;
           height: 15px;
-          border-radius: 5px;  
+          border-radius: 5px;
           background: #d3d3d3;
           outline: none;
           opacity: 0.7;
@@ -128,7 +128,7 @@ class ConfusionMatrix:
           appearance: none;
           width: 25px;
           height: 25px;
-          border-radius: 50%; 
+          border-radius: 50%;
           background: #4ca2af;
           cursor: pointer;
         }
@@ -144,7 +144,7 @@ class ConfusionMatrix:
     js_template = Template('''
         /*--------------------------------------------------------------------------------
         Function: extractTypes
-        Behavior: Identifies what different types each data point can be identified as based 
+        Behavior: Identifies what different types each data point can be identified as based
                   off of the 'true_label' attribute in JSON file.
         Input: JSON file
         Output: Returns array of possible values for 'Test Label'.
@@ -178,19 +178,24 @@ class ConfusionMatrix:
             var selectedConfMin = conf;
             var selectedEntries = []
             console.log(d);
-            console.log("Visualization: fetchDataWindowResults: for testLabel, predLabel, epoch, conf of: ", 
+            console.log("Visualization: fetchDataWindowResults: for testLabel, predLabel, epoch, conf of: ",
                 testLabel, predLabel, epoch, conf);
             for (const dataPoint of Object.entries(d)){
+                console.log(dataPoint);
                 var currentPrediction = dataPoint[1]['Test Prediction'][epoch];
                 var currentTestLabel = dataPoint[1]['Test Label'];
                 var currentSentence = dataPoint[1]['Test Sentence'];
                 var currentConfScore = dataPoint[1]['Test Confidence Score'][epoch];
-                if (currentPrediction == selectedPredictionLabel &&
+                var bestConfScore = Math.max.apply(Math, currentConfScore);
+                console.log("Debugging: conf: ", currentConfScore, bestConfScore, selectedConfMin, currentConfScore > selectedConfMin);
+                if(
+                currentPrediction == selectedPredictionLabel &&
                 currentTestLabel == selectedTestLabel &&
-                currentConfScore > selectedConfMin){
+                bestConfScore >= selectedConfMin){
                     selectedEntries.push(dataPoint);
                 }
             }
+            console.log(selectedEntries);
             return selectedEntries;
         }
 
@@ -203,7 +208,6 @@ class ConfusionMatrix:
         function addAxisLabels(){
             var xaxis_labels = $x
             var yaxis_labels = $y
-            console.log(xaxis_labels, yaxis_labels);
             for(var i = 0; i < xaxis_labels.length; i++){
                 d3.select(".xaxis").selectAll("tr").append("td").text(xaxis_labels[i])
                     .classed("xlabel", true);
@@ -222,17 +226,24 @@ class ConfusionMatrix:
         Output:
         --------------------------------------------------------------------------------*/
         function fillMatrix(){
+            console.log("Debugging: Filling Matrix...");
+            console.log("Debugging: rect: ", rect);
+            rect = svg.selectAll("rect")                                                                   // Defining rect
+                          .data(datasubset)
+                          .enter()
+                          .append("rect");
+            console.log("Visualization: rect: ", rect);
             /*--------------------------------------------------------------------------------
             Format: d[trueLabel, predictedLabel, entryText, index, conf_scores]
             --------------------------------------------------------------------------------*/
             rect.attr("x", function (d){
-                    var matrixnum = (parseInt(d[1][currentEpochSetting]) * tableDimension) + parseInt(d[0]);
+                    var matrixnum = (parseInt(d[1][currentEpochSetting -1]) * tableDimension) + parseInt(d[0]);
                     var inmatrixcol = counters[matrixnum] % blockStackDimension;
                     counters[matrixnum]++;
-                    return (d[1][currentEpochSetting] * (cellDimension + marginBuffer)) + (inmatrixcol * (cubeDimension));
+                    return (d[1][currentEpochSetting -1] * (cellDimension + marginBuffer)) + (inmatrixcol * (cubeDimension));
                 })
                 .attr("y", function(d){
-                    var matrixnum = (parseInt(d[1][currentEpochSetting] * tableDimension) + parseInt(d[0]));
+                    var matrixnum = (parseInt(d[1][currentEpochSetting -1] * tableDimension) + parseInt(d[0]));
                     var hm = Math.floor(ycounters[matrixnum]/blockStackDimension);
                     ycounters[matrixnum]++;
                     return (d[0] * (cellDimension + marginBuffer)) + (hm * (cubeDimension));
@@ -253,7 +264,7 @@ class ConfusionMatrix:
                     return ("black");
                 })
                 .attr("class", function(d){
-                    predicted_label = "predicted_label_" + d[1][currentEpochSetting];
+                    predicted_label = "predicted_label_" + d[1][currentEpochSetting -1];
                     true_label = "true_label_" + d[0];
                     return true_label + " " + predicted_label;
             });
@@ -266,16 +277,16 @@ class ConfusionMatrix:
         Output:
         --------------------------------------------------------------------------------*/
         function clickedRect(d_on, d){
-            console.log("Actual: ", d_on[0], "Predicted: ", d_on[1]);
+            console.log("Actual: ", d_on[0], "Predicted: ", d_on[1][currentEpochSetting-1]);
             var actual = d_on[0];
-            var prediction = d_on[1];
+            var prediction = d_on[1][currentEpochSetting-1];
             var selectedDataSet = fetchDataWindowResults(d, actual, prediction,
                 (currentEpochSetting - 1), currentConfSetting);
 
             d3.selectAll('rect').style('fill', "black");
             d3.selectAll('rect')
-                .filter(function(d) { 
-                    if( d[0] == actual && d[1] == prediction)
+                .filter(function(d) {
+                    if( d[0] == actual && d[1][currentEpochSetting-1] == prediction)
                         return 1;
                     else
                         return 0;
@@ -283,7 +294,7 @@ class ConfusionMatrix:
                 .style('fill', "blue");
 
             // Updating the Label on the Chart
-            var data_section_title = "Data for: Label (" + d_on[0] + ") Prediction (" + d_on[1] + ")";
+            var data_section_title = "Data for: Label (" + d_on[0] + ") Prediction (" + d_on[1][currentEpochSetting-1] + ")";
             d3.select('#review').text(data_section_title);
 
             // For some reason the above code deletes the ul
@@ -296,7 +307,7 @@ class ConfusionMatrix:
                 var dataPointString = " Input Data: " + tableRowData['Test Sentence'] +
                 " Confidence Score: " +  tableRowData['Test Confidence Score'][currentEpochSetting - 1];
                 d3.select("#testList").append("li").text(dataPointString).classed("dataPoint", true);
-                
+
             }
         }
 
@@ -326,18 +337,17 @@ class ConfusionMatrix:
         Output:
         --------------------------------------------------------------------------------*/
         function refineChoice(){
+            datasubset = [];
             console.log("Debugging: dataset filter:", dataset);
-            var filterEpoch = currentEpochSetting;
-            var filterConf = currentConfSetting;
-            
+
             for( var i = 0; i < dataset.length; i++ ){
                 datapoint = dataset[i];
-                // datapoint[1]
-                if( i < 10 ) {
-                    console.log(dataset[i]);
+                cScore = Math.max.apply(Math, dataset[i][4][currentEpochSetting-1]);
+                if( cScore >= currentConfSetting ){
+                    datasubset.push(datapoint);
                 }
-                
             }
+            console.log(datasubset.length);
         }
 
         /*--------------------------------------------------------------------------------
@@ -345,6 +355,7 @@ class ConfusionMatrix:
         --------------------------------------------------------------------------------*/
         console.log("Visualization: Running JavaScript...");
         var dname = $conf_data_filepath;              // Path to local JSON file storing data
+        var rawJSONData = null;
         var currentConfSetting = .5;                  // Set confidence score minimum to default
         var currentEpochSetting = 1;                  // Set epoch setting to default
         var lastEpochIndex = 0;                       // Max value that epoch slider can reach
@@ -358,7 +369,7 @@ class ConfusionMatrix:
         var rect = null;                              // Rectangles which are put into above graphic
         var w = 750;                                  // Width of matrix
         var h = 750;                                  // Height of matrix
-        
+
         var counters = null;
         var ycounters = null;
         var cellDimension = null;
@@ -370,6 +381,7 @@ class ConfusionMatrix:
         Creating Visualization / Main
         --------------------------------------------------------------------------------*/
         d3.json( $conf_data_filepath, function(d) {
+            rawJSONData = d;
             /*--------------------------------------------------------------------------------
             GLOBAL VARIABLES: DEFINITIONS
             --------------------------------------------------------------------------------*/
@@ -409,13 +421,7 @@ class ConfusionMatrix:
                         .attr("width", w)
                         .attr("height", h);
             console.log("Visualization: svg: ", svg);
-            rect = svg.selectAll("rect")                                                                   // Defining rect
-                          .data(dataset)
-                          .enter()
-                          .append("rect");
-            console.log("Visualization: rect: ", rect);
 
-            
             /*--------------------------------------------------------------------------------
             Defining variables for drawing matrix
             --------------------------------------------------------------------------------*/
@@ -426,13 +432,13 @@ class ConfusionMatrix:
             marginBuffer = 5;
             cubeDimension = ((cellDimension - marginBuffer) / blockStackDimension);
 
-            // refineChoice();
+            refineChoice();
             fillMatrix();
 
-            
+
             rect.on("click",function(d_on){ clickedRect(d_on, d) });
         });
- 
+
         /*--------------------------------------------------------------------------------
         Function: Slider Re-Draw
         Behavior: This d3 code will redraw each time there is a change in the slider.
@@ -451,27 +457,19 @@ class ConfusionMatrix:
 
             d3.select("#confidence_setting").text("Confidence: " + currentConfSetting);
             d3.select("#epoch_setting").text("Epoch: " + currentEpochSetting);
-            console.log("Visualization: Confidence set to (", currentConfSetting,
-                        ") Epoch set to (", currentEpochSetting, ")");
+            console.log(
+                "Visualization: Confidence set to (", currentConfSetting,
+                ") Epoch set to (", currentEpochSetting, ")");
 
             emptyMatrix();
+            refineChoice();
             fillMatrix();
 
-            /*
-            d3.json($conf_data_filepath, function(d) {
-
-
-                emptyMatrix();
-                console.log("from inside");
-                // fillMatrix();
-
-                rect.on("click",function(d_on){ clickedRect(d_on, d) });
-            });
-            */
+            rect.on("click",function(d_on){ clickedRect(d_on, rawJSONData) });
         })
-        
+
     ''')
-    
+
     def display_column_labels(self):
         print(self.x_labels)
 
