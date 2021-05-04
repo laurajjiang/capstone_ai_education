@@ -46,3 +46,8 @@
   stroke: black;
   overflow: visible;
 }
+
+
+td{
+  min-width: 10px;
+}
