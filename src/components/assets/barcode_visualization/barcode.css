@@ -9,6 +9,10 @@
   margin: 1%;
 }
 
+.tables > #sample {
+  margin: 2%;
+}
+
 .cosinesim {
   max-width: 100%;
 }
@@ -47,7 +51,10 @@
   overflow: visible;
 }
 
+tr > .cosinesim {
+  padding: 0 2%;
+}
 
-td{
-  min-width: 10px;
+td {
+  min-width: 5px;
 }

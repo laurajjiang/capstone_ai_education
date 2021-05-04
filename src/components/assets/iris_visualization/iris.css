@@ -2,6 +2,10 @@ td {
   max-height: 10px;
 }
 
+th {
+  padding: 0 5px;
+}
+
 .table {
   border-collapse: collapse;
   border: #d0d4d5 solid 1px;

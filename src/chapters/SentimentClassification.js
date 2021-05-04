@@ -461,7 +461,7 @@ const visualizationBlock = (
     sentence to see its similarity with other sentences around it. Finally, you
     can also filter for a specific type of review by word.
     <Spacer space='1vh' />
-    <div style={{ maxWidth: "700px", maxHeight: "500px", overflow: "scroll" }}>
+    <div style={{ maxHeight: "600px", overflow: "scroll" }}>
       <BarcodeVis />
     </div>
     <Spacer space='1vh' />

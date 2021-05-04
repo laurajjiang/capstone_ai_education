@@ -312,8 +312,19 @@ const exploreDataBlock = (
     Here's another way to visualize the iris data. Scroll to see all the entries
     in our dataset.
     <Spacer space='1vh' />
-    <div style={{ maxHeight: "500px", overflow: "scroll" }}>
-      <IrisVis />
+    <div
+      style={{
+        display: "flex",
+        justifyContent: "center",
+      }}>
+      <div
+        style={{
+          maxWidth: "600px",
+          maxHeight: "500px",
+          overflow: "scroll",
+        }}>
+        <IrisVis />
+      </div>
     </div>
   </div>
 );
