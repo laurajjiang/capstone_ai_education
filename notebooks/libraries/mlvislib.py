@@ -320,7 +320,6 @@ class ConfusionMatrix:
                 d3.select("#testList").append("li").text(dataPointString).classed("dataPoint", true);
             }
             d3.selectAll(".dataPoint").on('click', function(){                                                                  // View overflowed data on click
-                console.log(this);
                 d3.selectAll(".dataPoint").classed("clicked", false);
                 d3.select(this).classed("clicked", true);
             });
@@ -389,7 +388,6 @@ class ConfusionMatrix:
         --------------------------------------------------------------------------------*/
         d3.json( $conf_data_filepath, function(d) {
             rawJSONData = d;                                                                               // Storing JSON after read operation
-            limitData(rawJSONData);
             /*--------------------------------------------------------------------------------
             GLOBAL VARIABLES: DEFINITIONS
             --------------------------------------------------------------------------------*/

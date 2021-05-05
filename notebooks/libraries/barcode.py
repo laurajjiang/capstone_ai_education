@@ -85,6 +85,7 @@ class BarcodePlot:
       white-space: nowrap !important;
       overflow: hidden !important;
       text-overflow: ellipsis !important;
+      text-align: left !important;
     }
     #container{
       height: 150px;
@@ -172,7 +173,10 @@ class BarcodePlot:
         for(i = 0; i < sentences_val; i++){
         // NOTE: This conditional statement will break the visualization if the dataset has
         // a non-text value in the ['Test Sentence'] field.
-            if(largedataset[String(i)]['Test Sentence'].toUpperCase().search(x) > -1){
+        var hayo = largedataset[String(i)]['Test Sentence'];
+        console.log(hayo);
+        console.log(typeof hayo);
+            if(String(largedataset[String(i)]['Test Sentence']).toUpperCase().search(x) > -1){
               test.push([epoch_val, largedataset[i]["Index"], largedataset[i]["Test Label"], largedataset[i]["Test Prediction"][String(epoch_val)],
               largedataset[i]["Test Confidence Score"][epoch_val], largedataset[i]["Test Sentence"],
               largedataset[i]["Intermediate Values"][epoch_val], largedataset[i]["Test Prediction"][epoch_val]]);
