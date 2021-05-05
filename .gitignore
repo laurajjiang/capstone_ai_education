@@ -6,3 +6,4 @@ notebooks/.ipynb_checkpoints
 notebooks/libraries/predict_LR_extended.json
 notebooks/libraries/predict_nn.json
 notebooks/libraries/stored_results/
+src/assets/components/barcode_visualization/barcodes.json
