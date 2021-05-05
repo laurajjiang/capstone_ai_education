@@ -87,6 +87,13 @@ class ConfusionMatrix:
         }
         li.dataPoint{
             font-size: smaller;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
+        li.dataPoint.clicked{
+            overflow: visible;
+            white-space: normal;
         }
         li.dataPoint:nth-child(odd){                          /* Alternating list item color */
             background: #999;
@@ -308,10 +315,15 @@ class ConfusionMatrix:
             d3.select("#testList").selectAll("li").remove();                                                                    // Removing all old list items
             for (var i = 0; i < selectedDataSet.length; i++){                                                                   // Add list entries for 'Sentence' and Confidence score of selected data
                 var tableRowData = selectedDataSet[i][1];
-                var dataPointString = " Input Data: " + tableRowData['Test Sentence'] +
-                " Confidence Score: " +  tableRowData['Test Confidence Score'][currentEpochSetting - 1];
+                var dataPointString = " Confidence Score: " +  tableRowData['Test Confidence Score'][currentEpochSetting - 1] +
+                    " Input Data: " + tableRowData['Test Sentence']
                 d3.select("#testList").append("li").text(dataPointString).classed("dataPoint", true);
             }
+            d3.selectAll(".dataPoint").on('click', function(){                                                                  // View overflowed data on click
+                console.log(this);
+                d3.selectAll(".dataPoint").classed("clicked", false);
+                d3.select(this).classed("clicked", true);
+            });
         }
 
         /*--------------------------------------------------------------------------------
@@ -322,7 +334,6 @@ class ConfusionMatrix:
         Returns: N/A
         --------------------------------------------------------------------------------*/
         function emptyMatrix(){
-            console.log("CALLEWD EMPTY");
             counters = new Array(tableDimension * tableDimension).fill(0);
             ycounters = new Array(tableDimension * tableDimension).fill(0);
             svg.selectAll("*").remove();
@@ -378,12 +389,24 @@ class ConfusionMatrix:
         --------------------------------------------------------------------------------*/
         d3.json( $conf_data_filepath, function(d) {
             rawJSONData = d;                                                                               // Storing JSON after read operation
+            limitData(rawJSONData);
             /*--------------------------------------------------------------------------------
             GLOBAL VARIABLES: DEFINITIONS
             --------------------------------------------------------------------------------*/
             totalItems = Object.keys(d).length                                                             // Defining totalItems
             possibleOutputValues = extractTypes(d);                                                        // Defining possibleOutputValues
             tableDimension = possibleOutputValues.length;                                                  // Defining tableDimension
+            /* NOTE: LIMITS AMOUNT OF DATA USED
+            if( totalItems > 2000 ){
+                var sliced = [];
+                for( var i = 0; i < 2000; i++ ){
+                    sliced[i] = rawJSONData[i];
+                }
+                rawJSONData = sliced;
+                d = sliced;
+                totalItems = 2000;
+            }
+            */
             table = new Array(tableDimension);                                                             // Initializing table
             for(var i=0; i<tableDimension; i++){
                 table[i] = new Array(tableDimension);
