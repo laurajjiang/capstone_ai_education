@@ -18,10 +18,11 @@
 
 
     .cosinesim{
-      max-width:100%
+      margin: auto;
     }
 
     .sent {
+      width: 65%;
       max-width: 1000px;
       white-space: nowrap;
       overflow: scroll;
@@ -100,7 +101,7 @@
       d3.selectAll("#epochNum").text(epoch_val);
       d3.selectAll("#sentNum").text(sentences_val);
 
-      d3.json("hub.json", function(largedataset) {
+      d3.json("../d3_visualizations/hub.json", function(largedataset) {
         dataSet = largedataset[epoch_val];
         dataSet = largedataset[epoch_val];
 
@@ -156,7 +157,7 @@
         }
         mA = Math.sqrt(mA);
         mB = Math.sqrt(mB);
-        var similarity = (dotproduct)/((mA)*(mB)) 
+        var similarity = (dotproduct)/((mA)*(mB));
         return Math.abs(similarity);
     }
 
@@ -281,7 +282,7 @@
             .append("td")
             .attr('class', 'cosinesim')
             .text(function(d,i){
-              return answers[l].toFixed(3);
+              return answers[l].toFixed(2);
             })
           })
 

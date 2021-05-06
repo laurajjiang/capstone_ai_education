@@ -1,7 +1,31 @@
 <!DOCTYPE html>
 <html>
 
+
 <head>
+  <!-- The core Firebase JS SDK is always required and must be listed first -->
+  <script src="https://www.gstatic.com/firebasejs/8.4.2/firebase-app.js"></script>
+
+  <!-- TODO: Add SDKs for Firebase products that you want to use
+      https://firebase.google.com/docs/web/setup#available-libraries -->
+  <script src="https://www.gstatic.com/firebasejs/8.4.2/firebase-analytics.js"></script>
+
+  <script>
+    // Your web app's Firebase configuration
+    // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+    var firebaseConfig = {
+      apiKey: "AIzaSyCZNIoxZDSwS37N5f5FsEu8UwAgA_Hg8rA",
+      authDomain: "capstone-be4fe.firebaseapp.com",
+      projectId: "capstone-be4fe",
+      storageBucket: "capstone-be4fe.appspot.com",
+      messagingSenderId: "865720385920",
+      appId: "1:865720385920:web:2f75d70a84d923102e4165",
+      measurementId: "G-71Z8301E4N"
+    };
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    firebase.analytics();
+  </script>
 
   <script data-require="d3@3.5.3" data-semver="3.5.3" src="//cdnjs.cloudflare.com/ajax/libs/d3/3.5.3/d3.js"></script>
   <style>
@@ -18,10 +42,11 @@
 
 
     .cosinesim{
-      max-width:100%
+      margin: auto;
     }
 
     .sent {
+      width: 20%;
       max-width: 1000px;
       white-space: nowrap;
       overflow: scroll;
@@ -100,7 +125,7 @@
       d3.selectAll("#epochNum").text(epoch_val);
       d3.selectAll("#sentNum").text(sentences_val);
 
-      d3.json("hub.json", function(largedataset) {
+      d3.json("../d3_visualizations/simple_nn_epoch_sorted.json", function(largedataset) {
         dataSet = largedataset[epoch_val];
         dataSet = largedataset[epoch_val];
 
@@ -156,7 +181,7 @@
         }
         mA = Math.sqrt(mA);
         mB = Math.sqrt(mB);
-        var similarity = (dotproduct)/((mA)*(mB)) 
+        var similarity = (dotproduct)/((mA)*(mB));
         return Math.abs(similarity);
     }
 
@@ -281,7 +306,7 @@
             .append("td")
             .attr('class', 'cosinesim')
             .text(function(d,i){
-              return answers[l].toFixed(3);
+              return answers[l].toFixed(2);
             })
           })
 
