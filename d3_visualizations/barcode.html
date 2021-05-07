@@ -1,89 +1,70 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <script
-      data-require="d3@3.5.3"
-      data-semver="3.5.3"
-      src="//cdnjs.cloudflare.com/ajax/libs/d3/3.5.3/d3.js"
-    ></script>
-    <style>
-      #myInput {
-        /* background-image: url('/css/searchicon.png'); Add a search icon to input */
-        background-position: 10px 12px; /* Position the search icon */
-        background-repeat: no-repeat; /* Do not repeat the icon image */
-        width: 100%; /* Full-width */
-        font-size: 16px; /* Increase font-size */
-        padding: 12px 20px 12px 40px; /* Add some padding */
-        border: 1px solid #ddd; /* Add a grey border */
-        margin-bottom: 12px; /* Add some space below the input */
-      }
+<head>
 
-      .cosinesim {
-        max-width: 100%;
-      }
+  <script data-require="d3@3.5.3" data-semver="3.5.3" src="//cdnjs.cloudflare.com/ajax/libs/d3/3.5.3/d3.js"></script>
+  <style>
+    #myInput {
+      /* background-image: url('/css/searchicon.png'); Add a search icon to input */
+      background-position: 10px 12px; /* Position the search icon */
+      background-repeat: no-repeat; /* Do not repeat the icon image */
+      width: 100%; /* Full-width */
+      font-size: 16px; /* Increase font-size */
+      padding: 12px 20px 12px 40px; /* Add some padding */
+      border: 1px solid #ddd; /* Add a grey border */
+      margin-bottom: 12px; /* Add some space below the input */
+    }
 
-      .sent {
-        max-width: 1000px;
-        white-space: nowrap;
-        overflow: scroll;
-        text-overflow: ellipsis;
-      }
 
-      #container {
-        height: 150px;
-        width: auto;
-        border: 1px solid black;
-        border-radius: 3px;
-        margin-bottom: 1%;
-      }
-      .left {
-        margin-right: 15px;
-        float: left;
-        text-align: center;
-      }
-      .center {
-        text-align: center;
-      }
-      #highlighted {
-        background-color: aqua;
-        white-space: normal;
-        stroke-width: 1px;
-        stroke: black;
-        overflow: visible;
-      }
-    </style>
-  </head>
+    .cosinesim{
+      max-width:100%
+    }
 
-  <body>
-    <div id="container">
-      <div class="left">
-        <h3>Epoch #:</h3>
-        <h4 id="epochNum"></h4>
-        <input
-          class="slider"
-          id="epoch_slider"
-          type="range"
-          min="0"
-          max="19"
-          step="1"
-          value="0"
-          onchange="changedValues()"
-        />
-      </div>
-      <div class="left">
-        <h3>Number of Sentences:</h3>
-        <h4 id="sentNum"></h4>
-        <input
-          class="slider"
-          id="num_sentences"
-          type="range"
-          min="0"
-          max="496"
-          step="1"
-          value="10"
-          onchange="changedValues()"
-        />
-      </div>
+    .sent {
+      max-width: 1000px;
+      white-space: nowrap;
+      overflow: scroll;
+      text-overflow: ellipsis; 
+    }
+
+
+    #container{
+      height: 150px;
+      width: auto;
+      border: 1px solid black;
+      border-radius: 3px;
+      margin-bottom: 1%;
+    }
+    .left{
+      margin-right: 15px;
+      float : left;
+      text-align: center;
+    }
+    .center{
+      text-align: center;
+    }
+    #highlighted {  
+      background-color: aqua;
+      white-space: normal;
+      stroke-width: 1px;
+      stroke: black;
+      overflow: visible;
+    }
+      
+  </style>
+</head>
+
+<body>
+  <div id="container">
+    <div class="left">
+      <h3> Epoch #:</h3>
+      <h4 id="epochNum"></h4>
+      <input class="slider" id="epoch_slider" type="range" min="0" max="19" step="1" value="0" onchange="changedValues()"/>
+    </div>
+    <div class="left">
+      <h3> Number of Sentences:</h3>
+      <h4 id="sentNum"></h4>
+      <input class="slider" id="num_sentences" type="range" min="0" max="496" step="1" value="10" onchange="changedValues()"/>
     </div>
     <input
       type="text"
@@ -108,7 +89,25 @@
             return -1;
           }
           return 0;
-        });
+      });
+
+      const argIndices = arrayObject.map(data => data.idx);
+
+      return argIndices;
+    }
+
+    function changedValues() {
+      var x = d3.select("#myInput").property("value").toUpperCase();
+      var epoch_val = d3.select("#epoch_slider").property("value");
+      var sentences_val = d3.select("#num_sentences").property("value");
+
+      d3.selectAll("#epochNum").text(epoch_val);
+      d3.selectAll("#sentNum").text(sentences_val);
+
+      d3.json("hub.json", function(largedataset) {
+        dataSet = largedataset[epoch_val];
+        dataSet = largedataset[epoch_val];
+
 
         const argIndices = arrayObject.map((data) => data.idx);
 
