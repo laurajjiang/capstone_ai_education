@@ -1,9 +1,15 @@
 import React, { useEffect } from "react";
 import * as d3 from "d3";
-import largedataset from "./barcodes.json";
+import dataSet from "./barcodes.json";
 import "./barcode.css";
 
+/** This component creates the visualization for the barcodes used in the text/sentiment classification chapter. */
+
 export default function BarcodeVis() {
+  /** Basic sorting algorithm.
+   * @param {array} array - array of values to be sorted.
+   */
+
   function argsort(array) {
     const arrayObject = array.map((value, idx) => {
       return { value, idx };
@@ -24,74 +30,48 @@ export default function BarcodeVis() {
     return argIndices;
   }
 
+  /** Updates the table based off of currently selected epoch, filtered word, or number of sentences.
+   */
+
   function changedValues() {
-    var x = d3.select("#myInput").property("value").toUpperCase();
-    var epoch_val = d3.select("#epoch_slider").property("value");
-    var sentences_val = d3.select("#num_sentences").property("value");
+    let x = d3.select("#myInput").property("value").toUpperCase();
+    let currentEpoch = d3.select("#epoch_slider").property("value");
+    let numSelectedSentences = d3.select("#num_sentences").property("value");
 
-    d3.selectAll("#epochNum").text(epoch_val);
-    d3.selectAll("#sentNum").text(sentences_val);
+    d3.selectAll("#epochNum").text(currentEpoch);
+    d3.selectAll("#sentNum").text(numSelectedSentences);
 
-    let dataSet = largedataset[epoch_val];
+    let dataByEpoch = dataSet[currentEpoch];
 
     d3.selectAll("table").remove();
-    var i;
-    var test = [];
-    for (i = 0; i < sentences_val; i++) {
-      if (dataSet[i]["Test Sentence"].toUpperCase().search(x) > -1) {
-        test.push([
-          dataSet[i]["Epoch"],
-          dataSet[i]["Index"],
-          dataSet[i]["Test Label"],
-          dataSet[i]["Test Prediction"],
-          dataSet[i]["Test Confidence Score"],
-          dataSet[i]["Test Sentence"],
-          dataSet[i]["Intermediate Values"],
-          dataSet[i]["Test Prediction"],
+
+    let valuesPerEpoch = [];
+    for (let i = 0; i < numSelectedSentences; i++) {
+      if (dataByEpoch[i]["Test Sentence"].toUpperCase().search(x) > -1) {
+        valuesPerEpoch.push([
+          dataByEpoch[i]["Epoch"],
+          dataByEpoch[i]["Index"],
+          dataByEpoch[i]["Test Label"],
+          dataByEpoch[i]["Test Prediction"],
+          dataByEpoch[i]["Test Confidence Score"],
+          dataByEpoch[i]["Test Sentence"],
+          dataByEpoch[i]["Intermediate Values"],
+          dataByEpoch[i]["Test Prediction"],
         ]);
       }
     }
-    createTable(test);
+    createTable(valuesPerEpoch);
   }
 
-  function automatic() {
-    console.log();
-    var epoch_val = d3.select("#epoch_slider").property("value");
-    d3.selectAll("#epochNum").text(epoch_val);
+  /** Calculates cosine similarity, based off of this thread: https://stackoverflow.com/questions/51362252/javascript-cosine-similarity-function
+   * @param {int} A - current epoch
+   * @param {int} B -
+   */
 
-    var sentences_val = d3.select("#num_sentences").property("value");
-    d3.selectAll("#sentNum").text(sentences_val);
-
-    let dataSet = largedataset[epoch_val];
-
-    var max_sent = document.getElementById("num_sentences");
-    var ep_num = document.getElementById("epoch_slider");
-
-    max_sent.max = (Math.min(Object.keys(largedataset[0]).length - 1), 300);
-    ep_num.max = Object.keys(largedataset).length - 1;
-    var i;
-    var test = [];
-    for (i = 0; i < 10; i++) {
-      test.push([
-        dataSet[i]["Epoch"],
-        dataSet[i]["Index"],
-        dataSet[i]["Test Label"],
-        dataSet[i]["Test Prediction"],
-        dataSet[i]["Test Confidence Score"],
-        dataSet[i]["Test Sentence"],
-        dataSet[i]["Intermediate Values"],
-        dataSet[i]["Test Prediction"],
-      ]);
-    }
-
-    createTable(test);
-  }
-
-  // https://stackoverflow.com/questions/51362252/javascript-cosine-similarity-function
   function cosinesim(A, B) {
-    var dotproduct = 0;
-    var mA = 0;
-    var mB = 0;
+    let dotproduct = 0;
+    let mA = 0;
+    let mB = 0;
     for (let i = 0; i < A.length; i++) {
       console.log(i, ":", A[i], B[i][1]);
       dotproduct += A[i] * B[i][1];
@@ -100,135 +80,161 @@ export default function BarcodeVis() {
     }
     mA = Math.sqrt(mA);
     mB = Math.sqrt(mB);
-    var similarity = dotproduct / (mA * mB);
+    let similarity = dotproduct / (mA * mB);
     console.log(mA, mB, similarity, dotproduct);
     return Math.abs(similarity);
   }
 
-  function createSVG(d) {
-    var w = 3;
-    var h = 20;
+  /** Builds the SVG to represent the barcodes.
+   * @param {float} cosineValue - the cosine similarity value for a particular barcode.
+   */
 
-    var kpi = document.createElement("div");
+  function createSVG(cosineValue) {
+    const w = 3;
+    const h = 20;
 
-    var svg = d3.select(kpi).append("svg").attr("width", w).attr("height", h);
+    let dataVisualizations = document.createElement("div");
 
-    var elem = svg.selectAll("div").data([d]);
+    let svg = d3
+      .select(dataVisualizations)
+      .append("svg")
+      .attr("width", w)
+      .attr("height", h);
 
-    var elemEnter = elem.enter().append("g");
+    let elem = svg.selectAll("div").data([cosineValue]);
 
-    elemEnter
+    let dataElements = elem.enter().append("g");
+
+    dataElements
       .append("rect")
       .attr("width", 3)
       .attr("height", 20)
-      .style("opacity", 0.5 + d * 10)
+      .style("opacity", 0.5 + cosineValue * 10)
       .style("fill", "#4078a9");
 
-    return kpi;
+    return dataVisualizations;
   }
 
-  function createTable(test) {
-    var div = d3.select(".tables");
+  /** Builds the overall table to hold the barcode visualization.
+   * @param {Object} data - overall sentence data (JSON) to be used in this visualization
+   */
+
+  function createTable(updatedSentenceData) {
+    let div = d3.select(".tables");
     // append a table to the div
-    var table = div.append("table").attr("id", "sample").classed("table", true);
+    let table = div.append("table").attr("id", "sample").classed("table", true);
 
     // append a body to the table
-    var tbody = table.append("tbody");
+    let tbody = table.append("tbody");
 
     // table body rows
-    var tableBodyRows = tbody.selectAll("tr").data(test).enter().append("tr");
+    let tableBodyRows = tbody
+      .selectAll("tr")
+      .data(updatedSentenceData)
+      .enter()
+      .append("tr");
+
+    /** sentence array structure:
+     * sentenceData[0] = epoch
+     * sentenceData[1] = index
+     * sentenceData[2] = test label
+     * sentenceData[3] = test prediction
+     * sentenceData[4] = confidence score
+     * sentenceData[5] = sentence (string)
+     * sentenceData[6] = intermediate values
+     * sentenceData[7] = current prediction
+     */
 
     tableBodyRows
       .selectAll("td")
-      .data(function (d) {
-        return [d];
+      .data(function (sentenceData) {
+        return [sentenceData];
       })
       .enter()
       .append("td")
       .attr("class", "sent")
-      .text(function (d) {
-        return d[7] + " - " + d[5];
+      .text(function (sentenceData) {
+        return sentenceData[7] + " - " + sentenceData[5];
       });
 
     tableBodyRows
       .selectAll("td")
-      .data(function (d) {
-        return d[6];
+      .data(function (sentenceData) {
+        return sentenceData[6];
       })
       .enter()
       .append("td")
-      .attr("class", function (d, i) {
-        return "bar " + i;
+      .attr("class", function (_, id) {
+        return "bar " + id;
       })
-      .append(function (d) {
-        return createSVG(d);
+      .append(function (cosineValue) {
+        return createSVG(cosineValue);
       });
 
-    tableBodyRows.on("click", function (f, i) {
-      console.log("f", f, "i", i);
+    tableBodyRows.on("click", function (_, sentenceData) {
       d3.selectAll("#highlighted").attr("id", this).classed("sent", true);
       let w = d3.select(this).select(".sent").attr("id", "highlighted");
-      let bars = Object.entries(i[6]);
+      let bars = Object.entries(sentenceData[6]);
       let changed_indicies = argsort(bars);
       let sorted_bars = bars.sort(function (a, b) {
+        console.log(a, b);
         return b - a;
       });
 
-      // here we basically delete the current table & remake it except with different ordering for the barcode (done on line 207)
+      // delete the current table & remake it except with different ordering for the barcode (done on line 207)
       d3.selectAll(".bar").remove();
       d3.selectAll(".cosinesim").remove();
 
-      let big_array = [];
-      let answers = [];
+      let visibleSentences = [];
+      let cosineSimilarities = [];
 
-      tableBodyRows.selectAll("td").data(function (d) {
+      tableBodyRows.selectAll("td").data(function (sentence) {
         let temp_array = [];
-        var ugh = 0;
-        for (ugh = 0; ugh < d[6].length; ugh++) {
-          temp_array.push(d[6][changed_indicies[ugh]]);
+        for (let i = 0; i < sentence[6].length; i++) {
+          temp_array.push(sentence[6][changed_indicies[i]]);
         }
-        big_array.push(temp_array);
+        visibleSentences.push(temp_array);
         console.log("sorted", sorted_bars);
-        var answer = cosinesim(temp_array, Object.values(sorted_bars));
-        answers.push(answer);
+        let similarity = cosinesim(temp_array, Object.values(sorted_bars));
+        cosineSimilarities.push(similarity);
         return [];
       });
 
-      tableBodyRows.each(function (k, l) {
-        d3.select(this).data(function (d) {
-          test = [...k];
-          test[8] = answers[l];
-          return [test];
+      tableBodyRows.each(function (sentence, index) {
+        d3.select(this).data(function (_) {
+          updatedSentenceData = [...sentence];
+          updatedSentenceData[8] = cosineSimilarities[index];
+          return [updatedSentenceData];
         });
       });
 
-      tableBodyRows.each(function (k, l) {
+      tableBodyRows.each(function (_, epoch) {
         d3.select(this)
           .append("td")
           .attr("class", "cosinesim")
-          .text(function (d, i) {
-            return answers[l].toFixed(3);
+          .text(function (_) {
+            return cosineSimilarities[epoch].toFixed(3);
           });
       });
 
       tableBodyRows
         .selectAll("td")
-        .data(function (d, i) {
-          return big_array[i];
+        .data(function (_, epoch) {
+          return visibleSentences[epoch];
         })
         .enter()
         .append("td")
-        .attr("class", function (d, i) {
-          return "bar " + i;
+        .attr("class", function (_, id) {
+          return "bar " + id;
         })
-        .append(function (d) {
-          return createSVG(d);
+        .append(function (cosineValue) {
+          return createSVG(cosineValue);
         });
 
-      tableBodyRows.sort(function (a, b) {
-        if (a[8] < b[8]) {
+      tableBodyRows.sort(function (sentenceOne, sentenceTwo) {
+        if (sentenceOne[8] < sentenceTwo[8]) {
           return 1;
-        } else if (a[8] > b[8]) {
+        } else if (sentenceOne[8] > sentenceTwo[8]) {
           return -1;
         } else {
           return 0;
@@ -238,7 +244,35 @@ export default function BarcodeVis() {
   }
 
   useEffect(() => {
-    automatic();
+    const epoch_val = d3.select("#epoch_slider").property("value");
+    d3.selectAll("#epochNum").text(epoch_val);
+
+    const sentences_val = d3.select("#num_sentences").property("value");
+    d3.selectAll("#sentNum").text(sentences_val);
+
+    let dataByEpoch = dataSet[epoch_val];
+
+    let maxSentences = document.getElementById("num_sentences");
+    let numEpochs = document.getElementById("epoch_slider");
+
+    maxSentences.max = (Math.min(Object.keys(dataSet[0]).length - 1), 300);
+    numEpochs.max = Object.keys(dataSet).length - 1;
+    let i;
+    let valuesPerEpoch = [];
+    for (i = 0; i < 10; i++) {
+      valuesPerEpoch.push([
+        dataByEpoch[i]["Epoch"],
+        dataByEpoch[i]["Index"],
+        dataByEpoch[i]["Test Label"],
+        dataByEpoch[i]["Test Prediction"],
+        dataByEpoch[i]["Test Confidence Score"],
+        dataByEpoch[i]["Test Sentence"],
+        dataByEpoch[i]["Intermediate Values"],
+        dataByEpoch[i]["Test Prediction"],
+      ]);
+    }
+
+    createTable(valuesPerEpoch);
   });
 
   return (
@@ -252,7 +286,7 @@ export default function BarcodeVis() {
             id='epoch_slider'
             type='range'
             min='0'
-            max={Object.entries(largedataset).length}
+            max={Object.entries(dataSet).length}
             step='1'
             defaultValue='0'
             onChange={(e) => changedValues()}
@@ -266,7 +300,7 @@ export default function BarcodeVis() {
             id='num_sentences'
             type='range'
             min='0'
-            max={Object.entries(largedataset[0]).length - 1}
+            max={Object.entries(dataSet[0]).length - 1}
             step='10'
             defaultValue='10'
             onChange={(e) => changedValues()}

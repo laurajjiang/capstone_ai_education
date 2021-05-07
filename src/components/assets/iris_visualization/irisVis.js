@@ -3,7 +3,13 @@ import * as d3 from "d3";
 import dataSet from "./iris.json";
 import "./iris.css";
 
+/* This component renders the iris visualization used in the logistic regression and basic neural network classification. */
+
 export default function IrisVis() {
+  /** Determines the color selected for each filled circle in our visualization.
+   * @param {string} value - type of iris
+   */
+
   function colorPicker(value) {
     if (value == "Iris-setosa") {
       return "#7aa25c";
@@ -18,30 +24,72 @@ export default function IrisVis() {
     return Number(value) === value && value % 1 !== 0;
   }
 
+  /**
+   * Creates SVG of the bar and filled circle in the iris visualizations.
+   * @param {int | string} data - the piece of data being visualized. */
+
+  function createSVG(data) {
+    const w = 75;
+    const h = 30;
+
+    let dataVisualizations = document.createElement("div");
+
+    let svg = d3
+      .select(dataVisualizations)
+      .append("svg")
+      .attr("width", w)
+      .attr("height", h);
+
+    let elem = svg.selectAll("div").data([data]);
+
+    let dataElements = elem.enter().append("g");
+
+    if (checkNumberIfFloat(data) || Number.isInteger(data)) {
+      /* append bar for sepal/petal length/width elements  */
+
+      let scaledElement = data / 7;
+      dataElements
+        .append("rect")
+        .attr("x", 25)
+        .attr("y", 10)
+        .attr("width", 60 * scaledElement)
+        .attr("height", 15)
+        .style("fill", "#4078a9");
+    } else {
+      /* append filled circle representing iris type */
+
+      dataElements
+        .append("circle")
+        .attr("cx", 35)
+        .attr("cy", 15)
+        .attr("r", 10)
+        .style("fill", colorPicker);
+    }
+    return dataVisualizations;
+  }
+
   useEffect(() => {
-    console.log("useEffect hook");
-    console.log(dataSet.length);
-    var div = d3.select("body").select("#tables");
+    let div = d3.select("body").select("#tables");
 
     // append a table to the div
-    var table = div
+    let table = div
       .append("table")
       .attr("id", "sample")
       .classed("table display", true);
 
     // append a header to the table
-    var thead = table.append("thead");
+    let thead = table.append("thead");
 
     // append a body to the table
-    var tbody = table.append("tbody");
+    let tbody = table.append("tbody");
     // append a row to the header
-    var theadRow = thead.append("tr").attr("class", "headerRowStyle");
+    let theadRow = thead.append("tr").attr("class", "headerRowStyle");
 
-    // return a selection of cell elements in the header row
-    // attribute (join) data to the selection
-    // update (enter) the selection with nodes that have data
-    // append the cell elements to the header row
-    // return the text string for each item in the data array
+    /* return a selection of cell elements in the header row
+     * attribute (join) data to the selection
+     * update (enter) the selection with nodes that have data
+     * append the cell elements to the header row
+     * return the text string for each item in the data array */
 
     let regexNames = [];
     Object.keys(dataSet[0]).forEach((name) =>
@@ -53,12 +101,12 @@ export default function IrisVis() {
       .data(regexNames)
       .enter()
       .append("th")
-      .text(function (d) {
-        return d;
+      .text(function (title) {
+        return title;
       });
 
     // table body rows
-    var tableBodyRows = tbody
+    let tableBodyRows = tbody
       .selectAll("tr")
       .data(dataSet)
       .enter()
@@ -68,51 +116,18 @@ export default function IrisVis() {
     //table body row cells
     tableBodyRows
       .selectAll("td")
-      .data(function (d) {
-        return Object.values(d);
+      .data(function (dataEntry) {
+        return Object.values(dataEntry);
       })
       .enter()
       .append("td")
-      .text(function (d) {
-        return d;
+      .text(function (text) {
+        return text;
       })
-      .append(function (d) {
-        console.log(d);
-        return createSVG(d);
+      .append(function (value) {
+        return createSVG(value);
       });
   });
-
-  function createSVG(d) {
-    var w = 75;
-    var h = 30;
-
-    var kpi = document.createElement("div");
-
-    var svg = d3.select(kpi).append("svg").attr("width", w).attr("height", h);
-
-    var elem = svg.selectAll("div").data([d]);
-
-    var elemEnter = elem.enter().append("g");
-
-    if (checkNumberIfFloat(d) || Number.isInteger(d)) {
-      var la = d / 7;
-      elemEnter
-        .append("rect")
-        .attr("x", 25)
-        .attr("y", 10)
-        .attr("width", 60 * la)
-        .attr("height", 15)
-        .style("fill", "#4078a9");
-    } else {
-      elemEnter
-        .append("circle")
-        .attr("cx", 35)
-        .attr("cy", 15)
-        .attr("r", 10)
-        .style("fill", colorPicker);
-    }
-    return kpi;
-  }
 
   return (
     <div className='container'>
