@@ -73,15 +73,13 @@ export default function BarcodeVis() {
     let mA = 0;
     let mB = 0;
     for (let i = 0; i < A.length; i++) {
-      console.log(i, ":", A[i], B[i][1]);
-      dotproduct += A[i] * B[i][1];
+      dotproduct += A[i] * B[i];
       mA += A[i] * A[i];
-      mB += B[i][1] * B[i][1];
+      mB += B[i] * B[i];
     }
     mA = Math.sqrt(mA);
     mB = Math.sqrt(mB);
     let similarity = dotproduct / (mA * mB);
-    console.log(mA, mB, similarity, dotproduct);
     return Math.abs(similarity);
   }
 
@@ -174,10 +172,9 @@ export default function BarcodeVis() {
     tableBodyRows.on("click", function (_, sentenceData) {
       d3.selectAll("#highlighted").attr("id", this).classed("sent", true);
       let w = d3.select(this).select(".sent").attr("id", "highlighted");
-      let bars = Object.entries(sentenceData[6]);
+      let bars = sentenceData[6];
       let changed_indicies = argsort(bars);
       let sorted_bars = bars.sort(function (a, b) {
-        console.log(a, b);
         return b - a;
       });
 
@@ -194,8 +191,12 @@ export default function BarcodeVis() {
           temp_array.push(sentence[6][changed_indicies[i]]);
         }
         visibleSentences.push(temp_array);
-        console.log("sorted", sorted_bars);
-        let similarity = cosinesim(temp_array, Object.values(sorted_bars));
+        let similarity = cosinesim(temp_array, sorted_bars);
+
+        // adjust similarity to equal one if the selected sentence matches the current sentence being compared
+        if (sentence == sentenceData) {
+          similarity = 1.0;
+        }
         cosineSimilarities.push(similarity);
         return [];
       });
@@ -300,7 +301,7 @@ export default function BarcodeVis() {
             id='num_sentences'
             type='range'
             min='0'
-            max={Object.entries(dataSet[0]).length - 1}
+            max='100'
             step='10'
             defaultValue='10'
             onChange={(e) => changedValues()}

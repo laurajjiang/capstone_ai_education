@@ -279,7 +279,6 @@
           click: function (f) {
             d3.selectAll("#highlighted").attr("id", null).classed("sent", true);
             w = d3.select(this).select(".sent").attr("id", "highlighted");
-            console.log(f, f[6]);
             bars = [...f[6]];
             changed_indicies = argsort(bars);
             sorted_bars = bars.sort(function (a, b) {
@@ -300,7 +299,6 @@
                 temp_array.push(d[6][changed_indicies[ugh]]);
               }
               big_array.push(temp_array);
-
               var answer = cosinesim(temp_array, sorted_bars);
               answers.push(answer);
               return [];
