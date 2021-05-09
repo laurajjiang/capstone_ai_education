@@ -1,31 +1,7 @@
 <!DOCTYPE html>
 <html>
 
-
 <head>
-  <!-- The core Firebase JS SDK is always required and must be listed first -->
-  <script src="https://www.gstatic.com/firebasejs/8.4.2/firebase-app.js"></script>
-
-  <!-- TODO: Add SDKs for Firebase products that you want to use
-      https://firebase.google.com/docs/web/setup#available-libraries -->
-  <script src="https://www.gstatic.com/firebasejs/8.4.2/firebase-analytics.js"></script>
-
-  <script>
-    // Your web app's Firebase configuration
-    // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-    var firebaseConfig = {
-      apiKey: "AIzaSyCZNIoxZDSwS37N5f5FsEu8UwAgA_Hg8rA",
-      authDomain: "capstone-be4fe.firebaseapp.com",
-      projectId: "capstone-be4fe",
-      storageBucket: "capstone-be4fe.appspot.com",
-      messagingSenderId: "865720385920",
-      appId: "1:865720385920:web:2f75d70a84d923102e4165",
-      measurementId: "G-71Z8301E4N"
-    };
-    // Initialize Firebase
-    firebase.initializeApp(firebaseConfig);
-    firebase.analytics();
-  </script>
 
   <script data-require="d3@3.5.3" data-semver="3.5.3" src="//cdnjs.cloudflare.com/ajax/libs/d3/3.5.3/d3.js"></script>
   <style>
@@ -46,7 +22,7 @@
     }
 
     .sent {
-      width: 20%;
+      width: 30%;
       max-width: 1000px;
       white-space: nowrap;
       overflow: scroll;
@@ -76,6 +52,19 @@
       stroke: black;
       overflow: visible;
     }
+    #loader {
+    border: 16px solid #f3f3f3; /* Light grey */
+    border-top: 16px solid #3498db; /* Blue */
+    border-radius: 50%;
+    width: 120px;
+    height: 120px;
+    animation: spin 2s linear infinite;
+  }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
       
   </style>
 </head>
@@ -85,7 +74,7 @@
     <div class="left">
       <h3> Epoch #:</h3>
       <h4 id="epochNum"></h4>
-      <input class="slider" id="epoch_slider" type="range" min="0" max="19" step="1" value="0" onchange="changedValues()"/>
+      <input class="slider" id="epoch_slider" type="range" min="0" max="max_epoch_val" step="1" value="0" onchange="changedValues()"/>
     </div>
     <div class="left">
       <h3> Number of Sentences:</h3>
@@ -95,8 +84,28 @@
   </div>
     <input type="text" id="myInput" placeholder="Filter out words" style="width : auto">
     <button onclick="changedValues()">Filter</button>
-    <div class="tables"></div>
+    <div id="loader"></div>
+    <div class="tables" id="table_contents"></div>
   <script>
+
+    var loader = $('#loader');
+    var content = $('#table_contents');
+
+    $.getJSON("../d3_visualizations/simple_nn_epoch_sorted.json", (data) =>{
+        max_val = Object.keys(data).length;
+        console.log("max_val:", max_val);
+        var input = document.getElementById("epoch_slider");
+        input.setAttribute("max", (max_val - 1));
+        input.setAttribute("value", 0)
+        });
+
+    $.getJSON("../d3_visualizations/simple_nn_epoch_sorted.json", (data) =>{
+        max_val = Object.keys(data[0]).length;
+        console.log("max_val:", max_val);
+        var input = document.getElementById("num_sentences");
+        input.setAttribute("max", (max_val/10));
+        input.setAttribute("value", 10)
+        });
 
 // https://titanwolf.org/Network/Articles/Article?AID=135aa377-6989-4a7c-8da9-6eb73ef33086#gsc.tab=0 - code that does numpy's argsort
     function argsort(array) {
@@ -118,6 +127,8 @@
     }
 
     function changedValues() {
+      loader.show();
+      content.hide();
       var x = d3.select("#myInput").property("value").toUpperCase();
       var epoch_val = d3.select("#epoch_slider").property("value");
       var sentences_val = d3.select("#num_sentences").property("value");
@@ -127,7 +138,7 @@
 
       d3.json("../d3_visualizations/simple_nn_epoch_sorted.json", function(largedataset) {
         dataSet = largedataset[epoch_val];
-        dataSet = largedataset[epoch_val];
+        
 
         d3.selectAll("table").remove();
         var i; 
@@ -138,17 +149,21 @@
             }
         }
         createTable(test);
+        loader.hide();
+        content.show();
       })
     }
 
     function automatic(){
+      loader.show();
+      content.hide();
       var epoch_val = d3.select("#epoch_slider").property("value");
       d3.selectAll("#epochNum").text(epoch_val);
 
       var sentences_val = d3.select("#num_sentences").property("value");
       d3.selectAll("#sentNum").text(sentences_val);
 
-      d3.json("hub.json", function(largedataset) {
+      d3.json("../d3_visualizations/simple_nn_epoch_sorted.json", function(largedataset) {
         dataSet = largedataset[epoch_val];
 
         var max_sent = document.getElementById("num_sentences");
@@ -164,6 +179,8 @@
         }
 
         createTable(test);
+        loader.hide();
+        content.show();
 
           
       })
@@ -186,8 +203,8 @@
     }
 
     function createSVG(d) {
-      var w = 3;
-      var h = 20;
+      var w = 0.8;
+      var h = 10;
 
       var kpi = document.createElement("div");
 
@@ -207,8 +224,8 @@
           .attr({
           x: 0,
           y: 0, 
-          width: 3,
-          height: 20
+          width: 0.8,
+          height: 10
           })
           .style("opacity", .5  + d*10)
           .style("fill", "#4078a9");
