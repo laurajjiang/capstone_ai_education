@@ -127,8 +127,8 @@ class BarcodePlot:
         individual barcodes when an entry in the table has been selected
     -------------------------------------------------------------------------*/
     function argsort(array) {
-      const arrayObject = array.map((value, idx) => { return { value, idx }; });
-      arrayObject.sort((a, b) => {
+      const arrayObject = array.map((value, idx) => { return { value, idx }; });          // Map all values in array to have an index
+      arrayObject.sort((a, b) => {                                                        // Sort array based on bar value
           if (a.value < b.value) {
             return 1;
           }
@@ -137,7 +137,7 @@ class BarcodePlot:
           }
           return 0;
       });
-      const argIndices = arrayObject.map(data => data.idx);
+      const argIndices = arrayObject.map(data => data.idx);                               // Ordering is returned as list of indices
       return argIndices;
     }
 
@@ -149,21 +149,31 @@ class BarcodePlot:
         table.
     -------------------------------------------------------------------------*/
     function changedValues() {
-        // make a conditional for whether to add or remove values from the list or if new ones need to be read
-        console.log("Debugging: num_sentences: ", current_num_sent);
         var epoch_val = d3.select("#epoch_slider").property("value");
         var sentences_val = d3.select("#num_sentences").property("value");
+        var prev_sent_val = current_num_sent;
         d3.selectAll("#epochNum").text(epoch_val);
         d3.selectAll("#sentNum").text(sentences_val);
         current_epoch = epoch_val;
         current_num_sent = sentences_val;
         var max = current_num_sent;
-        data_array = [];
-        for(var i = 0; i < max; i++){                                                                            // Enter JSON data to array format
-            data_array.push([raw_data[i]["Index"], raw_data[i]["Test Label"],
-                raw_data[i]["Test Prediction"], raw_data[i]["Test Confidence Score"],
-                raw_data[i]["Test Sentence"], raw_data[i]["Intermediate Values"]]);
+        // data_array = [];
+        console.log("prev_sent_val, current_num_sent", prev_sent_val, current_num_sent);
+        console.log("Debugging: data_array: ", data_array);
+
+        if(current_num_sent > prev_sent_val){
+            var i = current_num_sent;
         }
+        if( current_num_sent < prev_sent_val){
+            console.log("Debuggings: ", data_array.splice(0, current_num_sent));
+            data_array = data_array.splice(0, current_num_sent);
+            console.log(data_array.splice(0, current_num_sent));
+        }
+        // for(var i = 0; i < max; i++){                                                                            // Enter JSON data to array format
+        //     data_array.push([raw_data[i]["Index"], raw_data[i]["Test Label"],
+        //         raw_data[i]["Test Prediction"], raw_data[i]["Test Confidence Score"],
+        //         raw_data[i]["Test Sentence"], raw_data[i]["Intermediate Values"]]);
+        // }
         d3.select(".tables").selectAll("*").remove();
         createTable(data_array);
     }
@@ -187,14 +197,11 @@ class BarcodePlot:
             var total_sentences = Object.keys(data).length -1;
             max_sent.max = total_sentences;
             ep_num.max = data["0"]['Num Epochs'] - 1;                                                               // Set max spoch to value of 'Num Epochs' in JSON
-            // var data_array = []                                                                                     // Initialize array to store JSON in memory
-            // NOTE: change the i < value
-            for(var i = 0; i < 10; i++){                                                                            // Enter JSON data to array format
+            for(var i = 0; i < 10; i++){                                                                            // Enter JSON data to global variable
                 data_array.push([data[i]["Index"], data[i]["Test Label"],
                     data[i]["Test Prediction"], data[i]["Test Confidence Score"],
                     data[i]["Test Sentence"], data[i]["Intermediate Values"]]);
             }
-            console.log("Debugging: data_array: ", data_array);
             createTable(data_array);                                                                                // Filling in Table
         })
     }
@@ -205,18 +212,18 @@ class BarcodePlot:
     -------------------------------------------------------------------------*/
     // https://stackoverflow.com/questions/51362252/javascript-cosine-similarity-function
     function cosinesim(A,B){
-        var dotproduct=0;
-        var mA=0;
-        var mB=0;
-        for(i = 0; i < A.length; i++){
-            dotproduct += (A[i] * B[i]);
-            mA += (A[i]*A[i]);
-            mB += (B[i]*B[i]);
-        }
-        mA = Math.sqrt(mA);
-        mB = Math.sqrt(mB);
-        var similarity = (dotproduct)/((mA)*(mB))
-        return Math.abs(similarity);
+        var dotproduct=0;                                        // Initialize dot product
+        var mA=0;                                                // Stores partial solution for A
+        var mB=0;                                                // Stores partial solution for B
+        for(i = 0; i < A.length; i++){                           // Store dot product of arrays and square of arrays
+            dotproduct += (A[i] * B[i]);                         // 
+            mA += (A[i]*A[i]);                                   // 
+            mB += (B[i]*B[i]);                                   //
+        }                                                        //
+        mA = Math.sqrt(mA);                                      // Take sqrt of sum of squared items in each array
+        mB = Math.sqrt(mB);                                      //
+        var similarity = (dotproduct)/((mA)*(mB))                // Divide dot product by product of a and b
+        return Math.abs(similarity);                             // Absolute value is similarity
     }
 
     /*------------------------------------------------------------------------
@@ -225,7 +232,6 @@ class BarcodePlot:
         reflect the intermediate value being represented.
     -------------------------------------------------------------------------*/
     function createSVG(d) {
-        console.log("creating SVG");
         var w = 3;                                           // Width of bar is 3
         var h = 20;                                          // Height of bar is 20
         var kpi = document.createElement("div");             // Creating a new div to hold 'barcode'
@@ -272,8 +278,7 @@ class BarcodePlot:
             .data(data)
             .enter()
             .append("tr");
-        // NOTE: Repair this to properly deal with epochs
-        tableBodyRows.selectAll("td")                                                              // Add prediction and score to each row
+        tableBodyRows.selectAll("td")                                                              // Add prediction for current epoch and score to each row
             .data(function(d) {
                 return [d];
             })
@@ -283,7 +288,6 @@ class BarcodePlot:
             .text(function(d) {
                 return d[2][String(current_epoch)] + " - " +  d[4];
         });
-        // NOTE: Fix this to properly deal with epochs
         tableBodyRows.selectAll("td")                                                              // Add colored bars to each row
             .data(function(d) {
                 return d[5][String(current_epoch)];
@@ -294,7 +298,7 @@ class BarcodePlot:
                 return 'bar ' + i;
             })
             .append(function(d) {
-                return createSVG(d);                                                               // Bar is created as a SVG
+                return createSVG(d);                                                               // A SVG rectangle is created for each 'bar' value
         });
         tableBodyRows.on({                                                                         // Appending click function to each row
             "click": function(f){
@@ -304,53 +308,52 @@ class BarcodePlot:
                 w = d3.select(this)                                                                // Adds highlight id to selection
                     .select(".sent")
                     .attr("id", "highlighted")
-                bars = [...f[5][String(current_epoch)]]                                                              // 
-                console.log("Bars: ", bars);
-                changed_indicies = argsort(bars)                                                         // 
-                sorted_bars = bars.sort(function(a, b){return b-a});                                     // 
-                d3.selectAll('.bar').remove()                                                            // 
-                d3.selectAll('.cosinesim').remove()                                                      // 
-                big_array = []                                                                           // 
-                answers = []                                                                             // 
-                tableBodyRows.selectAll("td")                                                            // 
-                    .data(function(d) {                                                                    // 
-                        temp_array = []                                                                      // 
-                        var ugh = 0                                                                          // 
-                        for(ugh = 0; ugh < d[5][String(current_epoch)].length; ugh++){                                              // 
-                            temp_array.push(d[5][String(current_epoch)][changed_indicies[ugh]])                                       // 
-                        }                                                                                    // 
-                        big_array.push(temp_array)                                                           // 
-                        var answer = cosinesim(temp_array, sorted_bars);                                     // 
-                        answers.push(answer)                                                                 // 
-                        return [];                                                                           // 
-                })                                                                                     // 
-                tableBodyRows.each(function(k,l){                                                        // 
-                    d3.select(this)                                                                        // 
-                        .data(function(d){                                                                   // 
-                            test = [...k]                                                                      // 
-                            test[8] = answers[l]                                                               // 
-                            return [test];                                                                     // 
-                        })                                                                                     // 
-                })                                                                                       // 
-                tableBodyRows.each(function(k,l){                                                        // 
-                    d3.select(this)                                                                        // 
-                        .append("td")                                                                          // 
-                        .attr('class', 'cosinesim')                                                            // 
-                        .text(function(d,i){                                                                   // 
-                            return answers[l].toFixed(3);                                                        // 
-                        })                                                                                     // 
-                })                                                                                       // 
-                tableBodyRows.selectAll("td")                                                            // 
-                    .data(function(d,i) {                                                                  // 
-                        return big_array[i]                                                                  // 
-                    })                                                                                     // 
-                    .enter()                                                                               // 
-                    .append("td")                                                                          // 
-                    .attr("class", function(d,i) { return 'bar ' + i; })                                   // 
-                    .append(function(d) {                                                                  // 
-                        return createSVG(d);                                                                 // 
-                });                                                                                    // 
-                tableBodyRows.sort(function(a,b) {                                                       // 
+                bars = [...f[5][String(current_epoch)]]                                            // Initialize bars as array of all bars in selected row
+                changed_indicies = argsort(bars)                                                   // Selected row is sorted and ordering is saved
+                sorted_bars = bars.sort(function(a, b){return b-a});                               // Bars for selecd row are again sorted
+                d3.selectAll('.bar').remove()                                                      // Remove bars from visualization
+                d3.selectAll('.cosinesim').remove()                                                // Remove all 'cosinesim' values from visualization
+                big_array = []                                                                     // Stores re-ordered 'barcodes'
+                answers = []                                                                       // Stores cosine similarities
+                tableBodyRows.selectAll("td")                                                      // For each row, calculate new barcode ordering and cosine similarity
+                    .data(function(d) {
+                        temp_array = []
+                        var ugh = 0
+                        for(ugh = 0; ugh < d[5][String(current_epoch)].length; ugh++){
+                            temp_array.push(d[5][String(current_epoch)][changed_indicies[ugh]])
+                        }
+                        big_array.push(temp_array)
+                        var answer = cosinesim(temp_array, sorted_bars);
+                        answers.push(answer)
+                        return [];
+                })
+                tableBodyRows.each(function(k,l){                                                  // Storing cosinesim as data for each row
+                    d3.select(this)
+                        .data(function(d){
+                            test = [...k]
+                            test[8] = answers[l]
+                            return [test];
+                        })
+                })
+                tableBodyRows.each(function(k,l){                                                  // Append the cosinesim value to each row
+                    d3.select(this)
+                        .append("td")
+                        .attr('class', 'cosinesim')
+                        .text(function(d,i){
+                            return answers[l].toFixed(3);
+                        })
+                })
+                tableBodyRows.selectAll("td")                                                      // Create SVG, recangles from newly ordered array
+                    .data(function(d,i) {
+                        return big_array[i]
+                    })
+                    .enter()
+                    .append("td")
+                    .attr("class", function(d,i) { return 'bar ' + i; })
+                    .append(function(d) {
+                        return createSVG(d);
+                });
+                tableBodyRows.sort(function(a,b) {                                                 // Sort rows in table based on cosinesim value
                     if (a[8] < b[8]) {
                         return 1;
                     } else if (a[8] > b[8]) {
@@ -363,7 +366,7 @@ class BarcodePlot:
         });
     }
 
-    automatic();
+    automatic();                                                                                   // Calling 'automatic' which serves as our 'main'
     ''')
 
 
