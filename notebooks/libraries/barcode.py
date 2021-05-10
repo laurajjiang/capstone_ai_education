@@ -25,7 +25,7 @@ class BarcodePlot:
           <div class="left">
             <h3> Epoch #:</h3>
             <h4 id="epochNum"></h4>
-            <input class="slider" id="epoch_slider" type="range" min="0" max="19" step="1" value="0" onchange="changedValues()"/>
+            <input class="slider" id="epoch_slider_bar" type="range" min="0" max="19" step="1" value="0" onchange="changedValues()"/>
           </div>
           <div class="left">
             <h3> Number of Sentences:</h3>
@@ -149,7 +149,7 @@ class BarcodePlot:
         table.
     -------------------------------------------------------------------------*/
     function changedValues() {
-        var epoch_val = d3.select("#epoch_slider").property("value");
+        var epoch_val = d3.select("#epoch_slider_bar").property("value");
         var sentences_val = d3.select("#num_sentences").property("value");
         var prev_sent_val = current_num_sent;
         d3.selectAll("#epochNum").text(epoch_val);
@@ -158,22 +158,18 @@ class BarcodePlot:
         current_num_sent = sentences_val;
         var max = current_num_sent;
         // data_array = [];
-        console.log("prev_sent_val, current_num_sent", prev_sent_val, current_num_sent);
-        console.log("Debugging: data_array: ", data_array);
 
-        if(current_num_sent > prev_sent_val){
-            var i = current_num_sent;
+        if(parseInt(current_num_sent) > parseInt(prev_sent_val)){
+            var i = parseInt(prev_sent_val);
+            for(;i < max; i++){                                                                            // Enter JSON data to array format
+                data_array.push([raw_data[i]["Index"], raw_data[i]["Test Label"],
+                    raw_data[i]["Test Prediction"], raw_data[i]["Test Confidence Score"],
+                    raw_data[i]["Test Sentence"], raw_data[i]["Intermediate Values"]]);
+            }
         }
-        if( current_num_sent < prev_sent_val){
-            console.log("Debuggings: ", data_array.splice(0, current_num_sent));
-            data_array = data_array.splice(0, current_num_sent);
-            console.log(data_array.splice(0, current_num_sent));
+        if( parseInt(current_num_sent) < parseInt(prev_sent_val)){
+            data_array = data_array.splice(0, parseInt(current_num_sent));
         }
-        // for(var i = 0; i < max; i++){                                                                            // Enter JSON data to array format
-        //     data_array.push([raw_data[i]["Index"], raw_data[i]["Test Label"],
-        //         raw_data[i]["Test Prediction"], raw_data[i]["Test Confidence Score"],
-        //         raw_data[i]["Test Sentence"], raw_data[i]["Intermediate Values"]]);
-        // }
         d3.select(".tables").selectAll("*").remove();
         createTable(data_array);
     }
@@ -184,7 +180,7 @@ class BarcodePlot:
         update with the appropriate values in the table.
     -------------------------------------------------------------------------*/
     function automatic(){
-        var epoch_val = d3.select("#epoch_slider").property("value");                                               // Fetch value of epoch slider
+        var epoch_val = d3.select("#epoch_slider_bar").property("value");                                               // Fetch value of epoch slider
         d3.selectAll("#epochNum").text(epoch_val);                                                                  // Insert value above slider
         current_epoch = epoch_val;
         var sentences_val = d3.select("#num_sentences").property("value");                                          // Fetch value of num sentencees slider
@@ -193,7 +189,7 @@ class BarcodePlot:
         d3.json( $json_filepath , function(data) {                                                                  // Read in JSON file from path
             raw_data = data;
             var max_sent = document.getElementById("num_sentences");                                                // Select num_sentences slider
-            var ep_num = document.getElementById("epoch_slider");                                                   // Select epoch slider
+            var ep_num = document.getElementById("epoch_slider_bar");                                                   // Select epoch slider
             var total_sentences = Object.keys(data).length -1;
             max_sent.max = total_sentences;
             ep_num.max = data["0"]['Num Epochs'] - 1;                                                               // Set max spoch to value of 'Num Epochs' in JSON
@@ -274,6 +270,7 @@ class BarcodePlot:
             })
             .classed("display", true);                                                             //   Class: display
         var tbody = table.append("tbody")                                                          // Adds body to table
+        console.log("adding new row");
         var tableBodyRows = tbody.selectAll("tr")                                                  // Appends a table row for each data entry
             .data(data)
             .enter()

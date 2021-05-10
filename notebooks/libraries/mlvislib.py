@@ -96,7 +96,7 @@ class ConfusionMatrix:
             white-space: normal;
         }
         li.dataPoint:nth-child(odd){                          /* Alternating list item color */
-            background: #999;
+            background: #A0A0A4;
         }
         table.xaxis {                                         /* X-axis of table */
             table-layout: auto;
@@ -300,7 +300,8 @@ class ConfusionMatrix:
             var prediction = d_on[1][currentEpochSetting-1];
             var selectedDataSet = fetchDataWindowResults(d, actual, prediction,                                                 // Fetch data points for selected cell
                 (currentEpochSetting - 1), currentConfSetting);
-            d3.selectAll('rect').style('fill', "black");                                                                        // Selecting all rects and coloring black
+            d3.select('#matrix').select('svg').selectAll('rect').style('fill', "black");
+            // d3.selectAll('rect').style('fill', "black");                                                                        // Selecting all rects and coloring black
             d3.selectAll('rect')                                                                                                // Coloring rects in selected quadrent blue
                 .filter(function(d) {
                     if( d[0] == actual && d[1][currentEpochSetting-1] == prediction)
