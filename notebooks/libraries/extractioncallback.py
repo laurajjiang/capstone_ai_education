@@ -46,6 +46,7 @@ class CallbackDataExtractor(Callback):
 
 
     def on_epoch_end(self, epoch, logs={}):
+        print("Collecting data on epoch ", epoch)
         if(epoch % self.sample_every == 0):
             # At end of each epoch, collects layer weights and output, as well as predictions on
             # each epoch.
