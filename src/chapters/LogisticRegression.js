@@ -307,7 +307,7 @@ const exploreDataBlock = (
     in here:
     <Spacer space='1vh' />
     <div style={{ display: "flex", justifyContent: "center" }}>
-      <img src='/logistic_regression/iris-data.png' />
+      <img src='../components/logistic_regression/iris-data.png' />
     </div>
     <Spacer space='1vh' />
     Here's another way to visualize the iris data. Scroll to see all the entries
