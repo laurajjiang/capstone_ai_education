@@ -1,0 +1,33 @@
+td {
+  max-height: 10px;
+}
+
+th {
+  padding: 0 5px;
+}
+
+.table {
+  border-collapse: collapse;
+  border: #d0d4d5 solid 1px;
+  border-spacing: 0px;
+  font: Arial;
+  text-align: center;
+}
+
+.headerRowStyle {
+  background-color: #fff;
+  border-bottom: 3px solid #ccc;
+  color: #4078a9;
+  font-size: 14px;
+  height: 48px;
+  line-height: 5px;
+}
+
+.headerCellStyle {
+  border-left: 1px solid #d0d4d5;
+}
+
+.tableRowStyle {
+  border-bottom: 1px solid #d0d4d5;
+  color: #565656;
+}

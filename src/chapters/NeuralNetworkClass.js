@@ -4,7 +4,7 @@ import Description from "../components/description";
 import { Callout, Button, Intent } from "@blueprintjs/core";
 import { CopyBlock, nord, a11yLight } from "react-code-blocks";
 import Spacer from "../components/spacer";
-import ConfusionMatrix from "../components/confusionMatrix";
+import IrisVis from "../components/assets/iris_visualization/irisVis";
 import Container from "../components/container";
 import "../index.css";
 import data from "./predict_nn.json";
@@ -275,11 +275,14 @@ const exploreDataBlock = (
     which type of it is. 0 is a <i>Iris-setosa</i>, 1 is a <i>Iris-versicolo</i>
     , and 2 is a <i>Iris-virginica</i>.
     <Spacer space='1vh' />
-    You might remember the simple plot of the iris data from the previous
-    chapter. Let's look at the iris data using a different kind of
-    visualization.
+    You might remember the table of the iris data from the previous chapter.
+    We'll display that here in case you want to take a second look.
+    <Spacer space='1vh' />
     <div style={{ display: "flex", justifyContent: "center" }}>
-      <span>PLACEHOLDER</span>
+      <Spacer space='1vh' />
+      <div style={{ maxHeight: "500px", overflow: "scroll" }}>
+        <IrisVis />
+      </div>
     </div>
   </div>
 );
