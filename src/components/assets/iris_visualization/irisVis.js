@@ -11,9 +11,9 @@ export default function IrisVis() {
    */
 
   function colorPicker(value) {
-    if (value == "Iris-setosa") {
+    if (value === "Iris-setosa") {
       return "#7aa25c";
-    } else if (value == "Iris-versicolor") {
+    } else if (value === "Iris-versicolor") {
       return "#f4f85e";
     } else {
       return "#d84b2a";

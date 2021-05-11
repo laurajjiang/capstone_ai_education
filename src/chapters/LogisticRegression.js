@@ -1,14 +1,15 @@
 import React from "react";
 import Navigation from "../components/navbar";
 import Description from "../components/description";
-import { Callout, Button, Intent } from "@blueprintjs/core";
+import { Button, Intent } from "@blueprintjs/core";
 import { CopyBlock, nord, a11yLight } from "react-code-blocks";
 import Spacer from "../components/spacer";
 import ConfusionMatrix from "../components/assets/confusion_matrix/confusionMatrix";
 import Container from "../components/container";
 import "../index.css";
-import data from "./predict_LR.json";
 import IrisVis from "../components/assets/iris_visualization/irisVis";
+
+/** This component is the logistic regression chapter on the website. */
 
 const objectives = [
   {
@@ -54,7 +55,7 @@ print(iris.shape)
 `;
 
 const loadDataOutput = `
-  sepal length (cm)  sepal width (cm)  petal len(cm)  petal w (cm)  \ 
+  sepal length (cm)  sepal width (cm)  petal len(cm)  petal w (cm)   
 0    5.1               3.5                1.4               0.2   
 1    4.9               3.0                1.4               0.2   
 2    4.7               3.2                1.3               0.2   
@@ -306,7 +307,7 @@ const exploreDataBlock = (
     in here:
     <Spacer space='1vh' />
     <div style={{ display: "flex", justifyContent: "center" }}>
-      <img src='/logistic_regression/iris-data.png' />
+      <img src='../components/logistic_regression/iris-data.png' />
     </div>
     <Spacer space='1vh' />
     Here's another way to visualize the iris data. Scroll to see all the entries
@@ -537,7 +538,7 @@ const pageContent = (
     <Description content={trainModelBlock} />
     <Description content={evaluateModelBlock} />
     <Description content={visualizationBlock} />
-    <ConfusionMatrix data={data} />
+    <ConfusionMatrix />
     <Spacer space='1vh' />
     <div>
       <Button

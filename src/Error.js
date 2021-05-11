@@ -4,6 +4,8 @@ import Footer from "./components/footer";
 import { Button, NonIdealState, Intent } from "@blueprintjs/core";
 import Spacer from "./components/spacer";
 
+/** Error (404) page not found component. */
+
 const description = (
   <>
     You've landed on a page that doesn't exist.

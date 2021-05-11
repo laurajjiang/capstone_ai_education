@@ -1,11 +1,12 @@
 import React from "react";
 import Navigation from "../components/navbar";
-import Footer from "../components/footer";
 import Description from "../components/description";
 import { Callout, Button, Intent } from "@blueprintjs/core";
 import Spacer from "../components/spacer";
 import Container from "../components/container";
 import "../index.css";
+
+/** This component is the introduction chapter on the website. */
 
 const pretext = (
   <>
