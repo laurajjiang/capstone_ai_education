@@ -5,6 +5,10 @@ import sklearn
 from keras.models import Model
 from keras.callbacks import Callback
 from sklearn.preprocessing import MinMaxScaler
+import random
+import os
+import sys
+import json
 
 
 # User Information:
@@ -46,7 +50,7 @@ class CallbackDataExtractor(Callback):
 
 
     def on_epoch_end(self, epoch, logs={}):
-        print("Collecting data on epoch ", epoch)
+        print("Collecting data on epoch ", epoch, "...")
         if(epoch % self.sample_every == 0):
             # At end of each epoch, collects layer weights and output, as well as predictions on
             # each epoch.
@@ -113,3 +117,63 @@ class CallbackDataExtractor(Callback):
                 columns= column_list
             )
             self.testing_results.append(epoch_test_results)
+
+    def generateJSON(self, path, num_entries=None):
+        captured_data = self.testing_results
+        data = {}
+        if num_entries == None:
+            for i in range(len(captured_data[0])):
+                data[i] = {}
+                data[i]['Num Epochs'] = len(captured_data)
+                data[i]['Index'] = i
+                if self.is_bin:
+                    data[i]['Test Label'] = int(captured_data[0]['actual'][i])
+                else:
+                    data[i]['Test Label'] = int(captured_data[0]['actual'][i].argmax())
+                data[i]['Test Prediction'] = {}
+                data[i]['Test Confidence Score'] = {}
+                if self.rec_int_values is True:
+                    data[i]['Intermediate Values'] = {}
+                    for j in range(len(captured_data)):
+                        data[i]['Intermediate Values'][j] = captured_data[j]['intermediate_values'][i]
+                if self.is_bin is True:
+                    for j in range(len(captured_data)):
+                        data[i]['Test Prediction'][j] = int(captured_data[j]['prediction'][i][0])
+                        data[i]['Test Confidence Score'][j] = [round(float(captured_data[j]['confidence_score'][i][0]), 3)]
+                    data[i]['Test Sentence'] = captured_data[0]['input'][i]
+                else:
+                    for j in range(len(captured_data)):
+                        data[i]['Test Prediction'][j] = int(captured_data[j]['prediction'][i])
+                        data[i]['Test Confidence Score'][j] = captured_data[j]['confidence_score'][i].tolist()
+                    data[i]['Test Sentence'] = captured_data[0]['input'][i].tolist()
+        else:
+            random_selection = random.sample(range(len(captured_data[0])), num_entries)
+            for index, i in enumerate(random_selection):
+                data[index] = {}
+                data[index]['Num Epochs'] = len(captured_data)
+                data[index]['Index'] = index
+                if self.is_bin:
+                    data[index]['Test Label'] = int(captured_data[0]['actual'][i])
+                else:
+                    data[index]['Test Label'] = int(captured_data[0]['actual'][i].argmax())
+                data[index]['Test Prediction'] = {}
+                data[index]['Test Confidence Score'] = {}
+                if self.rec_int_values is True:
+                    data[index]['Intermediate Values'] = {}
+                    for j in range(len(captured_data)):
+                        data[index]['Intermediate Values'][j] = captured_data[j]['intermediate_values'][i]
+                if self.is_bin is True:
+                    for j in range(len(captured_data)):
+                        data[index]['Test Prediction'][j] = int(captured_data[j]['prediction'][i][0])
+                        data[index]['Test Confidence Score'][j] = [round(float(captured_data[j]['confidence_score'][i][0]), 3)]
+                    data[index]['Test Sentence'] = captured_data[0]['input'][i]
+                else:
+                    for j in range(len(captured_data)):
+                        data[index]['Test Prediction'][j] = int(captured_data[j]['prediction'][i])
+                        data[index]['Test Confidence Score'][j] = captured_data[j]['confidence_score'][i].tolist()
+                    data[index]['Test Sentence'] = captured_data[0]['input'][i].tolist()
+
+
+        with open(path, 'w') as outfile:
+            json.dump(data, outfile, indent=4, sort_keys=False)
+
