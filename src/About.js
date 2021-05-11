@@ -5,6 +5,8 @@ import Description from "./components/description";
 import Spacer from "./components/spacer";
 import Container from "./components/container";
 
+/** About page describing team members and purpose of this site/project. */
+
 const aboutParagraph = (
   <>
     The goal of this project is to design and develop a web-based interactive

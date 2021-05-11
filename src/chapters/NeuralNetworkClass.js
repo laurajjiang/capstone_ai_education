@@ -1,13 +1,14 @@
 import React from "react";
 import Navigation from "../components/navbar";
 import Description from "../components/description";
-import { Callout, Button, Intent } from "@blueprintjs/core";
+import { Button, Intent } from "@blueprintjs/core";
 import { CopyBlock, nord, a11yLight } from "react-code-blocks";
 import Spacer from "../components/spacer";
 import IrisVis from "../components/assets/iris_visualization/irisVis";
 import Container from "../components/container";
 import "../index.css";
-import data from "./predict_nn.json";
+
+/** This component is the neural network classification chapter on the website. */
 
 const objectives = [
   {
@@ -51,7 +52,7 @@ print(iris.shape)
 `;
 
 const loadDataOutput = `
-  sepal length (cm)  sepal width (cm)  petal len(cm)  petal w (cm)  \ 
+  sepal length (cm)  sepal width (cm)  petal len(cm)  petal w (cm)  
 0    5.1               3.5                1.4               0.2   
 1    4.9               3.0                1.4               0.2   
 2    4.7               3.2                1.3               0.2   
