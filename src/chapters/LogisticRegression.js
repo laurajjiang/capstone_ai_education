@@ -17,23 +17,19 @@ const objectives = [
     tag: "#introduction",
   },
   {
-    obj:
-      "Describe what multi-class prediction is and how it applies to the iris data set.",
+    obj: "Describe what multi-class prediction is and how it applies to the iris data set.",
     tag: "#introduction",
   },
   {
-    obj:
-      "Demonstrate how to transform a given dataset to make it suitable for training/testing a model.",
+    obj: "Demonstrate how to transform a given dataset to make it suitable for training/testing a model.",
     tag: "#explore_data",
   },
   {
-    obj:
-      "Construct a logistic regression model using an optimization and loss function.",
+    obj: "Construct a logistic regression model using an optimization and loss function.",
     tag: "#build_model",
   },
   {
-    obj:
-      "Assess the accuracy and predictive power of the logistic regression model with the help of the interactive confusion matrix.",
+    obj: "Assess the accuracy and predictive power of the logistic regression model with the help of the interactive confusion matrix.",
     tag: "#train_model",
   },
 ];
@@ -538,7 +534,7 @@ const pageContent = (
     <Description content={trainModelBlock} />
     <Description content={evaluateModelBlock} />
     <Description content={visualizationBlock} />
-    <ConfusionMatrix />
+
     <Spacer space='1vh' />
     <div>
       <Button
