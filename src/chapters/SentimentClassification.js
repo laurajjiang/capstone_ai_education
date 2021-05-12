@@ -1,13 +1,14 @@
 import React from "react";
 import Navigation from "../components/navbar";
 import Description from "../components/description";
-import { Callout, Button, Intent } from "@blueprintjs/core";
+import { Button, Intent } from "@blueprintjs/core";
 import { CopyBlock, nord, a11yLight } from "react-code-blocks";
 import Spacer from "../components/spacer";
-import ConfusionMatrix from "../components/assets/confusion_matrix/confusionMatrix";
 import Container from "../components/container";
 import "../index.css";
 import BarcodeVis from "../components/assets/barcode_visualization/barcodeVis";
+
+/** This component is the sentiment classification chapter on the website. */
 
 const objectives = [
   {

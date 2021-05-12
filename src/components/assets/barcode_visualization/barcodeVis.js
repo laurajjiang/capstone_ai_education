@@ -194,7 +194,7 @@ export default function BarcodeVis() {
         let similarity = cosinesim(temp_array, sorted_bars);
 
         // adjust similarity to equal one if the selected sentence matches the current sentence being compared
-        if (sentence == sentenceData) {
+        if (sentence === sentenceData) {
           similarity = 1.0;
         }
         cosineSimilarities.push(similarity);
@@ -281,7 +281,7 @@ export default function BarcodeVis() {
       <div id='container'>
         <div class='left'>
           <h3> Epoch #:</h3>
-          <h4 id='epochNum'></h4>
+          <h4 id='epochNum' />
           <input
             class='slider'
             id='epoch_slider'
