@@ -7,6 +7,8 @@ import Description from "./components/description";
 import Spacer from "./components/spacer";
 import Container from "./components/container";
 
+/** Home page of the website. */
+
 const goal = (
   <>
     This project aims to be an interactive visualization tool to teach beginners

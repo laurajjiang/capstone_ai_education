@@ -1,13 +1,15 @@
 import React from "react";
 import Navigation from "../components/navbar";
 import Description from "../components/description";
-import { Callout, Button, Intent } from "@blueprintjs/core";
+import { Button, Intent } from "@blueprintjs/core";
 import { CopyBlock, nord, a11yLight } from "react-code-blocks";
 import Spacer from "../components/spacer";
-import ConfusionMatrix from "../components/confusionMatrix";
+import ConfusionMatrix from "../components/assets/confusion_matrix/confusionMatrix";
 import Container from "../components/container";
 import "../index.css";
-import data from "./predict_LR.json";
+import IrisVis from "../components/assets/iris_visualization/irisVis";
+
+/** This component is the logistic regression chapter on the website. */
 
 const objectives = [
   {
@@ -15,23 +17,19 @@ const objectives = [
     tag: "#introduction",
   },
   {
-    obj:
-      "Describe what multi-class prediction is and how it applies to the iris data set.",
+    obj: "Describe what multi-class prediction is and how it applies to the iris data set.",
     tag: "#introduction",
   },
   {
-    obj:
-      "Demonstrate how to transform a given dataset to make it suitable for training/testing a model.",
+    obj: "Demonstrate how to transform a given dataset to make it suitable for training/testing a model.",
     tag: "#explore_data",
   },
   {
-    obj:
-      "Construct a logistic regression model using an optimization and loss function.",
+    obj: "Construct a logistic regression model using an optimization and loss function.",
     tag: "#build_model",
   },
   {
-    obj:
-      "Assess the accuracy and predictive power of the logistic regression model with the help of the interactive confusion matrix.",
+    obj: "Assess the accuracy and predictive power of the logistic regression model with the help of the interactive confusion matrix.",
     tag: "#train_model",
   },
 ];
@@ -53,7 +51,7 @@ print(iris.shape)
 `;
 
 const loadDataOutput = `
-  sepal length (cm)  sepal width (cm)  petal len(cm)  petal w (cm)  \ 
+  sepal length (cm)  sepal width (cm)  petal len(cm)  petal w (cm)   
 0    5.1               3.5                1.4               0.2   
 1    4.9               3.0                1.4               0.2   
 2    4.7               3.2                1.3               0.2   
@@ -303,8 +301,27 @@ const exploreDataBlock = (
     Let's display a graph of what this dataset looks like, based off of sepal
     length and width. Keep in mind that there are 150 different iris data points
     in here:
+    <Spacer space='1vh' />
     <div style={{ display: "flex", justifyContent: "center" }}>
-      <img src='/iris-data.png' />
+      <img src='../components/logistic_regression/iris-data.png' />
+    </div>
+    <Spacer space='1vh' />
+    Here's another way to visualize the iris data. Scroll to see all the entries
+    in our dataset.
+    <Spacer space='1vh' />
+    <div
+      style={{
+        display: "flex",
+        justifyContent: "center",
+      }}>
+      <div
+        style={{
+          maxWidth: "600px",
+          maxHeight: "500px",
+          overflow: "scroll",
+        }}>
+        <IrisVis />
+      </div>
     </div>
   </div>
 );
@@ -517,7 +534,7 @@ const pageContent = (
     <Description content={trainModelBlock} />
     <Description content={evaluateModelBlock} />
     <Description content={visualizationBlock} />
-    <ConfusionMatrix data={data} />
+
     <Spacer space='1vh' />
     <div>
       <Button
