@@ -6,6 +6,8 @@ The goal of this project is to design and develop a web-based interactive visual
 
 The current state of the project supports multi-categorical classificaion using logistic regression and a neural network, image classification using a neural network and a convolutional neural network, and text (sentiment) classification using a neural network. There is an interactive confusion matrix supported for each model as well as unique interactive visualizations for the text classification section.
 
+In order to interact with the notebooks, we recommend that you clone this Github repo to your local machine and follow the [Running the Notebooks](#running-the-notebooks) setup process as described below. 
+
 ## Built With 
 
 * [React](https://reactjs.org/)
@@ -52,6 +54,8 @@ See the section about [deployment](https://facebook.github.io/create-react-app/d
 To run the notebooks locally and to view all the integrated visualiations properly, make sure that you have Jupyter installed. You can find Jupyter installation instructions [here](https://jupyter.org/install.html). 
 
 Once Jupyter has been successfully installed, navigate to the directory where the notebooks are located and run the command `jupyter notebook`. An instance of JupyterLab will spin up, and you can view and change any of the notebooks as desired. 
+
+You may view a [detail guide](https://docs.google.com/document/d/1h76vgy_LERoE-vHN1l1jOaTV0jHh6Q-2yGn7WjvXubw/edit?usp=sharing) written by one of our team members on how to set up your Python environment to be compatible with the notebooks that we've provided.
 
 ## Software Architecture 
 
