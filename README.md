@@ -19,7 +19,7 @@ In order to interact with the notebooks, we recommend that you clone this Github
 
 There are two components to this project: the site, bootstrapped with [Create React App](https://github.com/facebook/create-react-app), and the notebooks which are ideally run on the Jupyter platform. This repository is home to both of these components as well. You can find the notebooks inside the `/notebooks` folder. Please clone this repo to your machine, then follow the steps as described below. 
 
-## Running the Site
+### Running the Site
 
 ## Available Scripts
 
