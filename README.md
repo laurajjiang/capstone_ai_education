@@ -21,17 +21,13 @@ There are two components to this project: the site, bootstrapped with [Create Re
 
 ### Running the Site
 
-## Available Scripts
+### Available Scripts
 
-### `npm install -g yarn`
-If you don't have yarn, please install yarn with this npm command.
+If you don't have yarn, please install yarn with this npm command: `npm install -g yarn`
 
-`yarn install`
-Before run the yarn script, please install packages with this command.
+Before run the yarn script, please install packages with this command: `yarn install`
 
-In the project directory, you can run:
-
-`yarn start`
+In the project directory, you can run: `yarn start`
 
 Runs the app in the development mode.\
 Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
@@ -39,15 +35,12 @@ Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 The page will reload if you make edits.\
 You will also see any lint errors in the console.
 
-`yarn build`
+`yarn build` \
 
 Builds the app for production to the `build` folder.\
 It correctly bundles React in production mode and optimizes the build for the best performance.
 
 The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
 
 ### Running the Notebooks
 
@@ -55,7 +48,7 @@ To run the notebooks locally and to view all the integrated visualiations proper
 
 Once Jupyter has been successfully installed, navigate to the directory where the notebooks are located and run the command `jupyter notebook`. An instance of JupyterLab will spin up, and you can view and change any of the notebooks as desired. 
 
-You may view a [detail guide](https://docs.google.com/document/d/1h76vgy_LERoE-vHN1l1jOaTV0jHh6Q-2yGn7WjvXubw/edit?usp=sharing) written by one of our team members on how to set up your Python environment to be compatible with the notebooks that we've provided.
+You may view a [detailed guide](https://docs.google.com/document/d/1h76vgy_LERoE-vHN1l1jOaTV0jHh6Q-2yGn7WjvXubw/edit?usp=sharing) written by one of our team members on how to set up your Python environment to be compatible with the notebooks that we've provided.
 
 ## Software Architecture 
 
