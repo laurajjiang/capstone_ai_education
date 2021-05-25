@@ -12,8 +12,7 @@ import "../index.css";
 
 const objectives = [
   {
-    obj:
-      "Summarize the difference between logistic regression and a neural network.",
+    obj: "Summarize the difference between logistic regression and a neural network.",
     tag: "#introduction",
   },
   {
@@ -25,8 +24,7 @@ const objectives = [
     tag: "#explore_data",
   },
   {
-    obj:
-      "Interpret the differences between accuracy and loss per epoch, particularly interacting with the epoch slider on the confusion matrix.",
+    obj: "Interpret the differences between accuracy and loss per epoch, particularly interacting with the epoch slider on the confusion matrix.",
     tag: "#build_model",
   },
 ];
@@ -187,22 +185,13 @@ const buttonGroup = (
       intent={Intent.PRIMARY}
       text={
         <a
+          className='anchor-tag'
           href='https://github.com/laurajjiang/capstone_ai_education/blob/main/notebooks/neural_network_classification.ipynb'
           target='_blank'
           rel='noopener noreferrer'>
           View on GitHub
         </a>
       }
-    />
-    <Button
-      className='primary-button'
-      intent={Intent.PRIMARY}
-      text='Download notebook'
-    />
-    <Button
-      className='primary-button'
-      intent={Intent.PRIMARY}
-      text='View in Google Colab'
     />
   </div>
 );
@@ -403,7 +392,7 @@ const trainModelBlock = (
     just one iteration of training the model with a given batch of data!
     <Spacer space='1vh' />
     <div style={{ display: "flex", justifyContent: "center" }}>
-      <span>PLACEHOLDER</span>
+      <img src='/neural_network/acc-loss.png' />
     </div>
   </div>
 );

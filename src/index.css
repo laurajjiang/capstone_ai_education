@@ -19,6 +19,10 @@ code {
     monospace;
 }
 
+.anchor-tag:visited {
+  color: whitesmoke;
+}
+
 .title {
   font-size: 500%;
 }

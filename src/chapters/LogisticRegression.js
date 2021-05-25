@@ -197,28 +197,16 @@ loss: 0.5311 - accuracy: 0.8333
 
 const buttonGroup = (
   <div className='button-group'>
-    <Button
-      className='primary-button'
-      intent={Intent.PRIMARY}
-      text={
-        <a
-          href='https://github.com/laurajjiang/capstone_ai_education/blob/main/notebooks/logistic_regression_keras.ipynb'
-          target='_blank'
-          rel='noopener noreferrer'>
-          View on GitHub
-        </a>
-      }
-    />
-    <Button
-      className='primary-button'
-      intent={Intent.PRIMARY}
-      text='Download notebook'
-    />
-    <Button
-      className='primary-button'
-      intent={Intent.PRIMARY}
-      text='View in Google Colab'
-    />
+    <Button className='primary-button' intent={Intent.PRIMARY}>
+      <a
+        className='anchor-tag'
+        href='https://github.com/laurajjiang/capstone_ai_education/blob/main/notebooks/logistic_regression_keras.ipynb'
+        target='_blank'
+        rel='noopener noreferrer'>
+        {" "}
+        View on Github
+      </a>
+    </Button>
   </div>
 );
 
@@ -303,7 +291,7 @@ const exploreDataBlock = (
     in here:
     <Spacer space='1vh' />
     <div style={{ display: "flex", justifyContent: "center" }}>
-      <img src='../components/logistic_regression/iris-data.png' />
+      <img src='/logistic_regression/iris-data.png' />
     </div>
     <Spacer space='1vh' />
     Here's another way to visualize the iris data. Scroll to see all the entries
@@ -453,7 +441,7 @@ const trainModelBlock = (
     loss. At some points though, the accuracy does flatten out.
     <Spacer space='1vh' />
     <div style={{ display: "flex", justifyContent: "center" }}>
-      <img src='/lr_graph.png' />
+      <img src='/logistic_regression/acc-loss.png' />
     </div>
   </div>
 );

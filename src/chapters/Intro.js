@@ -11,6 +11,14 @@ import "../index.css";
 const pretext = (
   <>
     <Spacer space='1vh' />
+    To view and modify any code snippets shown on the site, please go to the
+    <a href='https://github.com/laurajjiang/capstone_ai_education'>
+      {" "}
+      repository{" "}
+    </a>{" "}
+    and follow the README and user guide for how to properly set up your machine
+    and install any necessary packages.
+    <Spacer space='1vh' />
     Artificial intelligence is the science and engineering of making machines
     behave or think rationally or for the machines to act or think like humans.
     <Spacer space='1vh' />

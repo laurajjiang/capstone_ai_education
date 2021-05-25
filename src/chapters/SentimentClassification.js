@@ -12,18 +12,15 @@ import BarcodeVis from "../components/assets/barcode_visualization/barcodeVis";
 
 const objectives = [
   {
-    obj:
-      "How does text classification differ from the classifications that we've gone over in the previous chapters?",
+    obj: "How does text classification differ from the classifications that we've gone over in the previous chapters?",
     tag: "#build-model",
   },
   {
-    obj:
-      "Describe how sentiment classification works at a high level -- how is data transformed? How does the model learn to predict sentiment?",
+    obj: "Describe how sentiment classification works at a high level -- how is data transformed? How does the model learn to predict sentiment?",
     tag: "#build-model",
   },
   {
-    obj:
-      "What information can you gather from the barcode visualization? How are similar words displayed and grouped together?",
+    obj: "What information can you gather from the barcode visualization? How are similar words displayed and grouped together?",
     tag: "#build-model",
   },
 ];
@@ -214,22 +211,13 @@ const buttonGroup = (
       intent={Intent.PRIMARY}
       text={
         <a
+          className='anchor-tag'
           href='https://github.com/laurajjiang/capstone_ai_education/blob/main/notebooks/text_classification_with_hub.ipynb'
           target='_blank'
           rel='noopener noreferrer'>
           View on GitHub
         </a>
       }
-    />
-    <Button
-      className='primary-button'
-      intent={Intent.PRIMARY}
-      text='Download notebook'
-    />
-    <Button
-      className='primary-button'
-      intent={Intent.PRIMARY}
-      text='View in Google Colab'
     />
   </div>
 );
@@ -420,7 +408,7 @@ const trainModelBlock = (
     Here is the accuracy and loss graph across epochs.
     <Spacer space='1vh' />
     <div style={{ display: "flex", justifyContent: "center" }}>
-      <span>PLACEHOLDER</span>
+      <img src='/text_classification/acc-loss.png' />
     </div>
   </div>
 );

@@ -11,13 +11,11 @@ import "../index.css";
 
 const objectives = [
   {
-    obj:
-      "Compare and contrast a convoluted neural network with a traditional neural network.",
+    obj: "Compare and contrast a convoluted neural network with a traditional neural network.",
     tag: "#build-model",
   },
   {
-    obj:
-      "Identify the additional layers in a convolution	al neural network. Explain what these new layers do and describe their effect on accuracy and loss.",
+    obj: "Identify the additional layers in a convolution	al neural network. Explain what these new layers do and describe their effect on accuracy and loss.",
     tag: "#build-model",
   },
 ];
@@ -129,22 +127,13 @@ const buttonGroup = (
       intent={Intent.PRIMARY}
       text={
         <a
+          className='anchor-tag'
           href='https://github.com/laurajjiang/capstone_ai_education/blob/main/notebooks/c_neural_network_img.ipynb'
           target='_blank'
           rel='noopener noreferrer'>
           View on GitHub
         </a>
       }
-    />
-    <Button
-      className='primary-button'
-      intent={Intent.PRIMARY}
-      text='Download notebook'
-    />
-    <Button
-      className='primary-button'
-      intent={Intent.PRIMARY}
-      text='View in Google Colab'
     />
   </div>
 );
@@ -323,7 +312,7 @@ const trainModelBlock = (
     Here is the accuracy and loss graph across epochs.
     <Spacer space='1vh' />
     <div style={{ display: "flex", justifyContent: "center" }}>
-      <span>PLACEHOLDER</span>
+      <img src='/convo_neural_network/acc-loss.png' />
     </div>
   </div>
 );
@@ -358,6 +347,11 @@ const evaluateModelBlock = (
 const visualizationBlock = (
   <div>
     <h1>Intepreting the results</h1>
+    Let's look at how our model performed using that same grid from the previous
+    chapter.
+    <div style={{ display: "flex", justifyContent: "center" }}>
+      <img src='/convo_neural_network/eval.png' />
+    </div>
     Here is the confusion matrix for our neural network.
     <Spacer space='1vh' />
     <span>PLACEHOLDER</span>

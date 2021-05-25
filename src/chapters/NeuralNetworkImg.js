@@ -1,7 +1,7 @@
 import React from "react";
 import Navigation from "../components/navbar";
 import Description from "../components/description";
-import {  Button, Intent } from "@blueprintjs/core";
+import { Button, Intent } from "@blueprintjs/core";
 import { CopyBlock, nord, a11yLight } from "react-code-blocks";
 import Spacer from "../components/spacer";
 import Container from "../components/container";
@@ -11,13 +11,11 @@ import "../index.css";
 
 const objectives = [
   {
-    obj:
-      "Illustrate how to transform image data into a vectorized form suitable for training a neural network.",
+    obj: "Illustrate how to transform image data into a vectorized form suitable for training a neural network.",
     tag: "#explore_data",
   },
   {
-    obj:
-      "Describe how image classification is performed and how it differs from already vectorized data.",
+    obj: "Describe how image classification is performed and how it differs from already vectorized data.",
     tag: "#explore_data",
   },
 ];
@@ -135,22 +133,13 @@ const buttonGroup = (
       intent={Intent.PRIMARY}
       text={
         <a
+          className='anchor-tag'
           href='https://github.com/laurajjiang/capstone_ai_education/blob/main/notebooks/neural_network_img.ipynb'
           target='_blank'
           rel='noopener noreferrer'>
           View on GitHub
         </a>
       }
-    />
-    <Button
-      className='primary-button'
-      intent={Intent.PRIMARY}
-      text='Download notebook'
-    />
-    <Button
-      className='primary-button'
-      intent={Intent.PRIMARY}
-      text='View in Google Colab'
     />
   </div>
 );
@@ -214,8 +203,9 @@ const exploreDataBlock = (
     />
     <Spacer space='1vh' />
     We can see a sample of what our data looks like:
+    <Spacer space='1vh' />
     <div style={{ display: "flex", justifyContent: "center" }}>
-      <span>PLACEHOLDER</span>
+      <img src='/neural_network_img/item.png' />
     </div>
     <Spacer space='1vh' />
   </div>
@@ -314,7 +304,7 @@ const trainModelBlock = (
     just one iteration of training the model with a given batch of data!
     <Spacer space='1vh' />
     <div style={{ display: "flex", justifyContent: "center" }}>
-      <span>PLACEHOLDER</span>
+      <img src='/neural_network_img/acc-loss.png' />
     </div>
     <Spacer space='1vh' />
   </div>
@@ -368,7 +358,7 @@ const visualizationBlock = (
     notebook it should be fairly straightforward how you can view more results.
     <Spacer space='1vh' />
     <div style={{ display: "flex", justifyContent: "center" }}>
-      <span>PLACEHOLDER</span>
+      <img src='/neural_network_img/eval.png' />
     </div>
     <Spacer space='1vh' />
     Here is the confusion matrix for our neural network.
