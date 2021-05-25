@@ -2,7 +2,7 @@
 
 Senior Capstone, Group 21
 
-The goal of this project is to design and develop a web-based interactive visualization tool for novices to learn about AI or machine learning (ML). The tool will enable users to actively learn about AI on their web browsers without programming, specifically by uploading their datasets (e.g., a set of images), train ML models, visually analyze results, and test them. We plan to evaluate our tool by conducting human-subject studies with potential users who aspire to learn about AI. We also aim to open-source the tool, so that anyone can use our tool for their learning. 
+Artificial intelligence and machine learning is becoming increasingly popular and present in tons of different industries and systems around the world. There currently lacks beginner friendly resources that both teach and tie multiple AI/ML concepts together. Through this project, we created a new web and notebook-based tool to provide users with both a high-level and optional in-depth (hands-on programming) experience of building three different machine learning models for varied use cases. The materials are organized by topic, introducing increasingly more complex concepts to users as they move through the site.
 
 The current state of the project supports multi-categorical classificaion using logistic regression and a neural network, image classification using a neural network and a convolutional neural network, and text (sentiment) classification using a neural network. There is an interactive confusion matrix supported for each model as well as unique interactive visualizations for the text classification section.
 
@@ -26,12 +26,12 @@ There are two components to this project: the site, bootstrapped with [Create Re
 ### `npm install -g yarn`
 If you don't have yarn, please install yarn with this npm command.
 
-### `yarn install`
+`yarn install`
 Before run the yarn script, please install packages with this command.
 
 In the project directory, you can run:
 
-### `yarn start`
+`yarn start`
 
 Runs the app in the development mode.\
 Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
@@ -39,7 +39,7 @@ Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 The page will reload if you make edits.\
 You will also see any lint errors in the console.
 
-### `yarn build`
+`yarn build`
 
 Builds the app for production to the `build` folder.\
 It correctly bundles React in production mode and optimizes the build for the best performance.
