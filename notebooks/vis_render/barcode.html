@@ -52,6 +52,20 @@
       stroke: black;
       overflow: visible;
     }
+
+    #loader {
+    border: 16px solid #f3f3f3; /* Light grey */
+    border-top: 16px solid #3498db; /* Blue */
+    border-radius: 50%;
+    width: 120px;
+    height: 120px;
+    animation: spin 2s linear infinite;
+  }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
       
   </style>
 </head>
@@ -61,18 +75,39 @@
     <div class="left">
       <h3> Epoch #:</h3>
       <h4 id="epochNum"></h4>
-      <input class="slider" id="epoch_slider" type="range" min="0" max="19" step="1" value="0" onchange="changedValues()"/>
+      <input class="slider" id="epoch_slider" type="range" min="0" max="" step="1" value="0" onchange="changedValues()"/>
     </div>
     <div class="left">
       <h3> Number of Sentences:</h3>
       <h4 id="sentNum"></h4>
-      <input class="slider" id="num_sentences" type="range" min="0" max="496" step="1" value="10" onchange="changedValues()"/>
+      <input class="slider" id="num_sentences" type="range" min="0" max="" step="1" value="10" onchange="changedValues()"/>
     </div>
   </div>
     <input type="text" id="myInput" placeholder="Filter out words" style="width : auto">
     <button onclick="changedValues()">Filter</button>
-    <div class="tables"></div>
+    <div id="loader"></div>
+    <div class="tables" id="table_contents"></div>
   <script>
+
+    var loader = $('#loader');
+    var content = $('#table_contents');
+
+    $.getJSON("../d3_visualizations/hub.json", (data) =>{
+        max_val = Object.keys(data).length;
+        console.log("max_val:", max_val);
+        var input = document.getElementById("epoch_slider");
+        input.setAttribute("max", (max_val - 1));
+        input.setAttribute("value", 0)
+        });
+
+    $.getJSON("../d3_visualizations/hub.json", (data) =>{
+        max_val = Object.keys(data[0]).length;
+        console.log("max_val:", max_val);
+        var input = document.getElementById("num_sentences");
+        input.setAttribute("max", (max_val/10));    // Since 10000 is so huge and takes forever to load, I set to 1000 as max
+        input.setAttribute("value", 10)
+        });
+
 
 // https://titanwolf.org/Network/Articles/Article?AID=135aa377-6989-4a7c-8da9-6eb73ef33086#gsc.tab=0 - code that does numpy's argsort
     function argsort(array) {
@@ -94,13 +129,14 @@
     }
 
     function changedValues() {
+      loader.show();
+      content.hide();
       var x = d3.select("#myInput").property("value").toUpperCase();
       var epoch_val = d3.select("#epoch_slider").property("value");
       var sentences_val = d3.select("#num_sentences").property("value");
 
       d3.selectAll("#epochNum").text(epoch_val);
       d3.selectAll("#sentNum").text(sentences_val);
-
       d3.json("../d3_visualizations/hub.json", function(largedataset) {
         dataSet = largedataset[epoch_val];
         dataSet = largedataset[epoch_val];
@@ -114,17 +150,21 @@
             }
         }
         createTable(test);
+        loader.hide();
+        content.show();
       })
     }
 
     function automatic(){
+      loader.show();
+      content.hide();
       var epoch_val = d3.select("#epoch_slider").property("value");
       d3.selectAll("#epochNum").text(epoch_val);
 
       var sentences_val = d3.select("#num_sentences").property("value");
       d3.selectAll("#sentNum").text(sentences_val);
 
-      d3.json("hub.json", function(largedataset) {
+      d3.json("../d3_visualizations/hub.json", function(largedataset) {
         dataSet = largedataset[epoch_val];
 
         var max_sent = document.getElementById("num_sentences");
@@ -140,6 +180,8 @@
         }
 
         createTable(test);
+        loader.hide();
+        content.show();
 
           
       })
