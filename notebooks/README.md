@@ -22,15 +22,15 @@ If any of these return an error of some kind, please direct yourself to the inst
 
 ### Installing dependent packages
 
-Navigate to the 'notebooks' directory from the terminal. Ensure that the requirements.txt file is present. Then run the command `pip install -r requirements.txt`. This will install each package that this project depends on. Run the command `pip list` to see which packages are installed in the current environment. A description of all packages installed can be found in the 'User Guide' document. 
+Clone this repository and navigate to the 'notebooks' directory from the terminal. Ensure that the requirements.txt file is present. Then run the command `pip install -r requirements.txt`. This will install each package that this project depends on. Run the command `pip list` to see which packages are installed in the current environment. A description of all packages installed can be found in the 'User Guide' document. 
 
 ## Proper filesystem
 
-After installing the required software, clone this repository. Ceratain portions of notebook code, and the generation and reference of .json files is dependent on how the filesystem is structured. It is vital that neither the location of the 'libraries' directory nor any of its contents are changed. Ensure the filesystem matches that seen on this repository. 
+Ceratain portions of notebook code, and the generation and reference of .json files is dependent on how the filesystem is structured. It is vital that neither the location of the 'libraries' directory nor any of its contents are changed. Ensure the filesystem matches that seen on this repository. 
 
 ## Running Notebooks
 
-In the terminal, enter the command `jupyter notebook`. This will open a page in the default web browser. Open one of the .ipynb files, and select the 'run' button to move through cells. 
+In the terminal, enter the command `jupyter notebook`. This will open a page in the default web browser. Open one of the .ipynb files, and select the 'run' button to move through cells. If you are not directed towards a window in the browser, try visiting the address [http:://localhost:8888](http:://localhost:8888)
 
 ## Trouble Shooting
 If an error message appears regarding Keras missing a module, try reinstalling tensorflow with the following command `pip install tensorflow --upgrade --force-reinstall`
