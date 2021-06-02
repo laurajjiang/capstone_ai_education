@@ -3,9 +3,6 @@ import string
 from string import Template
 import json
 
-def say_hello():
-    display(HTML('<h1>Greetings</h1>'))
-
 class BarcodePlot:
     source_data_path = ""
 
@@ -180,7 +177,7 @@ class BarcodePlot:
         update with the appropriate values in the table.
     -------------------------------------------------------------------------*/
     function automatic(){
-        var epoch_val = d3.select("#epoch_slider_bar").property("value");                                               // Fetch value of epoch slider
+        var epoch_val = d3.select("#epoch_slider_bar").property("value");                                           // Fetch value of epoch slider
         d3.selectAll("#epochNum").text(epoch_val);                                                                  // Insert value above slider
         current_epoch = epoch_val;
         var sentences_val = d3.select("#num_sentences").property("value");                                          // Fetch value of num sentencees slider

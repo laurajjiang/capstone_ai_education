@@ -224,6 +224,7 @@ class ConfusionMatrix:
         --------------------------------------------------------------------------------*/
         function addAxisLabels(){
             var xaxis_labels = $x
+            console.log("Logging x", $x);
             var yaxis_labels = $y
             for(var i = 0; i < xaxis_labels.length; i++){
                 d3.select(".xaxis").selectAll("tr").append("td").text(xaxis_labels[i])

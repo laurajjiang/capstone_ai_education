@@ -1,9 +1,10 @@
 import numpy as np
 import pandas as pd
 import tensorflow as tf
+from tensorflow import keras
 import sklearn
-from keras.models import Model
-from keras.callbacks import Callback
+from tensorflow.keras.models import Model
+from tensorflow.keras.callbacks import Callback
 from sklearn.preprocessing import MinMaxScaler
 import random
 import os
