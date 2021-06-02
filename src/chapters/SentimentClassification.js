@@ -7,6 +7,8 @@ import Spacer from "../components/spacer";
 import Container from "../components/container";
 import "../index.css";
 import BarcodeVis from "../components/assets/barcode_visualization/barcodeVis";
+import ConfusionMatrix from "../components/assets/confusion_matrix/confusionMatrix";
+import data from "./sentiment_classification.json";
 
 /** This component is the sentiment classification chapter on the website. */
 
@@ -456,7 +458,11 @@ const visualizationBlock = (
     <Spacer space='1vh' />
     Here is the confusion matrix for our neural network.
     <Spacer space='1vh' />
-    <span>PLACEHOLDER</span>
+    <ConfusionMatrix
+      data={data}
+      x_labels={["Positive", "Negative"]}
+      y_labels={["Positive", "Negative"]}
+    />
   </div>
 );
 

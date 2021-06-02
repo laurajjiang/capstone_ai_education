@@ -42,7 +42,6 @@ table.yaxis {
   /* Y-axis of table */
   float: left;
   display: inline;
-  table-layout: auto;
   height: 750px;
   writing-mode: sideways-lr;
 }
