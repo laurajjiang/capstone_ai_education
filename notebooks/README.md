@@ -3,6 +3,8 @@ A more advanced User Guide / Startup Guide can be found in the following documen
 
 https://oregonstate.app.box.com/file/817412863767
 
+
+
 ## Downloading and Installing Requirements
 
 The basic requirements to run the notebook portion includes:
@@ -25,6 +27,8 @@ If any of these return an error of some kind, please direct yourself to the inst
 ### Installing dependent packages
 
 Clone this repository and navigate to the 'notebooks' directory from the terminal. Ensure that the requirements.txt file is present. Then run the command `pip install -r requirements.txt`. This will install each package that this project depends on. Run the command `pip list` to see which packages are installed in the current environment. A description of all packages installed can be found in the 'User Guide' document. 
+
+NOTE: If you are a mac user, or if packages do not show up on pip list, try using `pip3` rather than `pip`
 
 ## Proper filesystem
 
