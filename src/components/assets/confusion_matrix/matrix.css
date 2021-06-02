@@ -2,30 +2,71 @@
   background-color: #ffb;
   border: 1px solid #b53;
 }
-td {
-  min-width: 100px;
+.highlight {
+  background-color: yellow;
 }
-
+.lighthigh {
+  background-color: green;
+}
+#testList {
+  /* List in data Section */
+  list-style-type: none;
+  padding-left: 0;
+  margin: 0;
+}
+li.dataPoint {
+  font-size: smaller;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+li.dataPoint.clicked {
+  overflow: visible;
+  white-space: normal;
+}
+li.dataPoint:nth-child(odd) {
+  /* Alternating list item color */
+  background: #a0a0a4;
+}
+table.xaxis {
+  /* X-axis of table */
+  table-layout: auto;
+  width: 750px;
+  margin-left: 26px !important;
+  text-align: center;
+}
+td.xlabel {
+  text-align: center;
+}
+table.yaxis {
+  /* Y-axis of table */
+  float: left;
+  display: inline;
+  table-layout: auto;
+  height: 750px;
+  writing-mode: sideways-lr;
+}
+td.ylabel {
+  text-align: center;
+}
 #review {
-  align-items: center;
-  display: flex;
-  flex-direction: column;
-  border: 1px solid pink;
+  /* Data Section */
+  border: 1px solid blue;
   padding: 5px;
+  float: left;
   width: 750px;
   height: 500px;
   background-color: white;
   margin: 20px;
   overflow: scroll;
 }
-
 #matrix {
-  border: 1px solid pink;
+  border: 1px solid blue;
   padding: 5px;
   float: left;
-  margin: 20px;
+  width: 750px;
+  display: inline;
 }
-
 #slider {
   -webkit-appearance: none;
   width: 100%;
