@@ -1,6 +1,8 @@
 # Notebooks Setup Guide
 A more advanced User Guide / Startup Guide can be found in the following document:
 
+https://oregonstate.app.box.com/file/817412863767
+
 ## Downloading and Installing Requirements
 
 The basic requirements to run the notebook portion includes:
